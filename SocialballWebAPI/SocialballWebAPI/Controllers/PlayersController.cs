@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,17 +23,20 @@ namespace SocialballWebAPI.Controllers
 
         // GET: api/Players
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Player>>> GetPlayers()
+        public async Task<ActionResult<IEnumerable<Player>>> GetPlayers(Guid? teamId)
         {
-            return await _context.Players.ToListAsync();
-
-            //get player by id
-            //return context.Players.Where(x => x.Id == ).ToList();
-
+            if (teamId.HasValue)
+            {
+                return await _context.Players.Where(x => x.TeamId == teamId).ToListAsync();
+            }
+            else
+            {
+                return await _context.Players.ToListAsync();
+            }
         }
 
         // GET: api/Players/5
-        [HttpGet("{id}")]
+        [HttpGet("details")]
         public async Task<ActionResult<Player>> GetPlayer(Guid id)
         {
             var player = await _context.Players.FindAsync(id);
@@ -45,42 +49,12 @@ namespace SocialballWebAPI.Controllers
             return player;
         }
 
-        // PUT: api/Players/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutPlayer(Guid id, Player player)
-        {
-            if (id != player.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(player).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PlayerExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
         // POST: api/Players
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Player>> PostPlayer(Player player)
+        public async Task<ActionResult<Player>> PostPlayer([FromBody] Player player)
         {
+            player.LoginPassword = BCrypt.Net.BCrypt.HashPassword(player.LoginPassword);
             _context.Players.Add(player);
             await _context.SaveChangesAsync();
 

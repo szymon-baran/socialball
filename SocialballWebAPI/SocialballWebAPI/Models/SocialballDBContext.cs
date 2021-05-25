@@ -71,7 +71,6 @@ namespace SocialballWebAPI.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.LoginPassword)
-                    .HasMaxLength(40)
                     .IsUnicode(false);
 
                 entity.Property(e => e.LoginUsername)

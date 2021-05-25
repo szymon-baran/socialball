@@ -1,13 +1,13 @@
 <template>
   <header>
     <nav>
-      <h1>
+      <h2>
         <router-link to="/"
           ><i class="fas fa-futbol"></i>
 
           SOCIALBALL</router-link
         >
-      </h1>
+      </h2>
       <ul>
         <li>
           <router-link to="/teams">Drużyny</router-link>
@@ -25,28 +25,39 @@
       </ul>
       <div>
         <ul>
-          <li>
-            <h3>
-              <router-link to="/profile">
-                Manchester United
-              </router-link>
-            </h3>
+          <li class="font-weight-bold">
+            <router-link to="/profile">
+              <i class="far fa-user-circle"></i>
+              <span class="ml-2">{{ getUserFullname }}</span>
+            </router-link>
           </li>
           <li>
             <!-- <router-link to="/login">Logowanie</router-link> -->
-            <router-link to="/logout">Wyloguj</router-link>
+            <!-- <router-link to="/logout">Wyloguj</router-link> -->
+            <i class="fas fa-sign-out-alt"></i>
+            <span class="ml-2">Wyloguj</span>
           </li>
         </ul>
       </div>
     </nav>
   </header>
 </template>
+<script>
+import { mapGetters } from "vuex";
 
+export default {
+  name: "MainHeader",
+  computed: {
+    ...mapGetters({ getUserFullname: "getUserFullname" }),
+  },
+};
+</script>
 <style scoped>
 header {
+  font-family: "Montserrat", sans-serif;
   width: 100%;
   height: 6vh;
-  background-color: #011b01;
+  background-color: #363640;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -56,35 +67,35 @@ header a {
   text-decoration: none;
   color: whitesmoke;
   display: inline-block;
-  padding: 0.6rem 1.2rem;
+  padding: 0.2rem 1.2rem;
   border: 1px solid transparent;
   border-radius: 8px;
 }
 
 a:active,
 a.router-link-active {
-  border: 1px solid whitesmoke;
-  border-radius: 8px;
-  transform: scale(1.1, 1.1);
-  background-color: whitesmoke;
-  color: black;
+  border-bottom: 2px solid #009385;
+  border-radius: 2px;
+  color: #009385;
 }
 
 a:hover {
-  border: 1px solid whitesmoke;
-  border-radius: 8px;
+  color: #009385;
 }
 
-h3, h1 {
+h2 {
+  font-size: 150%;
   margin: 0;
+  font-weight: bold;
 }
 
-h1 a:hover,
-h1 a:active,
-h1 a.router-link-active {
+h2 a:hover,
+h2 a:active,
+h2 a.router-link-active {
   border: none;
-  background-color: inherit;
-  color: white;
+  color: #009385;
+  transform: scale(1.07);
+  transition: all 0.4s ease-in-out;
 }
 
 nav {
@@ -106,5 +117,6 @@ ul {
 
 li {
   margin: 0 0.6rem;
+  font-size: 110%;
 }
 </style>

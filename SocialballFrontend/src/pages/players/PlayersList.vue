@@ -1,12 +1,13 @@
 <template>
-  <div class="big-data-grid">
-    <h3>Lista wszystkich zawodników</h3>
+  <div v-bind:class="{ 'big-data-grid': !isProfileView }">
+    <h3 v-if="!isProfileView">Lista wszystkich zawodników</h3>
     <DxDataGrid
-      caption="Lista wszystkich zawodników"
       :data-source="getPlayers"
       :remote-operations="false"
       :row-alternation-enabled="true"
       :show-borders="true"
+      :hover-state-enabled="true"
+      @row-click="onRowClick"
     >
       <DxFilterRow :visible="true" />
       <DxColumn data-field="firstName" caption="Imię" />
@@ -18,10 +19,12 @@
           display-expr="value"
         />
       </DxColumn>
-      <DxColumn data-field="teamName" caption="Klub" />
+      <DxColumn data-field="teamId" caption="Klub">
+        <DxLookup :data-source="getTeams" value-expr="id" display-expr="name" />
+      </DxColumn>
       <DxColumn data-field="citizenship" caption="Narodowość" />
     </DxDataGrid>
-    <p>
+    <p v-if="!isProfileView" class="mt-3">
       Na liście nie ma zawodnika? Zarejestruj go
       <router-link to="/register">tutaj</router-link>!
     </p>
@@ -47,7 +50,7 @@ export default {
           type: "array",
           data: [
             { id: 0, value: "Bramkarz" },
-            { id: 1, value: "Obronca" },
+            { id: 1, value: "Obrońca" },
             { id: 2, value: "Pomocnik" },
             { id: 3, value: "Napastnik" },
           ],
@@ -56,16 +59,35 @@ export default {
       },
     };
   },
+  props: {
+    isProfileView: {
+      type: Boolean,
+      required: false,
+    },
+    profileTeamId: {
+      type: String,
+      required: false,
+    },
+  },
   computed: {
-    ...mapGetters({ getPlayers: "players/getPlayers" }),
+    ...mapGetters({
+      getPlayers: "players/getPlayers",
+      getTeams: "teams/getTeams",
+    }),
   },
   methods: {
     ...mapActions({
-      setPlayers: "players/getAllPlayers",
+      setPlayers: "players/setPlayers",
+      setAllTeams: "teams/setAllTeams",
     }),
+    onRowClick(e) {
+      this.$router.push({ path: `/players/${e.data.id}` })
+      console.log(e.data.id)
+    }
   },
   mounted() {
-    this.setPlayers();
+    this.setPlayers(this.profileTeamId);
+    this.setAllTeams();
   },
   components: {
     DxDataGrid,

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SocialballWebAPI.Models;
+using SocialballWebAPI.ViewModels;
 
 namespace SocialballWebAPI.Controllers
 {
@@ -26,6 +27,17 @@ namespace SocialballWebAPI.Controllers
         {
             return await _context.Teams.ToListAsync();
         }
+
+        [HttpGet("selectList")]
+        public async Task<List<SelectList>> GetTeamsToSelectList()
+        {
+            return await _context.Teams.Select(x => new SelectList { Id = x.Id, Name = x.Name }).ToListAsync();
+        }
+        //[HttpGet("selectList")]
+        //public async Task<Dictionary<Guid, string>> GetTeamsToSelectList()
+        //{
+        //    return await _context.Teams.Select(x => new SelectList { Id = x.Id, Name = x.Name }).ToListAsync();
+        //}
 
         // GET: api/Teams/5
         [HttpGet("{id}")]

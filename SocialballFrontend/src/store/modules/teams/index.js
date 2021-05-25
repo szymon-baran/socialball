@@ -9,7 +9,6 @@ export default {
   },
   getters: {
     getTeams(state) {
-      debugger;
       return state.teams;
     },
   },
@@ -19,9 +18,9 @@ export default {
     },
   },
   actions: {
-    getAllTeams({ commit }) {
+    setAllTeams({ commit }) {
       axios
-        .get("https://localhost:44369/api/teams")
+        .get("https://localhost:44369/api/teams/selectList")
         .then((response) => {
           commit("SET_TEAMS", response.data);
         });

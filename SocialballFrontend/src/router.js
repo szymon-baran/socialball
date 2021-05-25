@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 //Authentication
 import LoginPlayer from './pages/authentication/LoginPlayer.vue';
+import UserProfile from './pages/authentication/UserProfile.vue';
 
 //Players
 import PlayerDetails from './pages/players/PlayerDetails.vue';
@@ -32,7 +33,7 @@ const router = createRouter({
     routes: [
         { path: '/', component: HomePage },
         // { path: '/', redirect: '/home' },
-        { path: '/profile', component: null }, // profil zalogowanego uzytkownika
+        { path: '/profile', component: UserProfile }, // profil zalogowanego uzytkownika
         { path: '/players', component: PlayersList },
         { path: '/players/:id', component: PlayerDetails, children: [
             { path: 'contact', component: ContactPlayer }, // /players/:id/contact
