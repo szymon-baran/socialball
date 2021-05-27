@@ -54,7 +54,10 @@ namespace SocialballWebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Player>> PostPlayer([FromBody] Player player)
         {
-            player.LoginPassword = BCrypt.Net.BCrypt.HashPassword(player.LoginPassword);
+            if (!String.IsNullOrEmpty(player.LoginPassword))
+            {
+                player.LoginPassword = BCrypt.Net.BCrypt.HashPassword(player.LoginPassword);
+            }
             _context.Players.Add(player);
             await _context.SaveChangesAsync();
 

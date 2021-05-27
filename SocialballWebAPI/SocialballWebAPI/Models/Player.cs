@@ -13,6 +13,7 @@ namespace SocialballWebAPI.Models
         public int? Position { get; set; }
         public Guid? TeamId { get; set; }
         public string Citizenship { get; set; }
+        public string Email { get; set; }
         public string LoginUsername { get; set; }
         public string LoginPassword { get; set; }
 

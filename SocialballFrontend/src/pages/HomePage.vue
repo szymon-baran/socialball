@@ -1,16 +1,20 @@
 <template>
   <div class="home-background">
-    <div class="transparent-box">
-      <div class="text-inside">
-        <h3>Połącz się z innymi na boisku już teraz!</h3>
+    <div class="main-text">
+        <h3 class="mb-4">Połącz się z innymi na boisku już teraz!</h3>
         <DxButton text="Zaloguj się" @click="routerPushToLogin" />
-        <DxButton text="Zarejestruj się" @click="routerPushToRegister" />
-        <p class="mt-3">
+        <span class="ml-3">
+          <DxButton
+            text="Zarejestruj się"
+            @click="routerPushToRegister"
+            type="default"
+          />
+        </span>
+        <p class="mt-4">
           Jeśli jesteś zainteresowany przyłączeniem swojej drużyny do programu
           Socialball, skontaktuj się ze wsparciem strony
           <a href="mailto:szymon.w.baran@gmail.com">tutaj</a>.
         </p>
-      </div>
     </div>
   </div>
 </template>
@@ -27,7 +31,8 @@ export default {
       router.push({ path: "/login" });
     },
     routerPushToRegister() {
-      router.push({ path: "/register" });1
+      router.push({ path: "/register" });
+      1;
     },
   },
 };

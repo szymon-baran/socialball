@@ -82,7 +82,6 @@ export default {
     }),
     onRowClick(e) {
       this.$router.push({ path: `/players/${e.data.id}` })
-      console.log(e.data.id)
     }
   },
   mounted() {

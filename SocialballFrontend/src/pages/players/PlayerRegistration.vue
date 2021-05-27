@@ -73,6 +73,7 @@ import DataSource from "devextreme/data/data_source";
 const submitButtonOptions = {
   text: "Zarejestruj zawodnika",
   useSubmitBehavior: true,
+  type: "default",
 };
 
 export default {
@@ -91,13 +92,7 @@ export default {
       { Id: 3, Name: "Napastnik" },
     ];
     return {
-      player: {
-        FirstName: "",
-        LastName: "",
-        Team: "",
-        Email: "",
-        Position: null,
-      },
+      player: {},
       submitButtonOptions,
       positionOptions: {
         dataSource: new DataSource({

@@ -4,14 +4,9 @@ export default {
   namespaced: true,
   state() {
     return {
-      form: {
-        FirstName: "",
-        LastName: "",
-        Team: "",
-        Email: "",
-      },
       players: [],
       playerDetails: [],
+      player: [],
     };
   },
   getters: {
@@ -40,13 +35,13 @@ export default {
           commit("SET_PLAYERS", response.data);
         });
     },
-    addPlayer: async ({ commit }, player) => {
-      console.log(commit);
+    addPlayer: async (tmp, player) => {
+      debugger;
       await axios
         .post("https://localhost:44369/api/players", player);
+      
     },
     setPlayerDetails: async ({ commit }, playerId) => {
-      console.log(commit);
       await axios
         .get("https://localhost:44369/api/players/details", {
           params: { id: playerId },
