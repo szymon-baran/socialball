@@ -4,7 +4,7 @@
     <p>Twoja drużyna:</p>
     <PlayersList 
       :isProfileView="true"
-      :profileTeamId="getCurrentUser.teamId"
+      :teamId="getCurrentUser.teamId"
     />
   </div>
 </template>

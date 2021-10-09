@@ -14,9 +14,9 @@
       <DxColumn data-field="lastName" caption="Nazwisko" />
       <DxColumn data-field="position" caption="Pozycja">
         <DxLookup
-          :data-source="positionsToLookup"
-          value-expr="id"
-          display-expr="value"
+          :data-source="positions"
+          value-expr="value"
+          display-expr="name"
         />
       </DxColumn>
       <DxColumn data-field="teamId" caption="Klub">
@@ -39,24 +39,13 @@ import {
   DxLookup,
 } from "devextreme-vue/data-grid";
 
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions, mapMutations } from "vuex";
 
 export default {
   name: "Players",
   data() {
     return {
-      positionsToLookup: {
-        store: {
-          type: "array",
-          data: [
-            { id: 0, value: "Bramkarz" },
-            { id: 1, value: "Obrońca" },
-            { id: 2, value: "Pomocnik" },
-            { id: 3, value: "Napastnik" },
-          ],
-          key: "id",
-        },
-      },
+      positions: [],
     };
   },
   props: {
@@ -64,7 +53,7 @@ export default {
       type: Boolean,
       required: false,
     },
-    profileTeamId: {
+    teamId: {
       type: String,
       required: false,
     },
@@ -79,13 +68,20 @@ export default {
     ...mapActions({
       setPlayers: "players/setPlayers",
       setAllTeams: "teams/setAllTeams",
+      setPositionsToLookup: "teams/setPositionsToLookup",
+    }),
+    ...mapMutations({
+      RESET_PLAYERS: "players/RESET_PLAYERS",
     }),
     onRowClick(e) {
-      this.$router.push({ path: `/players/${e.data.id}` })
-    }
+      this.$router.push({ path: `/players/${e.data.id}` });
+    },
   },
   mounted() {
-    this.setPlayers(this.profileTeamId);
+    this.setPositionsToLookup().then((response) => {
+      this.positions = response.data;
+    });
+    this.setPlayers(this.teamId);
     this.setAllTeams();
   },
   components: {
@@ -93,6 +89,9 @@ export default {
     DxColumn,
     DxFilterRow,
     DxLookup,
+  },
+  beforeUnmount() {
+    this.RESET_PLAYERS();
   },
 };
 </script>

@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SocialballWebAPI.Enums;
+using SocialballWebAPI.Extensions;
 using SocialballWebAPI.Models;
 using SocialballWebAPI.ViewModels;
 
@@ -25,7 +27,7 @@ namespace SocialballWebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Team>>> GetTeams()
         {
-            return await _context.Teams.ToListAsync();
+            return await _context.Teams.Include(x => x.League).ToListAsync();
         }
 
         [HttpGet("selectList")]
@@ -33,11 +35,23 @@ namespace SocialballWebAPI.Controllers
         {
             return await _context.Teams.Select(x => new SelectList { Id = x.Id, Name = x.Name }).ToListAsync();
         }
-        //[HttpGet("selectList")]
-        //public async Task<Dictionary<Guid, string>> GetTeamsToSelectList()
-        //{
-        //    return await _context.Teams.Select(x => new SelectList { Id = x.Id, Name = x.Name }).ToListAsync();
-        //}
+
+        [HttpGet("getPositionsInsideOfTeam")]
+        public async Task<List<PositionsInTeam>> GetPositionsInsideOfTeam(Guid teamId)
+        {
+            List<PositionsInTeam> positionsInTeams = new List<PositionsInTeam>();
+
+            for (PositionType p = 0; p <= PositionType.Napastnik; p++)
+            {
+                positionsInTeams.Add(new PositionsInTeam
+                {
+                    Position = p,
+                    NumberOfPlayers = _context.Players.Where(x => x.TeamId == teamId && x.Position == (int)p).Count()
+                });
+            }
+
+            return positionsInTeams;
+        }
 
         // GET: api/Teams/5
         [HttpGet("{id}")]
@@ -114,6 +128,19 @@ namespace SocialballWebAPI.Controllers
         private bool TeamExists(Guid id)
         {
             return _context.Teams.Any(e => e.Id == id);
+        }
+
+        // lookups
+        [HttpGet("getPositionsToLookup")]
+        public ActionResult GetPositionsToLookup()
+        {
+            return Ok(EnumExtensions.GetValues<PositionType>());
+        }
+
+        [HttpGet("getLeaguesToLookup")]
+        public ActionResult GetLeaguesToLookup()
+        {
+            return Ok(_context.Leagues.ToList());
         }
     }
 }

@@ -2,6 +2,7 @@ import { createStore } from "vuex";
 
 import playersModule from "./modules/players/index";
 import teamsModule from "./modules/teams/index";
+import matchesModule from "./modules/matches/index";
 
 const store = createStore({
   state() {
@@ -11,21 +12,22 @@ const store = createStore({
         firstName: "Robert",
         lastName: "Lewandowski",
         position: 3,
-        teamId: "36470F04-6238-4E72-B157-DABE95220A54"
-      }
+        teamId: "36470F04-6238-4E72-B157-DABE95220A54",
+      },
     };
   },
   getters: {
-    getCurrentUser: state => {
+    getCurrentUser: (state) => {
       return state.user;
     },
-    getUserFullname: state => {
+    getUserFullname: (state) => {
       return state.user.firstName + " " + state.user.lastName;
     },
   },
   modules: {
     players: playersModule,
     teams: teamsModule,
+    matches: matchesModule,
   },
 });
 

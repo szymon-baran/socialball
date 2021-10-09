@@ -7,6 +7,11 @@ namespace SocialballWebAPI.Models
 {
     public partial class Player
     {
+        public Player()
+        {
+            GoalScorers = new HashSet<Goal>();
+            GoalAssistPlayers = new HashSet<Goal>();
+        }
         public Guid Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -18,5 +23,8 @@ namespace SocialballWebAPI.Models
         public string LoginPassword { get; set; }
 
         public virtual Team Team { get; set; }
+
+        public virtual ICollection<Goal> GoalScorers { get; set; }
+        public virtual ICollection<Goal> GoalAssistPlayers { get; set; }
     }
 }

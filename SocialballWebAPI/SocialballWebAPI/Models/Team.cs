@@ -16,8 +16,9 @@ namespace SocialballWebAPI.Models
 
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public string Country { get; set; }
+        public Guid? LeagueId { get; set; }
 
+        public virtual League League { get; set; }
         public virtual ICollection<Match> MatchAwayTeams { get; set; }
         public virtual ICollection<Match> MatchHomeTeams { get; set; }
         public virtual ICollection<Player> Players { get; set; }

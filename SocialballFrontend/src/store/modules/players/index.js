@@ -1,12 +1,21 @@
 import axios from "axios";
+import { getField, updateField } from "vuex-map-fields";
 
 export default {
   namespaced: true,
   state() {
     return {
       players: [],
-      playerDetails: [],
-      player: [],
+      player: {
+        FirstName: "",
+        LastName: "",
+        Email: "",
+        Position: null,
+        TeamId: "",
+        Citizenship: "",
+        LoginUsername: "",
+        LoginPassword: "",
+      },
     };
   },
   getters: {
@@ -16,15 +25,37 @@ export default {
     getPlayerDetails(state) {
       return state.playerDetails;
     },
+    getField,
   },
   mutations: {
     SET_PLAYERS(state, payload) {
       state.players = payload;
     },
-    SET_PLAYER_DETAILS(state, payload) {
-      state.playerDetails = payload;
+    RESET_PLAYERS(state) {
+      state.players = [];
     },
+    SET_PLAYER_DETAILS(state, payload) {
+      state.player.FirstName = payload.firstName;
+      state.player.LastName = payload.lastName;
+      state.player.Email = payload.email;
+      state.player.Position = payload.position;
+      state.player.TeamId = payload.teamId;
+      state.player.Citizenship = payload.citizenship;
+      state.player.LoginUsername = payload.loginUsername;
+    },
+    RESET_PLAYER_FORM(state) {
+      state.player.FirstName = "";
+      state.player.LastName = "";
+      state.player.Email = "";
+      state.player.Position = null;
+      state.player.TeamId = "";
+      state.player.Citizenship = "";
+      state.player.LoginUsername = "";
+      state.player.LoginPassword = "";
+    },
+    updateField,
   },
+
   actions: {
     setPlayers({ commit }, profileTeamId) {
       axios
@@ -35,11 +66,8 @@ export default {
           commit("SET_PLAYERS", response.data);
         });
     },
-    addPlayer: async (tmp, player) => {
-      debugger;
-      await axios
-        .post("https://localhost:44369/api/players", player);
-      
+    addPlayer: async ({ state }) => {
+      await axios.post("https://localhost:44369/api/players", state.player);
     },
     setPlayerDetails: async ({ commit }, playerId) => {
       await axios

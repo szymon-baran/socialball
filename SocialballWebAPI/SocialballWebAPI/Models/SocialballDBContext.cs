@@ -20,6 +20,8 @@ namespace SocialballWebAPI.Models
         public virtual DbSet<Match> Matches { get; set; }
         public virtual DbSet<Player> Players { get; set; }
         public virtual DbSet<Team> Teams { get; set; }
+        public virtual DbSet<League> Leagues { get; set; }
+        public virtual DbSet<Goal> Goals { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -35,24 +37,24 @@ namespace SocialballWebAPI.Models
 
             modelBuilder.Entity<Match>(entity =>
             {
-                entity.ToTable("matches");
+                entity.ToTable("Matches");
 
                 entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
 
                 entity.HasOne(d => d.AwayTeam)
                     .WithMany(p => p.MatchAwayTeams)
                     .HasForeignKey(d => d.AwayTeamId)
-                    .HasConstraintName("FK_matches_teams1");
+                    .HasConstraintName("FK_Matches_Teams1");
 
                 entity.HasOne(d => d.HomeTeam)
                     .WithMany(p => p.MatchHomeTeams)
                     .HasForeignKey(d => d.HomeTeamId)
-                    .HasConstraintName("FK_matches_teams");
+                    .HasConstraintName("FK_Matches_Teams");
             });
 
             modelBuilder.Entity<Player>(entity =>
             {
-                entity.ToTable("players");
+                entity.ToTable("Players");
 
                 entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
 
@@ -83,22 +85,47 @@ namespace SocialballWebAPI.Models
                 entity.HasOne(d => d.Team)
                     .WithMany(p => p.Players)
                     .HasForeignKey(d => d.TeamId)
-                    .HasConstraintName("FK_players_teams");
+                    .HasConstraintName("FK_Players_Teams");
             });
 
             modelBuilder.Entity<Team>(entity =>
             {
-                entity.ToTable("teams");
+                entity.ToTable("Teams");
 
                 entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
-
-                entity.Property(e => e.Country)
-                    .HasMaxLength(20)
-                    .IsUnicode(false);
 
                 entity.Property(e => e.Name)
                     .HasMaxLength(30)
                     .IsUnicode(false);
+
+                entity.HasOne(d => d.League)
+                    .WithMany(p => p.Teams)
+                    .HasForeignKey(d => d.LeagueId)
+                    .HasConstraintName("FK_Teams_Leagues");
+            });
+
+            modelBuilder.Entity<League>(entity =>
+            {
+                entity.ToTable("Leagues");
+
+                entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            });
+
+            modelBuilder.Entity<Goal>(entity =>
+            {
+                entity.ToTable("Goals");
+
+                entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+
+                entity.HasOne(d => d.Scorer)
+                    .WithMany(p => p.GoalScorers)
+                    .HasForeignKey(d => d.ScorerId)
+                    .HasConstraintName("FK_Goals_Players1");
+
+                entity.HasOne(d => d.AssistPlayer)
+                    .WithMany(p => p.GoalAssistPlayers)
+                    .HasForeignKey(d => d.AssistPlayerId)
+                    .HasConstraintName("FK_Goals_Players");
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -2,7 +2,7 @@
   <header>
     <nav>
       <h2>
-        <router-link to="/"
+        <router-link to="/" draggable="false"
           ><i class="fas fa-futbol"></i>
 
           SOCIALBALL</router-link
@@ -10,23 +10,33 @@
       </h2>
       <ul>
         <li>
-          <router-link to="/teams">Drużyny</router-link>
+          <router-link
+            :class="{ 'router-link-active': checkForTeamsPath }"
+            to="/teams"
+            draggable="false"
+            >Drużyny</router-link
+          >
         </li>
         <li>
-          <router-link to="/players">Piłkarze</router-link>
+          <router-link
+            :class="{ 'router-link-active': checkForPlayersPath }"
+            to="/players"
+            draggable="false"
+            >Piłkarze</router-link
+          >
         </li>
         <li>
-          <router-link to="/matches">Mecze</router-link>
+          <router-link to="/matches" draggable="false">Mecze</router-link>
         </li>
         <li>
-          <router-link to="/messages">Wiadomości</router-link>
+          <router-link to="/messages" draggable="false">Wiadomości</router-link>
         </li>
         <!-- TO DO -->
       </ul>
       <div>
         <ul>
           <li class="font-weight-bold">
-            <router-link to="/profile">
+            <router-link to="/profile" draggable="false">
               <i class="far fa-user-circle"></i>
               <span class="ml-2">{{ getUserFullname }}</span>
             </router-link>
@@ -49,6 +59,12 @@ export default {
   name: "MainHeader",
   computed: {
     ...mapGetters({ getUserFullname: "getUserFullname" }),
+    checkForTeamsPath() {
+      return this.$route.fullPath.includes("/teams") ? true : false;
+    },
+    checkForPlayersPath() {
+      return this.$route.fullPath.includes("/players") ? true : false;
+    },
   },
 };
 </script>
@@ -92,10 +108,10 @@ h2 {
 h2 a:hover,
 h2 a:active,
 h2 a.router-link-active {
-  border: none;
+  border-bottom: none;
   color: #009385;
+  transition: all 0.4s ease;
   transform: scale(1.07);
-  transition: all 0.4s ease-in-out;
 }
 
 nav {
@@ -118,5 +134,9 @@ ul {
 li {
   margin: 0 0.6rem;
   font-size: 110%;
+}
+
+router-link {
+  pointer-events: none;
 }
 </style>
