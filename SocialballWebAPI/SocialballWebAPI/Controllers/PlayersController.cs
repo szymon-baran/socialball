@@ -39,7 +39,7 @@ namespace SocialballWebAPI.Controllers
         [HttpGet("details")]
         public async Task<ActionResult<Player>> GetPlayer(Guid id)
         {
-            var player = await _context.Players.FindAsync(id);
+            var player = await _context.Players.Include(x => x.GoalsScored).FirstOrDefaultAsync(x => x.Id == id);
 
             if (player == null)
             {

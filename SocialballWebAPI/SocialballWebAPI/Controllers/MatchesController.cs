@@ -35,10 +35,19 @@ namespace SocialballWebAPI.Controllers
         }
 
         // GET: api/Matches/5
-        [HttpGet("{id}")]
+        [HttpGet("details")]
         public async Task<ActionResult<Match>> GetMatch(Guid id)
         {
-            var match = await _context.Matches.FindAsync(id);
+            var match = await _context.Matches
+                .Include(x => x.Goals.OrderBy(y => y.Minute))
+                    .ThenInclude(x => x.Scorer)
+                .Include(x => x.Goals.OrderBy(y => y.Minute))
+                    .ThenInclude(x => x.AssistPlayer)
+                .Include(x => x.AwayTeam)
+                    .ThenInclude(x => x.League)
+                .Include(x => x.HomeTeam)
+                    .ThenInclude(x => x.League)
+            .FirstOrDefaultAsync(x => x.Id == id);
 
             if (match == null)
             {

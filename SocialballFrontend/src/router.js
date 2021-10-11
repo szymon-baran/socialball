@@ -15,7 +15,6 @@ import TeamsList from "./pages/teams/TeamsList.vue";
 
 //Matches
 import MatchAdd from "./pages/matches/MatchAdd.vue";
-import MatchDetails from "./pages/matches/MatchDetails.vue";
 import MatchesList from "./pages/matches/MatchesList.vue";
 
 //Messages
@@ -51,7 +50,6 @@ const router = createRouter({
     },
     { path: "/addMatch", component: MatchAdd },
     { path: "/matches", component: MatchesList },
-    { path: "/matches/:id", component: MatchDetails },
     { path: "/login", component: LoginPlayer },
     { path: "/messages", component: MessagesReceived },
     { path: "/:pageNotFound(.*)", component: PageNotFound },

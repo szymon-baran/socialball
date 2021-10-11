@@ -6,7 +6,16 @@ export default {
   state() {
     return {
       matches: [],
-      match: {},
+      match: {
+        Id: "",
+        HomeTeamId: "",
+        HomeTeam: {},
+        AwayTeamId: "",
+        AwayTeam: {},
+        Stadium: "",
+        DateTime: null,
+        Goals: [],
+      },
     };
   },
   getters: {
@@ -43,6 +52,16 @@ export default {
     RESET_MATCHES(state) {
       state.matches = [];
     },
+    SET_MATCH_DETAILS(state, payload) {
+      state.match.Id = payload.id;
+      state.match.HomeTeamId = payload.homeTeamId;
+      state.match.HomeTeam = payload.homeTeam;
+      state.match.AwayTeamId = payload.awayTeamId;
+      state.match.AwayTeam = payload.awayTeam;
+      state.match.Stadium = payload.stadium;
+      state.match.DateTime = payload.dateTime;
+      state.match.Goals = payload.goals;
+    },
     updateField,
   },
 
@@ -54,6 +73,15 @@ export default {
         })
         .then((response) => {
           commit("SET_MATCHES", response.data);
+        });
+    },
+    setMatchDetails: async ({ commit }, matchId) => {
+      await axios
+        .get("https://localhost:44369/api/matches/details", {
+          params: { id: matchId },
+        })
+        .then(function(response) {
+          commit("SET_MATCH_DETAILS", response.data);
         });
     },
   },

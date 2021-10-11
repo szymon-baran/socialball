@@ -8,6 +8,7 @@
       :hover-state-enabled="true"
       key-expr="id"
       parent-id-expr="matchId"
+      @row-click="showMatchDetails"
     >
       <DxFilterRow :visible="true" />
 
@@ -21,10 +22,19 @@
       <DxColumn data-field="stadium" caption="Stadion" />
       <DxColumn
         data-field="dateTime"
-        caption="Data i czas rozpoczęcia"
-        format="shortDate"
+        caption="Data meczu"
+        data-type="date"
+        format="dd/MM/yyyy"
+        :editorOptions="{ showClearButton: true }"
       />
     </DxDataGrid>
+
+    <MatchDetailsPopup
+      :matchId="detailsPopupOptions.selectedMatchId"
+      :matchResult="detailsPopupOptions.selectedMatchResult"
+      v-if="detailsPopupOptions.isVisible"
+      @closed="onPopupClosed()"
+    />
   </div>
 </template>
 
@@ -35,8 +45,9 @@ import {
   DxLookup,
   DxFilterRow,
 } from "devextreme-vue/data-grid";
-
 import { mapGetters, mapActions, mapMutations } from "vuex";
+
+import MatchDetailsPopup from "./MatchDetailsPopup";
 
 export default {
   name: "Matches",
@@ -45,6 +56,15 @@ export default {
       type: String,
       required: false,
     },
+  },
+  data() {
+    return {
+      detailsPopupOptions: {
+        isVisible: false,
+        selectedMatchId: "",
+        selectedMatchResult: "",
+      },
+    };
   },
   computed: {
     ...mapGetters({
@@ -60,6 +80,16 @@ export default {
     ...mapMutations({
       RESET_MATCHES: "matches/RESET_MATCHES",
     }),
+    showMatchDetails(e) {
+      this.detailsPopupOptions.isVisible = true;
+      this.detailsPopupOptions.selectedMatchId = e.data.id;
+      this.detailsPopupOptions.selectedMatchResult = e.data.result;
+    },
+    onPopupClosed() {
+      this.detailsPopupOptions.isVisible = false;
+      this.detailsPopupOptions.selectedMatchId = "";
+      this.detailsPopupOptions.selectedMatchResult = "";
+    },
   },
   mounted() {
     this.setMatches(this.teamId);
@@ -70,6 +100,7 @@ export default {
     DxColumn,
     DxLookup,
     DxFilterRow,
+    MatchDetailsPopup,
   },
   beforeUnmount() {
     this.RESET_MATCHES();

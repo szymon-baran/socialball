@@ -118,12 +118,12 @@ namespace SocialballWebAPI.Models
                 entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
 
                 entity.HasOne(d => d.Scorer)
-                    .WithMany(p => p.GoalScorers)
+                    .WithMany(p => p.GoalsScored)
                     .HasForeignKey(d => d.ScorerId)
                     .HasConstraintName("FK_Goals_Players1");
 
                 entity.HasOne(d => d.AssistPlayer)
-                    .WithMany(p => p.GoalAssistPlayers)
+                    .WithMany(p => p.GoalsAssisted)
                     .HasForeignKey(d => d.AssistPlayerId)
                     .HasConstraintName("FK_Goals_Players");
             });

@@ -1,5 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap");
 
 * {
   box-sizing: border-box;
@@ -8,6 +8,14 @@
 html {
   font-family: "Roboto", sans-serif;
   scroll-behavior: smooth;
+}
+
+.header-font {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.main-color {
+  color: #009385;
 }
 
 body {
@@ -52,7 +60,7 @@ a {
 }
 
 a:hover {
-  color: #009385
+  color: #009385;
 }
 
 .big-data-grid {
@@ -60,9 +68,10 @@ a:hover {
   width: 80%;
 }
 
-.dx-data-row.dx-state-hover:not(.dx-selection):not(.dx-row-inserted):not(.dx-row-removed):not(.dx-edit-row) > td:not(.dx-focused) {  
-  cursor: pointer;  
-}  
+.dx-data-row.dx-state-hover:not(.dx-selection):not(.dx-row-inserted):not(.dx-row-removed):not(.dx-edit-row)
+  > td:not(.dx-focused) {
+  cursor: pointer;
+}
 
 .dx-field-label {
   padding-top: 5px;
