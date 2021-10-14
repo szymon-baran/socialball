@@ -1,13 +1,15 @@
-﻿using System;
+﻿using SocialballWebAPI.Models;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-#nullable disable
-
-namespace SocialballWebAPI.Models
+namespace SocialballWebAPI.DTOs
 {
-    public partial class Match
+    public class MatchDto
     {
-        public Match()
+        // TO DO - a moze nie? https://stackoverflow.com/questions/31101339/how-can-i-fetch-child-entities-as-dto-in-parent-using-reusable-queries-expressio
+        public MatchDto()
         {
             MatchEvents = new HashSet<MatchEvent>();
         }

@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 
 namespace SocialballWebAPI.Enums
 {
-    public enum MatchEventType
+    public enum PenaltyType
     {
-        Goal = 1,
-        Foul = 2,
+        None = 0,
+        YellowCard = 1,
+        RedCard = 2,
     }
 
 }

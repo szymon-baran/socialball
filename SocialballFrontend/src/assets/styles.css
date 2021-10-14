@@ -18,6 +18,14 @@ html {
   color: #009385;
 }
 
+.yellow-color {
+  color: #d8b207;
+}
+
+.red-color {
+  color: #ac0808;
+}
+
 body {
   margin: 0;
   background-color: #181818;

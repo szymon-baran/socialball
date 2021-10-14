@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using SocialballWebAPI.Enums;
 
 #nullable disable
 
@@ -21,7 +23,9 @@ namespace SocialballWebAPI.Models
         public virtual DbSet<Player> Players { get; set; }
         public virtual DbSet<Team> Teams { get; set; }
         public virtual DbSet<League> Leagues { get; set; }
-        public virtual DbSet<Goal> Goals { get; set; }
+        public virtual DbSet<MatchEvent> MatchEvents { get; set; }
+        public virtual DbSet<MatchEventFoul> MatchEventFouls { get; set; }
+        public virtual DbSet<MatchEventGoal> MatchEventGoals { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -34,6 +38,8 @@ namespace SocialballWebAPI.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("Relational:Collation", "Polish_CI_AS");
+
+            base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Match>(entity =>
             {
@@ -111,21 +117,38 @@ namespace SocialballWebAPI.Models
                 entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             });
 
-            modelBuilder.Entity<Goal>(entity =>
+            modelBuilder.Entity<MatchEvent>(entity =>
             {
-                entity.ToTable("Goals");
+                entity.ToTable("MatchEvents");
 
                 entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
 
-                entity.HasOne(d => d.Scorer)
-                    .WithMany(p => p.GoalsScored)
-                    .HasForeignKey(d => d.ScorerId)
-                    .HasConstraintName("FK_Goals_Players1");
+                entity.HasDiscriminator(b => b.MatchEventType)
+                    .HasValue<MatchEvent>(0)
+                    .HasValue<MatchEventGoal>(MatchEventType.Goal)
+                    .HasValue<MatchEventFoul>(MatchEventType.Foul);
+
+                entity.HasOne(d => d.Player)
+                    .WithMany(p => p.MatchEvents)
+                    .HasForeignKey(d => d.PlayerId)
+                    .HasConstraintName("FK_MatchGoals_Players1")
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<MatchEventGoal>(entity =>
+            {
+                entity.ToTable("MatchEvents");
 
                 entity.HasOne(d => d.AssistPlayer)
-                    .WithMany(p => p.GoalsAssisted)
+                    .WithMany(p => p.MatchGoalsAssisted)
                     .HasForeignKey(d => d.AssistPlayerId)
-                    .HasConstraintName("FK_Goals_Players");
+                    .HasConstraintName("FK_MatchGoals_Players2")
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<MatchEventFoul>(entity =>
+            {
+                entity.ToTable("MatchEvents");
             });
 
             OnModelCreatingPartial(modelBuilder);

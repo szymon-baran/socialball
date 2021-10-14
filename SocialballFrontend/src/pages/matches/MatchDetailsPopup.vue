@@ -61,16 +61,27 @@
         </div>
         <div class="line" />
         <h4>Przebieg meczu</h4>
-        <div v-for="goal in Goals" v-bind:key="goal.id">
+        <div v-for="event in MatchEvents" v-bind:key="event.id">
           <div class="row">
-            <div class="col" v-if="goal.scorer.teamId === AwayTeamId" />
-            <div class="col">
-              <i class="fas fa-futbol ico main-color"></i> {{ goal.minute }}' {{ goal.scorer.lastName }}
-              <div v-if="goal.assistPlayerId">
-                <i class="far fa-handshake ico main-color"></i> {{ goal.assistPlayer.lastName }}
+            <div class="col" v-if="event.player.teamId === AwayTeamId" />
+            <div class="col" v-if="event.matchEventType === 1">
+              <i class="fas fa-futbol ico main-color"></i> {{ event.minute }}' {{ event.player.lastName }}
+              <div v-if="event.assistPlayerId">
+                <i class="far fa-handshake ico main-color"></i> {{ event.assistPlayer.lastName }}
               </div>
             </div>
-            <div class="col" v-if="goal.scorer.teamId === HomeTeamId" />
+            <div class="col" v-if="event.matchEventType === 2">
+              <span v-if="event.penaltyType === 0">
+                <i class="fas fa-exclamation ico main-color"></i> {{ event.minute }}' {{ event.player.lastName }}
+              </span>
+              <span v-if="event.penaltyType === 1">
+                <i class="fas fa-square ico yellow-color"></i> {{ event.minute }}' {{ event.player.lastName }}
+              </span>
+              <span v-if="event.penaltyType === 2">
+                <i class="fas fa-square ico red-color"></i> {{ event.minute }}' {{ event.player.lastName }}
+              </span>
+            </div>
+            <div class="col" v-if="event.player.teamId === HomeTeamId" />
           </div>
         </div>
       </div>
@@ -119,7 +130,7 @@ export default {
       "match.AwayTeam",
       "match.Stadium",
       "match.DateTime",
-      "match.Goals",
+      "match.MatchEvents",
     ]),
     getFormattedDateTime() {
       var tmpDate = new Date(this.DateTime);

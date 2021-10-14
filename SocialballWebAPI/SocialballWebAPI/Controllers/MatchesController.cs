@@ -26,11 +26,11 @@ namespace SocialballWebAPI.Controllers
         {
             if (teamId.HasValue)
             {
-                return await _context.Matches.Where(x => x.HomeTeamId == teamId || x.AwayTeamId == teamId).Include(x => x.Goals).ThenInclude(x => x.Scorer).ToListAsync();
+                return await _context.Matches.Where(x => x.HomeTeamId == teamId || x.AwayTeamId == teamId).Include(x => x.MatchEvents).ThenInclude(x => x.Player).ToListAsync();
             }
             else
             {
-                return await _context.Matches.Include(x => x.Goals).ThenInclude(x => x.Scorer).ToListAsync();
+                return await _context.Matches.Include(x => x.MatchEvents).ThenInclude(x => x.Player).ToListAsync();
             }
         }
 
@@ -39,10 +39,10 @@ namespace SocialballWebAPI.Controllers
         public async Task<ActionResult<Match>> GetMatch(Guid id)
         {
             var match = await _context.Matches
-                .Include(x => x.Goals.OrderBy(y => y.Minute))
-                    .ThenInclude(x => x.Scorer)
-                .Include(x => x.Goals.OrderBy(y => y.Minute))
-                    .ThenInclude(x => x.AssistPlayer)
+                .Include(x => x.MatchEvents)
+                    .ThenInclude(x => (x as MatchEventGoal).AssistPlayer)
+                .Include(x => x.MatchEvents)
+                    .ThenInclude(x => x.Player)
                 .Include(x => x.AwayTeam)
                     .ThenInclude(x => x.League)
                 .Include(x => x.HomeTeam)

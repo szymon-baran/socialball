@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SocialballWebAPI.DTOs;
+using SocialballWebAPI.Enums;
 using SocialballWebAPI.Models;
 
 namespace SocialballWebAPI.Controllers
@@ -15,10 +18,12 @@ namespace SocialballWebAPI.Controllers
     public class PlayersController : ControllerBase
     {
         private readonly SocialballDBContext _context;
+        private readonly IMapper _mapper;
 
-        public PlayersController(SocialballDBContext context)
+        public PlayersController(SocialballDBContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Players
@@ -37,16 +42,18 @@ namespace SocialballWebAPI.Controllers
 
         // GET: api/Players/5
         [HttpGet("details")]
-        public async Task<ActionResult<Player>> GetPlayer(Guid id)
+        public async Task<ActionResult<PlayerDto>> GetPlayer(Guid id)
         {
-            var player = await _context.Players.Include(x => x.GoalsScored).FirstOrDefaultAsync(x => x.Id == id);
+            var player = await _context.Players.Include(x => x.MatchEvents.Where(y => y.MatchEventType == MatchEventType.Goal)).FirstOrDefaultAsync(x => x.Id == id);
 
             if (player == null)
             {
                 return NotFound();
             }
 
-            return player;
+            PlayerDto model = _mapper.Map<PlayerDto>(player);
+             
+            return model;
         }
 
         // POST: api/Players

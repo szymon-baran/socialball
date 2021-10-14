@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'big-data-grid' : !showAsDetails }">
+  <div :class="{ 'big-data-grid': !showAsDetails }">
     <h3 v-if="!showAsDetails">Rejestracja zawodnika</h3>
     <h4 class="line">Dane personalne</h4>
     <form>
@@ -72,46 +72,43 @@
             />
           </div>
         </div>
-        <h4 class="line">Dane techniczne</h4>
-        <div class="row">
-          <div class="col">
-            <label for="loginUsernameTextBox" class="form-label"
-              >Nazwa użytkownika</label
-            >
-            <DxTextBox
-              v-model="LoginUsername"
-              id="loginUsernameTextBox"
-              :disabled="showAsDetails"
-            >
-              <DxValidator>
-                <DxRequiredRule message="Nazwa użytkownika jest wymagana!" />
-              </DxValidator>
-            </DxTextBox>
+        <div v-if="!showAsDetails">
+          <h4 class="line">Dane techniczne</h4>
+          <div class="row">
+            <div class="col">
+              <label for="loginUsernameTextBox" class="form-label"
+                >Nazwa użytkownika</label
+              >
+              <DxTextBox v-model="LoginUsername" id="loginUsernameTextBox">
+                <DxValidator>
+                  <DxRequiredRule message="Nazwa użytkownika jest wymagana!" />
+                </DxValidator>
+              </DxTextBox>
+            </div>
+            <div class="col">
+              <label for="loginPasswordTextBox" class="form-label">Hasło</label>
+              <DxTextBox
+                v-model="LoginPassword"
+                id="loginPasswordTextBox"
+                mode="password"
+              >
+                <DxValidator>
+                  <DxRequiredRule message="Hasło jest wymagane!" />
+                </DxValidator>
+              </DxTextBox>
+            </div>
           </div>
-          <div class="col" v-if="!showAsDetails">
-            <label for="loginPasswordTextBox" class="form-label">Hasło</label>
-            <DxTextBox
-              v-model="LoginPassword"
-              id="loginPasswordTextBox"
-              mode="password"
-              :disabled="showAsDetails"
-            >
-              <DxValidator>
-                <DxRequiredRule message="Hasło jest wymagane!" />
-              </DxValidator>
-            </DxTextBox>
-          </div>
-        </div>
-        <div class="row mt-4" v-if="!showAsDetails">
-          <div class="col">
-            <DxValidationSummary />
-          </div>
-          <div class="col text-right">
-            <DxButton
-              text="Zarejestruj zawodnika"
-              type="default"
-              @click="handleSubmit"
-            />
+          <div class="row mt-4">
+            <div class="col">
+              <DxValidationSummary />
+            </div>
+            <div class="col text-right">
+              <DxButton
+                text="Zarejestruj zawodnika"
+                type="default"
+                @click="handleSubmit"
+              />
+            </div>
           </div>
         </div>
       </DxValidationGroup>

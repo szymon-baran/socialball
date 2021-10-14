@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SocialballWebAPI.Models;
 
 namespace SocialballWebAPI.Migrations
 {
     [DbContext(typeof(SocialballDBContext))]
-    partial class SocialballDBContextModelSnapshot : ModelSnapshot
+    [Migration("20211011192843_MatchGoals")]
+    partial class MatchGoals
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,15 +71,15 @@ namespace SocialballWebAPI.Migrations
                     b.ToTable("Matches");
                 });
 
-            modelBuilder.Entity("SocialballWebAPI.Models.MatchEvent", b =>
+            modelBuilder.Entity("SocialballWebAPI.Models.MatchGoal", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("(newid())");
 
-                    b.Property<int>("MatchEventType")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("AssistPlayerId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("MatchId")
                         .HasColumnType("uniqueidentifier");
@@ -85,18 +87,18 @@ namespace SocialballWebAPI.Migrations
                     b.Property<int>("Minute")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("PlayerId")
+                    b.Property<Guid>("ScorerId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AssistPlayerId");
+
                     b.HasIndex("MatchId");
 
-                    b.HasIndex("PlayerId");
+                    b.HasIndex("ScorerId");
 
-                    b.ToTable("MatchEvents");
-
-                    b.HasDiscriminator<int>("MatchEventType").HasValue(0);
+                    b.ToTable("MatchGoals");
                 });
 
             modelBuilder.Entity("SocialballWebAPI.Models.Player", b =>
@@ -171,32 +173,6 @@ namespace SocialballWebAPI.Migrations
                     b.ToTable("Teams");
                 });
 
-            modelBuilder.Entity("SocialballWebAPI.Models.MatchEventFoul", b =>
-                {
-                    b.HasBaseType("SocialballWebAPI.Models.MatchEvent");
-
-                    b.Property<int?>("PenaltyType")
-                        .HasColumnType("int");
-
-                    b.ToTable("MatchEvents");
-
-                    b.HasDiscriminator().HasValue(2);
-                });
-
-            modelBuilder.Entity("SocialballWebAPI.Models.MatchEventGoal", b =>
-                {
-                    b.HasBaseType("SocialballWebAPI.Models.MatchEvent");
-
-                    b.Property<Guid?>("AssistPlayerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasIndex("AssistPlayerId");
-
-                    b.ToTable("MatchEvents");
-
-                    b.HasDiscriminator().HasValue(1);
-                });
-
             modelBuilder.Entity("SocialballWebAPI.Models.Match", b =>
                 {
                     b.HasOne("SocialballWebAPI.Models.Team", "AwayTeam")
@@ -214,24 +190,31 @@ namespace SocialballWebAPI.Migrations
                     b.Navigation("HomeTeam");
                 });
 
-            modelBuilder.Entity("SocialballWebAPI.Models.MatchEvent", b =>
+            modelBuilder.Entity("SocialballWebAPI.Models.MatchGoal", b =>
                 {
+                    b.HasOne("SocialballWebAPI.Models.Player", "AssistPlayer")
+                        .WithMany("MatchGoalsAssisted")
+                        .HasForeignKey("AssistPlayerId")
+                        .HasConstraintName("FK_MatchGoals_Players");
+
                     b.HasOne("SocialballWebAPI.Models.Match", "Match")
-                        .WithMany("MatchEvents")
+                        .WithMany("MatchGoals")
                         .HasForeignKey("MatchId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SocialballWebAPI.Models.Player", "Player")
-                        .WithMany("MatchEvents")
-                        .HasForeignKey("PlayerId")
+                    b.HasOne("SocialballWebAPI.Models.Player", "Scorer")
+                        .WithMany("MatchGoalsScored")
+                        .HasForeignKey("ScorerId")
                         .HasConstraintName("FK_MatchGoals_Players1")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("AssistPlayer");
 
                     b.Navigation("Match");
 
-                    b.Navigation("Player");
+                    b.Navigation("Scorer");
                 });
 
             modelBuilder.Entity("SocialballWebAPI.Models.Player", b =>
@@ -254,17 +237,6 @@ namespace SocialballWebAPI.Migrations
                     b.Navigation("League");
                 });
 
-            modelBuilder.Entity("SocialballWebAPI.Models.MatchEventGoal", b =>
-                {
-                    b.HasOne("SocialballWebAPI.Models.Player", "AssistPlayer")
-                        .WithMany("MatchGoalsAssisted")
-                        .HasForeignKey("AssistPlayerId")
-                        .HasConstraintName("FK_MatchGoals_Players2")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("AssistPlayer");
-                });
-
             modelBuilder.Entity("SocialballWebAPI.Models.League", b =>
                 {
                     b.Navigation("Teams");
@@ -272,14 +244,14 @@ namespace SocialballWebAPI.Migrations
 
             modelBuilder.Entity("SocialballWebAPI.Models.Match", b =>
                 {
-                    b.Navigation("MatchEvents");
+                    b.Navigation("MatchGoals");
                 });
 
             modelBuilder.Entity("SocialballWebAPI.Models.Player", b =>
                 {
-                    b.Navigation("MatchEvents");
-
                     b.Navigation("MatchGoalsAssisted");
+
+                    b.Navigation("MatchGoalsScored");
                 });
 
             modelBuilder.Entity("SocialballWebAPI.Models.Team", b =>

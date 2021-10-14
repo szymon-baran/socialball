@@ -9,8 +9,8 @@ namespace SocialballWebAPI.Models
     {
         public Player()
         {
-            GoalsScored = new HashSet<Goal>();
-            GoalsAssisted = new HashSet<Goal>();
+            MatchEvents = new HashSet<MatchEvent>();
+            MatchGoalsAssisted = new HashSet<MatchEventGoal>();
         }
         public Guid Id { get; set; }
         public string FirstName { get; set; }
@@ -24,7 +24,7 @@ namespace SocialballWebAPI.Models
 
         public virtual Team Team { get; set; }
 
-        public virtual ICollection<Goal> GoalsScored { get; set; }
-        public virtual ICollection<Goal> GoalsAssisted { get; set; }
+        public virtual ICollection<MatchEvent> MatchEvents { get; set; }
+        public virtual ICollection<MatchEventGoal> MatchGoalsAssisted { get; set; }
     }
 }

@@ -14,7 +14,7 @@ export default {
         AwayTeam: {},
         Stadium: "",
         DateTime: null,
-        Goals: [],
+        MatchEvents: [],
       },
     };
   },
@@ -22,15 +22,6 @@ export default {
     getMatches(state) {
       return state.matches;
     },
-    // getGoalsInMatches(state) {
-    //   let tmp = [];
-    //   state.matches.forEach((entry) => {
-    //     entry.goals.forEach((x) => {
-    //       tmp.push(x);
-    //     })
-    //   });
-    //   return tmp;
-    // },
     getField,
   },
   mutations: {
@@ -39,11 +30,14 @@ export default {
       state.matches.forEach((match) => {
         let homeGoals = 0;
         let awayGoals = 0;
-        match.goals.forEach((goal) => {
-          if (goal.scorer.teamId === match.homeTeamId) {
-            homeGoals++;
-          } else if (goal.scorer.teamId === match.awayTeamId) {
-            awayGoals++;
+        match.matchEvents.forEach((event) => {
+          // Filtrowanie tylko goli
+          if (event.matchEventType === 1) {
+            if (event.player.teamId === match.homeTeamId) {
+              homeGoals++;
+            } else if (event.player.teamId === match.awayTeamId) {
+              awayGoals++;
+            }
           }
         });
         match.result = homeGoals + ":" + awayGoals;
@@ -60,7 +54,7 @@ export default {
       state.match.AwayTeam = payload.awayTeam;
       state.match.Stadium = payload.stadium;
       state.match.DateTime = payload.dateTime;
-      state.match.Goals = payload.goals;
+      state.match.MatchEvents = payload.matchEvents.sort((x, y) => x.minute - y.minute);
     },
     updateField,
   },

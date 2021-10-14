@@ -41,7 +41,6 @@ export default {
       state.player.Position = payload.position;
       state.player.TeamId = payload.teamId;
       state.player.Citizenship = payload.citizenship;
-      state.player.LoginUsername = payload.loginUsername;
     },
     RESET_PLAYER_FORM(state) {
       state.player.FirstName = "";

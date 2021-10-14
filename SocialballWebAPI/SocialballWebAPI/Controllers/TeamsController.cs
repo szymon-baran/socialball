@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SocialballWebAPI.DTOs;
 using SocialballWebAPI.Enums;
 using SocialballWebAPI.Extensions;
 using SocialballWebAPI.Models;
@@ -17,10 +19,12 @@ namespace SocialballWebAPI.Controllers
     public class TeamsController : ControllerBase
     {
         private readonly SocialballDBContext _context;
+        private readonly IMapper _mapper;
 
-        public TeamsController(SocialballDBContext context)
+        public TeamsController(SocialballDBContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Teams
@@ -55,7 +59,7 @@ namespace SocialballWebAPI.Controllers
 
         // GET: api/Teams/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Team>> GetTeam(Guid id)
+        public async Task<ActionResult<TeamDto>> GetTeam(Guid id)
         {
             var team = await _context.Teams.FindAsync(id);
 
@@ -64,7 +68,9 @@ namespace SocialballWebAPI.Controllers
                 return NotFound();
             }
 
-            return team;
+            TeamDto model = _mapper.Map<TeamDto>(team);
+
+            return model;
         }
 
         // PUT: api/Teams/5
