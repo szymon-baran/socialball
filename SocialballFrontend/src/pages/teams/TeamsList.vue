@@ -10,6 +10,7 @@
       @row-click="onRowClick"
     >
       <DxFilterRow :visible="true" />
+      <DxLoadPanel :enabled="true" />
       <DxColumn data-field="name" caption="Nazwa drużyny" />
       <DxColumn data-field="leagueId" caption="Nazwa ligi">
         <DxLookup :data-source="leagues" value-expr="id" display-expr="name" />
@@ -22,6 +23,7 @@
 <script>
 import {
   DxDataGrid,
+  DxLoadPanel,
   DxColumn,
   DxFilterRow,
   DxLookup,
@@ -63,6 +65,7 @@ export default {
   },
   components: {
     DxDataGrid,
+    DxLoadPanel,
     DxColumn,
     DxFilterRow,
     DxLookup,

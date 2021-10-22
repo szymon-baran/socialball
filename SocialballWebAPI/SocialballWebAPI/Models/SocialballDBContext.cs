@@ -21,6 +21,7 @@ namespace SocialballWebAPI.Models
 
         public virtual DbSet<Match> Matches { get; set; }
         public virtual DbSet<Player> Players { get; set; }
+        public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Team> Teams { get; set; }
         public virtual DbSet<League> Leagues { get; set; }
         public virtual DbSet<MatchEvent> MatchEvents { get; set; }
@@ -78,37 +79,49 @@ namespace SocialballWebAPI.Models
                     .HasMaxLength(30)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Email)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.LoginPassword)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.LoginUsername)
-                    .HasMaxLength(40)
-                    .IsUnicode(false);
-
                 entity.HasOne(d => d.Team)
                     .WithMany(p => p.Players)
-                    .HasForeignKey(d => d.TeamId)
+                    .HasForeignKey(d => d.TeamId)   
                     .HasConstraintName("FK_Players_Teams");
             });
 
-            modelBuilder.Entity<Team>(entity =>
+            modelBuilder.Entity<User>(entity =>
             {
-                entity.ToTable("Teams");
+                entity.ToTable("Users");
 
                 entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
 
-                entity.Property(e => e.Name)
-                    .HasMaxLength(30)
+                entity.Property(e => e.Email)
                     .IsUnicode(false);
 
-                entity.HasOne(d => d.League)
-                    .WithMany(p => p.Teams)
-                    .HasForeignKey(d => d.LeagueId)
-                    .HasConstraintName("FK_Teams_Leagues");
+                entity.Property(e => e.Password)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Username)
+                    .HasMaxLength(40)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.Player)
+                    .WithOne(p => p.User)
+                    .HasForeignKey<Player>(d => d.UserId)
+                    .HasConstraintName("FK_Users_Players");
             });
+
+            modelBuilder.Entity<Team>(entity =>
+        {
+            entity.ToTable("Teams");
+
+            entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+
+            entity.Property(e => e.Name)
+                .HasMaxLength(30)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.League)
+                .WithMany(p => p.Teams)
+                .HasForeignKey(d => d.LeagueId)
+                .HasConstraintName("FK_Teams_Leagues");
+        });
 
             modelBuilder.Entity<League>(entity =>
             {

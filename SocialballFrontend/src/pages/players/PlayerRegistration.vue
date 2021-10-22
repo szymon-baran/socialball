@@ -1,4 +1,6 @@
 <template>
+  <!-- TO DO: wyrzucic druzyne: moze jakies zaproszenia wysylane przez zarzad + prosby o dodanie ze strony zawodnikow -->
+  <!-- Potwierdzenie hasla -->
   <div :class="{ 'big-data-grid': !showAsDetails }">
     <h3 v-if="!showAsDetails">Rejestracja zawodnika</h3>
     <h4 class="line">Dane personalne</h4>
@@ -97,6 +99,20 @@
                 </DxValidator>
               </DxTextBox>
             </div>
+            <div class="col">
+              <label for="loginPasswordConfirmationTextBox" class="form-label"
+                >Powtórz hasło</label
+              >
+              <DxTextBox id="loginPasswordConfirmationTextBox" mode="password">
+                <DxValidator>
+                  <DxRequiredRule message="Powtórzenie hasła jest wymagane!" />
+                  <DxCompareRule
+                    :comparison-target="passwordComparison"
+                    message="Hasła się nie zgadzają!"
+                  />
+                </DxValidator>
+              </DxTextBox>
+            </div>
           </div>
           <div class="row mt-4">
             <div class="col">
@@ -123,6 +139,7 @@ import {
   DxValidator,
   DxRequiredRule,
   DxEmailRule,
+  DxCompareRule,
 } from "devextreme-vue/validator";
 import DxValidationGroup from "devextreme-vue/validation-group";
 import DxValidationSummary from "devextreme-vue/validation-summary";
@@ -145,6 +162,7 @@ export default {
     DxValidator,
     DxRequiredRule,
     DxEmailRule,
+    DxCompareRule,
     DxValidationGroup,
     DxValidationSummary,
   },
@@ -192,7 +210,9 @@ export default {
     ...mapMutations({
       RESET_PLAYER_FORM: "players/RESET_PLAYER_FORM",
     }),
-
+    passwordComparison() {
+      return this.LoginPassword;
+    },
     async handleSubmit() {
       let validationResult = this.validationGroup.validate();
       if (validationResult.isValid) {

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SocialballWebAPI.DTOs
 {
-    public class PlayerDto
+    public class GetPlayerDto
     {
         public Guid Id { get; set; }
         public string FirstName { get; set; }

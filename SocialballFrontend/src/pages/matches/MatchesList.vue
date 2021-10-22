@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div v-bind:class="{ 'big-data-grid': !teamId }">
+    <h3 v-if="!teamId">Lista wszystkich meczy</h3>
     <DxDataGrid
       :data-source="getMatches"
       :remote-operations="false"
@@ -11,7 +12,7 @@
       @row-click="showMatchDetails"
     >
       <DxFilterRow :visible="true" />
-
+      <DxLoadPanel :enabled="true" />
       <DxColumn data-field="homeTeamId" caption="Drużyna domowa">
         <DxLookup :data-source="getTeams" value-expr="id" display-expr="name" />
       </DxColumn>
@@ -41,6 +42,7 @@
 <script>
 import {
   DxDataGrid,
+  DxLoadPanel,
   DxColumn,
   DxLookup,
   DxFilterRow,
@@ -97,6 +99,7 @@ export default {
   },
   components: {
     DxDataGrid,
+    DxLoadPanel,
     DxColumn,
     DxLookup,
     DxFilterRow,

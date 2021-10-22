@@ -18,11 +18,10 @@ namespace SocialballWebAPI.Models
         public int? Position { get; set; }
         public Guid? TeamId { get; set; }
         public string Citizenship { get; set; }
-        public string Email { get; set; }
-        public string LoginUsername { get; set; }
-        public string LoginPassword { get; set; }
+        public Guid? UserId { get; set; }
 
         public virtual Team Team { get; set; }
+        public virtual User User { get; set; }
 
         public virtual ICollection<MatchEvent> MatchEvents { get; set; }
         public virtual ICollection<MatchEventGoal> MatchGoalsAssisted { get; set; }

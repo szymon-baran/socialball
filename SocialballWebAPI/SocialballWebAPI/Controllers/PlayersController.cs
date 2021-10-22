@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -42,7 +43,7 @@ namespace SocialballWebAPI.Controllers
 
         // GET: api/Players/5
         [HttpGet("details")]
-        public async Task<ActionResult<PlayerDto>> GetPlayer(Guid id)
+        public async Task<ActionResult<GetPlayerDto>> GetPlayer(Guid id)
         {
             var player = await _context.Players.Include(x => x.MatchEvents.Where(y => y.MatchEventType == MatchEventType.Goal)).FirstOrDefaultAsync(x => x.Id == id);
 
@@ -51,21 +52,52 @@ namespace SocialballWebAPI.Controllers
                 return NotFound();
             }
 
-            PlayerDto model = _mapper.Map<PlayerDto>(player);
-             
+            GetPlayerDto model = _mapper.Map<GetPlayerDto>(player);
+
+            return model;
+        }
+
+        [HttpGet("getPlayerByUserId")]
+        [Authorize]
+        public async Task<ActionResult<GetPlayerDto>> GetPlayerByUserId(Guid userId)
+        {
+            var player = await _context.Players.Include(x => x.MatchEvents.Where(y => y.MatchEventType == MatchEventType.Goal)).FirstOrDefaultAsync(x => x.UserId == userId);
+
+            if (player == null)
+            {
+                return NotFound();
+            }
+
+            GetPlayerDto model = _mapper.Map<GetPlayerDto>(player);
+
             return model;
         }
 
         // POST: api/Players
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Player>> PostPlayer([FromBody] Player player)
+        public async Task<ActionResult<Player>> PostPlayer([FromBody] RegisterPlayerDto playerModel)
         {
-            if (!String.IsNullOrEmpty(player.LoginPassword))
+            User user = new User()
             {
-                player.LoginPassword = BCrypt.Net.BCrypt.HashPassword(player.LoginPassword);
-            }
+                Username = playerModel.LoginUsername,
+                Password = BCrypt.Net.BCrypt.HashPassword(playerModel.LoginPassword),
+                Email = playerModel.Email
+            };
+            _context.Users.Add(user);
+            _context.SaveChanges();
+
+            Player player = new Player()
+            {
+                FirstName = playerModel.FirstName,
+                LastName = playerModel.LastName,
+                Position = playerModel.Position,
+                TeamId = playerModel.TeamId,
+                Citizenship = playerModel.Citizenship,
+                UserId = user.Id
+            };
             _context.Players.Add(player);
+
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetPlayer", new { id = player.Id }, player);

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getField, updateField } from "vuex-map-fields";
+import authHeader from "../../../services/auth-header";
 
 export default {
   namespaced: true,
@@ -23,7 +24,7 @@ export default {
       return state.players;
     },
     getPlayerDetails(state) {
-      return state.playerDetails;
+      return state.player;
     },
     getField,
   },
@@ -60,6 +61,7 @@ export default {
       axios
         .get("https://localhost:44369/api/players", {
           params: { teamId: profileTeamId },
+          headers: authHeader(),
         })
         .then((response) => {
           commit("SET_PLAYERS", response.data);
@@ -72,6 +74,15 @@ export default {
       await axios
         .get("https://localhost:44369/api/players/details", {
           params: { id: playerId },
+        })
+        .then(function(response) {
+          commit("SET_PLAYER_DETAILS", response.data);
+        });
+    },
+    getPlayerDetailsByUserId: async ({ commit }, userId) => {
+      await axios
+        .get("https://localhost:44369/api/players/getPlayerByUserId", {
+          params: { userId: userId },
         })
         .then(function(response) {
           commit("SET_PLAYER_DETAILS", response.data);

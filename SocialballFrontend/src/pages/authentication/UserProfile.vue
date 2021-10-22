@@ -1,27 +1,36 @@
 <template>
-  <div class="big-data-grid">
-    <h3>Witaj, {{ getUserFullname }}!</h3>
+  <div class="big-data-grid" v-if="getPlayerDetails">
+    <h3>
+      Witaj, {{ getPlayerDetails.FirstName }} {{ getPlayerDetails.LastName }}!
+    </h3>
     <p>Twoja drużyna:</p>
-    <PlayersList 
-      :isProfileView="true"
-      :teamId="getCurrentUser.teamId"
-    />
+    <PlayersList :isProfileView="true" :teamId="getPlayerDetails.TeamId" />
   </div>
 </template>
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import PlayersList from "../players/PlayersList";
 
 export default {
   name: "UserProfile",
   computed: {
     ...mapGetters({
-      getUserFullname: "getUserFullname",
-      getCurrentUser: "getCurrentUser",
+      getLoggedInUser: "authentication/getLoggedInUser",
+      getPlayerDetails: "players/getPlayerDetails",
     }),
   },
+  methods: {
+    ...mapActions({
+      getPlayerDetailsByUserId: "players/getPlayerDetailsByUserId",
+    }),
+  },
+  mounted() {
+    if (this.getLoggedInUser) {
+      this.getPlayerDetailsByUserId(this.getLoggedInUser.id);
+    }
+  },
   components: {
-    PlayersList
+    PlayersList,
   },
 };
 </script>

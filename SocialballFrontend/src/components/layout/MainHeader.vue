@@ -35,36 +35,79 @@
       </ul>
       <div>
         <ul>
-          <li class="font-weight-bold">
+          <li class="font-weight-bold" v-if="isLoggedIn">
             <router-link to="/profile" draggable="false">
               <i class="far fa-user-circle"></i>
-              <span class="ml-2">{{ getUserFullname }}</span>
+              <span class="ml-2">{{ getUsername }}</span>
             </router-link>
+            <a
+              v-if="isLoggedIn"
+              class="login-buttons"
+              @click="logoutMethod"
+              title="Wyloguj"
+              ><i class="fas fa-sign-out-alt"></i
+            ></a>
           </li>
-          <li>
-            <!-- <router-link to="/login">Logowanie</router-link> -->
-            <!-- <router-link to="/logout">Wyloguj</router-link> -->
-            <i class="fas fa-sign-out-alt"></i>
-            <span class="ml-2">Wyloguj</span>
+          <li v-if="!isLoggedIn">
+            <span
+              ><a
+                class="login-buttons"
+                id="showLoginButton"
+                @click="showLoginPopover"
+                title="Zaloguj"
+                ><i class="fas fa-sign-in-alt"></i> </a
+            ></span>
           </li>
         </ul>
       </div>
     </nav>
   </header>
+  <LoginPlayer
+    :loginPopoverVisible="loginPopoverVisible"
+    @hideLoginForm="onLoginFormHiding"
+    v-if="loginPopoverVisible"
+  />
 </template>
 <script>
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
+import LoginPlayer from "../../pages/authentication/LoginPlayer";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "MainHeader",
+  data() {
+    return {
+      loginPopoverVisible: false,
+    };
+  },
   computed: {
-    ...mapGetters({ getUserFullname: "getUserFullname" }),
+    ...mapGetters({
+      getUsername: "authentication/getUsername",
+      isLoggedIn: "authentication/isLoggedIn",
+    }),
     checkForTeamsPath() {
       return this.$route.fullPath.includes("/teams") ? true : false;
     },
     checkForPlayersPath() {
       return this.$route.fullPath.includes("/players") ? true : false;
     },
+  },
+  methods: {
+    ...mapActions({ logout: "authentication/logout" }),
+    showLoginPopover() {
+      this.loginPopoverVisible = true;
+    },
+    onLoginFormHiding() {
+      this.loginPopoverVisible = false;
+    },
+    logoutMethod() {
+      this.logout();
+      this.$router.go();
+      useToast().success("Wylogowano pomyślnie!");
+    }
+  },
+  components: {
+    LoginPlayer,
   },
 };
 </script>
@@ -138,5 +181,9 @@ li {
 
 router-link {
   pointer-events: none;
+}
+
+.login-buttons {
+  cursor: pointer;
 }
 </style>

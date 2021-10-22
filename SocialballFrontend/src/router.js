@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
+import store from "./store/index";
 
 //Authentication
-import LoginPlayer from "./pages/authentication/LoginPlayer.vue";
 import UserProfile from "./pages/authentication/UserProfile.vue";
 
 //Players
@@ -31,7 +31,7 @@ const router = createRouter({
   routes: [
     { path: "/", component: HomePage },
     // { path: '/', redirect: '/home' },
-    { path: "/profile", component: UserProfile }, // profil zalogowanego uzytkownika
+    { path: "/profile", component: UserProfile, meta: { guest: false } }, // profil zalogowanego uzytkownika
     { path: "/players", component: PlayersList },
     {
       path: "/players/:id",
@@ -50,10 +50,19 @@ const router = createRouter({
     },
     { path: "/addMatch", component: MatchAdd },
     { path: "/matches", component: MatchesList },
-    { path: "/login", component: LoginPlayer },
     { path: "/messages", component: MessagesReceived },
     { path: "/:pageNotFound(.*)", component: PageNotFound },
   ],
+});
+
+router.beforeEach((to, from, next) => {
+  if (to.meta.guest != null && !to.meta.guest) {
+    const isAuthenticated = store.getters["authentication/isLoggedIn"];
+    if (!isAuthenticated) {
+      return next({ path: "/" });
+    }
+  }
+  return next();
 });
 
 export default router;

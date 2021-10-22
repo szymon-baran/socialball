@@ -12,7 +12,7 @@ namespace SocialballWebAPI.Helpers
     {
         public MappingProfile()
         {
-            CreateMap<Player, PlayerDto>().ReverseMap();
+            CreateMap<Player, GetPlayerDto>().ReverseMap();
             CreateMap<Team, TeamDto>().ReverseMap();
         }
     }

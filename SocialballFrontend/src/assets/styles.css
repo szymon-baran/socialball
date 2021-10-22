@@ -44,7 +44,7 @@ h4 {
 }
 
 .home-background {
-  background-image: url("homepage-background-blurred.jpg");
+  background-image: url("homepage-background.jpeg");
   background-attachment: fixed;
   background-size: cover;
   display: grid;
@@ -57,9 +57,16 @@ h4 {
 
 .main-text {
   font-size: 110%;
-  width: 30rem;
-  height: 18rem;
+  width: 40rem;
+  height: 32rem;
   text-align: center;
+}
+
+.glass {
+  background-color: rgba(255, 255, 255, .15);  
+  backdrop-filter: blur(8px);
+  padding: 6rem;
+  border-radius: 10px;
 }
 
 a {
@@ -74,6 +81,11 @@ a:hover {
 .big-data-grid {
   margin: 3rem auto 1rem auto;
   width: 80%;
+}
+
+.popover-container {
+  margin: .5rem auto 1rem auto;
+  width: 100%;
 }
 
 .dx-data-row.dx-state-hover:not(.dx-selection):not(.dx-row-inserted):not(.dx-row-removed):not(.dx-edit-row)

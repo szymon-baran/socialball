@@ -10,6 +10,7 @@
       @row-click="onRowClick"
     >
       <DxFilterRow :visible="true" />
+      <DxLoadPanel :enabled="true" />
       <DxColumn data-field="firstName" caption="Imię" />
       <DxColumn data-field="lastName" caption="Nazwisko" />
       <DxColumn data-field="position" caption="Pozycja">
@@ -34,6 +35,7 @@
 <script>
 import {
   DxDataGrid,
+  DxLoadPanel,
   DxColumn,
   DxFilterRow,
   DxLookup,
@@ -86,6 +88,7 @@ export default {
   },
   components: {
     DxDataGrid,
+    DxLoadPanel,
     DxColumn,
     DxFilterRow,
     DxLookup,
