@@ -18,9 +18,9 @@ import MatchAdd from "./pages/matches/MatchAdd.vue";
 import MatchesList from "./pages/matches/MatchesList.vue";
 
 //Messages
+import MessagesList from "./pages/messages/MessagesList.vue";
 import ContactPlayer from "./pages/messages/ContactPlayer.vue";
 import ContactTeam from "./pages/messages/ContactTeam.vue";
-import MessagesReceived from "./pages/messages/MessagesReceived.vue";
 
 //Others
 import HomePage from "./pages/HomePage.vue";
@@ -50,7 +50,7 @@ const router = createRouter({
     },
     { path: "/addMatch", component: MatchAdd },
     { path: "/matches", component: MatchesList },
-    { path: "/messages", component: MessagesReceived },
+    { path: "/messages", component: MessagesList },
     { path: "/:pageNotFound(.*)", component: PageNotFound },
   ],
 });

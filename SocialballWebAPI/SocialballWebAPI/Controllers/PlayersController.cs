@@ -58,7 +58,6 @@ namespace SocialballWebAPI.Controllers
         }
 
         [HttpGet("getPlayerByUserId")]
-        [Authorize]
         public async Task<ActionResult<GetPlayerDto>> GetPlayerByUserId(Guid userId)
         {
             var player = await _context.Players.Include(x => x.MatchEvents.Where(y => y.MatchEventType == MatchEventType.Goal)).FirstOrDefaultAsync(x => x.UserId == userId);
@@ -82,7 +81,8 @@ namespace SocialballWebAPI.Controllers
             {
                 Username = playerModel.LoginUsername,
                 Password = BCrypt.Net.BCrypt.HashPassword(playerModel.LoginPassword),
-                Email = playerModel.Email
+                Email = playerModel.Email,
+                UserType = UserType.Zawodnik
             };
             _context.Users.Add(user);
             _context.SaveChanges();

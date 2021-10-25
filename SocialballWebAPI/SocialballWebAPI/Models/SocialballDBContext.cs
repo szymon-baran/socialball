@@ -27,6 +27,7 @@ namespace SocialballWebAPI.Models
         public virtual DbSet<MatchEvent> MatchEvents { get; set; }
         public virtual DbSet<MatchEventFoul> MatchEventFouls { get; set; }
         public virtual DbSet<MatchEventGoal> MatchEventGoals { get; set; }
+        public virtual DbSet<TeamMessage> TeamMessages { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -162,6 +163,27 @@ namespace SocialballWebAPI.Models
             modelBuilder.Entity<MatchEventFoul>(entity =>
             {
                 entity.ToTable("MatchEvents");
+            });
+
+            modelBuilder.Entity<TeamMessage>(entity =>
+            {
+                entity.ToTable("TeamMessages");
+
+                entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+
+                entity.Property(e => e.Subject)
+                    .HasMaxLength(30)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.Team)
+                    .WithMany(p => p.TeamMessages)
+                    .HasForeignKey(d => d.TeamId)
+                    .HasConstraintName("FK_TeamMessages_Teams");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.TeamMessages)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("FK_TeamMessages_Users");
             });
 
             OnModelCreatingPartial(modelBuilder);

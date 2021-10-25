@@ -12,6 +12,7 @@ namespace SocialballWebAPI.Models
             MatchAwayTeams = new HashSet<Match>();
             MatchHomeTeams = new HashSet<Match>();
             Players = new HashSet<Player>();
+            TeamMessages = new HashSet<TeamMessage>();
         }
 
         public Guid Id { get; set; }
@@ -22,5 +23,6 @@ namespace SocialballWebAPI.Models
         public virtual ICollection<Match> MatchAwayTeams { get; set; }
         public virtual ICollection<Match> MatchHomeTeams { get; set; }
         public virtual ICollection<Player> Players { get; set; }
+        public virtual ICollection<TeamMessage> TeamMessages { get; set; }
     }
 }

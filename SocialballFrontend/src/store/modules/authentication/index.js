@@ -1,6 +1,7 @@
 // import axios from "axios";
 import { getField, updateField } from "vuex-map-fields";
 import AuthService from "../../../services/auth.service";
+import router from "../../../router";
 
 const user = JSON.parse(localStorage.getItem("user"));
 const initialState = user
@@ -95,25 +96,7 @@ export default {
     logout({ commit }) {
       AuthService.logout();
       commit("LOGOUT");
+      router.push({ path: "/" });
     },
-
-    // async login({ commit, state }) {
-    //   await axios.post("https://localhost:44369/api/users/login", state.form).then((res) => {
-    //     commit("SET_PROFILE", res.data);
-    //     commit("RESET_LOGIN_FORM");
-    //   });
-    // },
-    // logout({ commit }) {
-    //   return axios.post("https://localhost:44369/api/users/logout").then(() => {
-    //     commit("SET_PROFILE", {});
-    //   });
-    // },
-    // authHeader({ state }) {
-    //   if (state.profile && state.profile.token) {
-    //     return { Authorization: 'Bearer ' + state.user.token };
-    //   } else {
-    //     return {};
-    //   }
-    // },
   },
 };

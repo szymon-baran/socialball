@@ -102,7 +102,6 @@ export default {
     },
     logoutMethod() {
       this.logout();
-      this.$router.go();
       useToast().success("Wylogowano pomyślnie!");
     }
   },
