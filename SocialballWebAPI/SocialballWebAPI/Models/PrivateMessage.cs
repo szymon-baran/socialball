@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace SocialballWebAPI.Models
 {
-    public class TeamMessage : Message
+    public class PrivateMessage : Message
     {
-        public Guid ToTeamId { get; set; }
-        public virtual Team ToTeam { get; set; }
+        public Guid ToUserId { get; set; }
+        public virtual User ToUser { get; set; }
     }
 }

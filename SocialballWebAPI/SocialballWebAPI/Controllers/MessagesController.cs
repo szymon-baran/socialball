@@ -2,37 +2,44 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SocialballWebAPI.DTOs;
+using SocialballWebAPI.Enums;
+using SocialballWebAPI.Extensions;
 using SocialballWebAPI.Models;
 
 namespace SocialballWebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TeamMessagesController : ControllerBase
+    public class MessagesController : ControllerBase
     {
         private readonly SocialballDBContext _context;
+        private readonly IMapper _mapper;
 
-        public TeamMessagesController(SocialballDBContext context)
+        public MessagesController(SocialballDBContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/TeamMessages
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TeamMessage>>> GetTeamMessages()
+        public async Task<ActionResult<IEnumerable<Message>>> GetMessages(Guid userId)
         {
-            return await _context.TeamMessages.ToListAsync();
+            var playerDetails = _context.Players.Single(x => x.UserId == userId);
+            return await _context.Messages.Where(x => x is PrivateMessage ? ((PrivateMessage)x).ToUserId == userId : (x is TeamMessage ? ((TeamMessage)x).ToTeamId == playerDetails.TeamId : false)).ToListAsync();
         }
 
         // GET: api/TeamMessages/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<TeamMessage>> GetTeamMessage(Guid id)
+        public async Task<ActionResult<Message>> GetMessage(Guid id)
         {
-            var teamMessage = await _context.TeamMessages.FindAsync(id);
+            var teamMessage = await _context.Messages.FindAsync(id);
 
             if (teamMessage == null)
             {
@@ -46,7 +53,7 @@ namespace SocialballWebAPI.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> PutTeamMessage(Guid id, TeamMessage teamMessage)
+        public async Task<IActionResult> PutMessage(Guid id, Message teamMessage)
         {
             if (id != teamMessage.Id)
             {
@@ -61,7 +68,7 @@ namespace SocialballWebAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!TeamMessageExists(id))
+                if (!MessageExists(id))
                 {
                     return NotFound();
                 }
@@ -74,36 +81,43 @@ namespace SocialballWebAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/TeamMessages
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<TeamMessage>> PostTeamMessage(TeamMessage teamMessage)
+        [HttpPost("addTeamMessage")]
+        public async Task<ActionResult<Message>> AddTeamMessage(SendTeamMessageDto model)
         {
-            _context.TeamMessages.Add(teamMessage);
+            TeamMessage teamMessage = _mapper.Map<TeamMessage>(model);
+            teamMessage.SentOn = DateTime.Now;
+
+            _context.Messages.Add(teamMessage);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetTeamMessage", new { id = teamMessage.Id }, teamMessage);
+            return Ok();
         }
 
         // DELETE: api/TeamMessages/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTeamMessage(Guid id)
+        public async Task<IActionResult> DeleteMessage(Guid id)
         {
-            var teamMessage = await _context.TeamMessages.FindAsync(id);
-            if (teamMessage == null)
+            var message = await _context.Messages.FindAsync(id);
+            if (message == null)
             {
                 return NotFound();
             }
 
-            _context.TeamMessages.Remove(teamMessage);
+            _context.Messages.Remove(message);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool TeamMessageExists(Guid id)
+        private bool MessageExists(Guid id)
         {
-            return _context.TeamMessages.Any(e => e.Id == id);
+            return _context.Messages.Any(e => e.Id == id);
+        }
+
+        [HttpGet("getMessageTypesToLookup")]
+        public ActionResult GetMessageTypesToLookup()
+        {
+            return Ok(EnumExtensions.GetValues<MessageType>());
         }
     }
 }

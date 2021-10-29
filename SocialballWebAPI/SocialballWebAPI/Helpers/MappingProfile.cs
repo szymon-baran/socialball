@@ -14,6 +14,7 @@ namespace SocialballWebAPI.Helpers
         {
             CreateMap<Player, GetPlayerDto>().ReverseMap();
             CreateMap<Team, TeamDto>().ReverseMap();
+            CreateMap<TeamMessage, SendTeamMessageDto>().ReverseMap();
         }
     }
 }

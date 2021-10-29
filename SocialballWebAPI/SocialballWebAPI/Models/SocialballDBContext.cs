@@ -27,6 +27,8 @@ namespace SocialballWebAPI.Models
         public virtual DbSet<MatchEvent> MatchEvents { get; set; }
         public virtual DbSet<MatchEventFoul> MatchEventFouls { get; set; }
         public virtual DbSet<MatchEventGoal> MatchEventGoals { get; set; }
+        public virtual DbSet<Message> Messages { get; set; }
+        public virtual DbSet<PrivateMessage> PrivateMessages { get; set; }
         public virtual DbSet<TeamMessage> TeamMessages { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -82,7 +84,7 @@ namespace SocialballWebAPI.Models
 
                 entity.HasOne(d => d.Team)
                     .WithMany(p => p.Players)
-                    .HasForeignKey(d => d.TeamId)   
+                    .HasForeignKey(d => d.TeamId)
                     .HasConstraintName("FK_Players_Teams");
             });
 
@@ -165,26 +167,49 @@ namespace SocialballWebAPI.Models
                 entity.ToTable("MatchEvents");
             });
 
-            modelBuilder.Entity<TeamMessage>(entity =>
+            modelBuilder.Entity<Message>(entity =>
             {
-                entity.ToTable("TeamMessages");
+                entity.ToTable("Messages");
 
                 entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+
+                entity.HasDiscriminator(b => b.MessageType)
+                    .HasValue<Message>(0)
+                    .HasValue<PrivateMessage>(MessageType.Prywatna)
+                    .HasValue<TeamMessage>(MessageType.Druzynowa);
 
                 entity.Property(e => e.Subject)
                     .HasMaxLength(30)
                     .IsUnicode(false);
 
-                entity.HasOne(d => d.Team)
-                    .WithMany(p => p.TeamMessages)
-                    .HasForeignKey(d => d.TeamId)
-                    .HasConstraintName("FK_TeamMessages_Teams");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.TeamMessages)
-                    .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK_TeamMessages_Users");
+                entity.HasOne(d => d.FromUser)
+                    .WithMany(p => p.Messages)
+                    .HasForeignKey(d => d.FromUserId)
+                    .HasConstraintName("FK_Messages_Users");
             });
+
+            modelBuilder.Entity<PrivateMessage>(entity =>
+            {
+                entity.ToTable("Messages");
+
+                entity.HasOne(d => d.ToUser)
+                    .WithMany(p => p.PrivateMessages)
+                    .HasForeignKey(d => d.ToUserId)
+                    .HasConstraintName("FK_PrivateMessages_Users")
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<TeamMessage>(entity =>
+            {
+                entity.ToTable("Messages");
+
+                entity.HasOne(d => d.ToTeam)
+                    .WithMany(p => p.TeamMessages)
+                    .HasForeignKey(d => d.ToTeamId)
+                    .HasConstraintName("FK_TeamMessages_Teams")
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
 
             OnModelCreatingPartial(modelBuilder);
         }

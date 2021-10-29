@@ -4,6 +4,7 @@ import playersModule from "./modules/players/index";
 import teamsModule from "./modules/teams/index";
 import matchesModule from "./modules/matches/index";
 import authenticationModule from "./modules/authentication/index";
+import messagesModule from "./modules/messages/index";
 
 const store = createStore({
   modules: {
@@ -11,6 +12,7 @@ const store = createStore({
     teams: teamsModule,
     matches: matchesModule,
     authentication: authenticationModule,
+    messages: messagesModule,
   },
 });
 
