@@ -26,15 +26,6 @@ export default {
   namespaced: true,
   state: initialState,
 
-  // state() {
-  //   return {
-  //     profile: {},
-  //     form: {
-  //       Username: "",
-  //       Password: "",
-  //     },
-  //   };
-  // },
   getters: {
     getUsername(state) {
       return state.user?.username;

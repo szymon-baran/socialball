@@ -1,8 +1,8 @@
 <template>
   <div class="text-center big-data-grid" id="not-found-container">
     <i class="far fa-frown main-color mt-3"></i>
-    <h1 class="m-4">404</h1>
-    <h3>Nie znaleziono wybranej strony.</h3>
+    <h1 class="m-4">403</h1>
+    <h3>Brak uprawnień do przeglądania wybranej strony!</h3>
     <DxButton
       text="Powrót na stronę główną"
       type="default"
@@ -16,7 +16,7 @@ import DxButton from "devextreme-vue/button";
 import router from "../router";
 
 export default {
-  name: "PageNotFound",
+  name: "NoPermission",
   methods: {
     routerPushToHome() {
       router.push({ path: "/" });

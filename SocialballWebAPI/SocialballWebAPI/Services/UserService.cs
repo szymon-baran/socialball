@@ -9,6 +9,7 @@ using System.Text;
 using SocialballWebAPI.ViewModels;
 using SocialballWebAPI.Helpers;
 using SocialballWebAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace SocialballWebAPI.Services
 {
@@ -32,7 +33,7 @@ namespace SocialballWebAPI.Services
 
         public AuthenticateResponse Authenticate(AuthenticateRequest model)
         {
-            var user = _context.Users.SingleOrDefault(x => x.Username == model.Username);
+            var user = _context.Users.Include(x => x.UserData).SingleOrDefault(x => x.Username == model.Username);
 
             // return null if user not found
             if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.Password)) return null;

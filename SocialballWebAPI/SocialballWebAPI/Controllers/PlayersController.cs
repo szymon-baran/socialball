@@ -33,11 +33,11 @@ namespace SocialballWebAPI.Controllers
         {
             if (teamId.HasValue)
             {
-                return await _context.Players.Where(x => x.TeamId == teamId).ToListAsync();
+                return await _context.Players.Where(x => x.UserType == UserType.Zawodnik && x.TeamId == teamId).ToListAsync();
             }
             else
             {
-                return await _context.Players.ToListAsync();
+                return await _context.Players.Where(x => x.UserType == UserType.Zawodnik).ToListAsync();
             }
         }
 
@@ -72,6 +72,19 @@ namespace SocialballWebAPI.Controllers
             return model;
         }
 
+        [HttpGet("getUserDataByUserId")]
+        public async Task<ActionResult<UserData>> GetUserDataByUserId(Guid userId)
+        {
+            var userData = await _context.UserDatas.FirstOrDefaultAsync(x => x.UserId == userId);
+
+            if (userData == null)
+            {
+                return NotFound();
+            }
+
+            return userData;
+        }
+
         // POST: api/Players
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
@@ -81,8 +94,7 @@ namespace SocialballWebAPI.Controllers
             {
                 Username = playerModel.LoginUsername,
                 Password = BCrypt.Net.BCrypt.HashPassword(playerModel.LoginPassword),
-                Email = playerModel.Email,
-                UserType = UserType.Zawodnik
+                Email = playerModel.Email
             };
             _context.Users.Add(user);
             _context.SaveChanges();
@@ -94,7 +106,8 @@ namespace SocialballWebAPI.Controllers
                 Position = playerModel.Position,
                 TeamId = playerModel.TeamId,
                 Citizenship = playerModel.Citizenship,
-                UserId = user.Id
+                UserId = user.Id,
+                UserType = UserType.Zawodnik
             };
             _context.Players.Add(player);
 
@@ -117,6 +130,13 @@ namespace SocialballWebAPI.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        [HttpGet("isUsernameUnique")]
+        public bool IsUsernameUnique(string username)
+        {
+            bool check = !_context.Users.Any(x => x.Username == username);
+            return check;
         }
 
         private bool PlayerExists(Guid id)

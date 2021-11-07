@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SocialballWebAPI.Models;
 
 namespace SocialballWebAPI.Migrations
 {
     [DbContext(typeof(SocialballDBContext))]
-    partial class SocialballDBContextModelSnapshot : ModelSnapshot
+    [Migration("20211031201603_MessageRebuildMigration")]
+    partial class MessageRebuildMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -130,6 +132,50 @@ namespace SocialballWebAPI.Migrations
                     b.ToTable("Messages");
                 });
 
+            modelBuilder.Entity("SocialballWebAPI.Models.Player", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("(newid())");
+
+                    b.Property<string>("Citizenship")
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(30)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(30)");
+
+                    b.Property<int?>("Position")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TeamId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TeamId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
+
+                    b.ToTable("Players");
+                });
+
             modelBuilder.Entity("SocialballWebAPI.Models.Team", b =>
                 {
                     b.Property<Guid>("Id")
@@ -167,6 +213,9 @@ namespace SocialballWebAPI.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(max)");
 
+                    b.Property<int>("UserType")
+                        .HasColumnType("int");
+
                     b.Property<string>("Username")
                         .HasMaxLength(40)
                         .IsUnicode(false)
@@ -175,52 +224,6 @@ namespace SocialballWebAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("SocialballWebAPI.Models.UserData", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("(newid())");
-
-                    b.Property<string>("Citizenship")
-                        .HasMaxLength(20)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(20)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(30)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(30)");
-
-                    b.Property<Guid?>("TeamId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("UserType")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TeamId");
-
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
-
-                    b.ToTable("UserDatas");
-
-                    b.HasDiscriminator<int>("UserType").HasValue(0);
                 });
 
             modelBuilder.Entity("SocialballWebAPI.Models.UserMessage", b =>
@@ -277,27 +280,6 @@ namespace SocialballWebAPI.Migrations
                     b.HasDiscriminator().HasValue(1);
                 });
 
-            modelBuilder.Entity("SocialballWebAPI.Models.Player", b =>
-                {
-                    b.HasBaseType("SocialballWebAPI.Models.UserData");
-
-                    b.Property<int?>("Position")
-                        .HasColumnType("int");
-
-                    b.ToTable("UserDatas");
-
-                    b.HasDiscriminator().HasValue(1);
-                });
-
-            modelBuilder.Entity("SocialballWebAPI.Models.TeamManager", b =>
-                {
-                    b.HasBaseType("SocialballWebAPI.Models.UserData");
-
-                    b.ToTable("UserDatas");
-
-                    b.HasDiscriminator().HasValue(2);
-                });
-
             modelBuilder.Entity("SocialballWebAPI.Models.Match", b =>
                 {
                     b.HasOne("SocialballWebAPI.Models.Team", "AwayTeam")
@@ -345,6 +327,23 @@ namespace SocialballWebAPI.Migrations
                     b.Navigation("FromUser");
                 });
 
+            modelBuilder.Entity("SocialballWebAPI.Models.Player", b =>
+                {
+                    b.HasOne("SocialballWebAPI.Models.Team", "Team")
+                        .WithMany("Players")
+                        .HasForeignKey("TeamId")
+                        .HasConstraintName("FK_Players_Teams");
+
+                    b.HasOne("SocialballWebAPI.Models.User", "User")
+                        .WithOne("Player")
+                        .HasForeignKey("SocialballWebAPI.Models.Player", "UserId")
+                        .HasConstraintName("FK_Users_Players");
+
+                    b.Navigation("Team");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("SocialballWebAPI.Models.Team", b =>
                 {
                     b.HasOne("SocialballWebAPI.Models.League", "League")
@@ -353,23 +352,6 @@ namespace SocialballWebAPI.Migrations
                         .HasConstraintName("FK_Teams_Leagues");
 
                     b.Navigation("League");
-                });
-
-            modelBuilder.Entity("SocialballWebAPI.Models.UserData", b =>
-                {
-                    b.HasOne("SocialballWebAPI.Models.Team", "Team")
-                        .WithMany("UserDatas")
-                        .HasForeignKey("TeamId")
-                        .HasConstraintName("FK_UserDatas_Teams");
-
-                    b.HasOne("SocialballWebAPI.Models.User", "User")
-                        .WithOne("UserData")
-                        .HasForeignKey("SocialballWebAPI.Models.UserData", "UserId")
-                        .HasConstraintName("FK_Users_UserDatas");
-
-                    b.Navigation("Team");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SocialballWebAPI.Models.UserMessage", b =>
@@ -419,29 +401,29 @@ namespace SocialballWebAPI.Migrations
                     b.Navigation("MessageRecipients");
                 });
 
+            modelBuilder.Entity("SocialballWebAPI.Models.Player", b =>
+                {
+                    b.Navigation("MatchEvents");
+
+                    b.Navigation("MatchGoalsAssisted");
+                });
+
             modelBuilder.Entity("SocialballWebAPI.Models.Team", b =>
                 {
                     b.Navigation("MatchAwayTeams");
 
                     b.Navigation("MatchHomeTeams");
 
-                    b.Navigation("UserDatas");
+                    b.Navigation("Players");
                 });
 
             modelBuilder.Entity("SocialballWebAPI.Models.User", b =>
                 {
+                    b.Navigation("Player");
+
                     b.Navigation("ReceivedMessages");
 
                     b.Navigation("SentMessages");
-
-                    b.Navigation("UserData");
-                });
-
-            modelBuilder.Entity("SocialballWebAPI.Models.Player", b =>
-                {
-                    b.Navigation("MatchEvents");
-
-                    b.Navigation("MatchGoalsAssisted");
                 });
 #pragma warning restore 612, 618
         }

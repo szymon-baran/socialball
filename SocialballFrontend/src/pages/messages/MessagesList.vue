@@ -6,8 +6,16 @@
       </div>
       <div class="col text-right">
         <DxButton
-          text="Wyślij wiadomość do drużyny"
-          @click="showAddTeamMessagePopup"
+          text="Wyślij wiadomość do swojej drużyny"
+          @click="showAddMessagePopup(messageTypeEnum.TEAM)"
+          type="default"
+          styling-mode="outlined"
+          class="mr-2"
+          v-if="getLoggedInUser.userType === userTypeEnum.TEAM_MANAGEMENT"
+        />
+        <DxButton
+          text="Wyślij wiadomość prywatną"
+          @click="showAddMessagePopup(messageTypeEnum.PRIVATE)"
           type="default"
         />
       </div>
@@ -22,31 +30,41 @@
     >
       <DxFilterRow :visible="true" />
       <DxLoadPanel :enabled="true" />
-      <DxColumn data-field="subject" caption="Tytuł wiadomości" />
+      <DxSorting mode="none" />
+      <DxColumn data-field="message.subject" caption="Tytuł wiadomości" />
       <DxColumn
-        data-field="sentOn"
+        data-field="message.sentOn"
         caption="Data otrzymania wiadomości"
         data-type="datetime"
         format="dd/MM/yyyy HH:mm"
         :editorOptions="{ showClearButton: true }"
+        :sort-index="1"
+        sort-order="desc"
       />
-      <DxColumn data-field="messageType" caption="Typ wiadomości">
+      <DxColumn data-field="message.messageType" caption="Typ wiadomości">
         <DxLookup
           :data-source="messageTypes"
           value-expr="value"
           display-expr="name"
         />
       </DxColumn>
+      <DxColumn
+        data-field="isRead"
+        caption="Czy odczytana?"
+        :sort-index="0"
+        sort-order="asc"
+      />
     </DxDataGrid>
   </div>
-  <TeamMessageAdd
-    v-if="isAddTeamMessagePopupVisible"
-    @close="onAddTeamMessagePopupClose"
+  <MessageAdd
+    v-if="addMessagePopupOptions.isVisible"
+    :messageType="addMessagePopupOptions.messageType"
+    @close="onAddMessagePopupClose"
   />
   <MessageDetailsPopup
     :message="detailsPopupOptions.selectedMessage"
     v-if="detailsPopupOptions.isVisible"
-    @closed="onPopupClosed()"
+    @closed="onDetailsPopupClose"
   />
 </template>
 <script>
@@ -58,15 +76,23 @@ import {
   DxColumn,
   DxFilterRow,
   DxLookup,
+  DxSorting,
 } from "devextreme-vue/data-grid";
-import TeamMessageAdd from "./TeamMessageAdd.vue";
+import MessageAdd from "./MessageAdd.vue";
 import MessageDetailsPopup from "./MessageDetailsPopup.vue";
+import { messageTypeEnum } from "../../enums/messageTypeEnum";
+import { userTypeEnum } from "../../enums/userTypeEnum";
 
 export default {
   name: "MessagesList",
   data() {
     return {
-      isAddTeamMessagePopupVisible: false,
+      messageTypeEnum,
+      userTypeEnum,
+      addMessagePopupOptions: {
+        isVisible: false,
+        messageType: null,
+      },
       detailsPopupOptions: {
         isVisible: false,
         selectedMessage: {},
@@ -85,17 +111,19 @@ export default {
       setMessages: "messages/setMessages",
       setMessageTypesToLookup: "messages/setMessageTypesToLookup",
     }),
-    showAddTeamMessagePopup() {
-      this.isAddTeamMessagePopupVisible = true;
+    showAddMessagePopup(messageType) {
+      this.addMessagePopupOptions.messageType = messageType;
+      this.addMessagePopupOptions.isVisible = true;
     },
-    onAddTeamMessagePopupClose() {
-      this.isAddTeamMessagePopupVisible = false;
+    onAddMessagePopupClose() {
+      this.addMessagePopupOptions.messageType = null;
+      this.addMessagePopupOptions.isVisible = false;
     },
     showMessageDetails(e) {
       this.detailsPopupOptions.isVisible = true;
       this.detailsPopupOptions.selectedMessage = e.data;
     },
-    onPopupClosed() {
+    onDetailsPopupClose() {
       this.detailsPopupOptions.isVisible = false;
       this.detailsPopupOptions.selectedMessage = {};
     },
@@ -107,7 +135,8 @@ export default {
     DxColumn,
     DxFilterRow,
     DxLookup,
-    TeamMessageAdd,
+    DxSorting,
+    MessageAdd,
     MessageDetailsPopup,
   },
   mounted() {

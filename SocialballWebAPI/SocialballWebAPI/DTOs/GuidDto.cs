@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SocialballWebAPI.Enums
+namespace SocialballWebAPI.DTOs
 {
-    public enum UserType
+    public class GuidDto
     {
-        Zawodnik = 1,
-        Sztab = 2
+        public Guid Id { get; set; }
     }
 }

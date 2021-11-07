@@ -20,16 +20,17 @@ namespace SocialballWebAPI.Models
         }
 
         public virtual DbSet<Match> Matches { get; set; }
-        public virtual DbSet<Player> Players { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<UserData> UserDatas { get; set; }
+        public virtual DbSet<Player> Players { get; set; }
+        public virtual DbSet<TeamManager> TeamManagers { get; set; }
         public virtual DbSet<Team> Teams { get; set; }
         public virtual DbSet<League> Leagues { get; set; }
         public virtual DbSet<MatchEvent> MatchEvents { get; set; }
         public virtual DbSet<MatchEventFoul> MatchEventFouls { get; set; }
         public virtual DbSet<MatchEventGoal> MatchEventGoals { get; set; }
         public virtual DbSet<Message> Messages { get; set; }
-        public virtual DbSet<PrivateMessage> PrivateMessages { get; set; }
-        public virtual DbSet<TeamMessage> TeamMessages { get; set; }
+        public virtual DbSet<UserMessage> UserMessages { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -62,11 +63,16 @@ namespace SocialballWebAPI.Models
                     .HasConstraintName("FK_Matches_Teams");
             });
 
-            modelBuilder.Entity<Player>(entity =>
+            modelBuilder.Entity<UserData>(entity =>
             {
-                entity.ToTable("Players");
+                entity.ToTable("UserDatas");
 
                 entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+
+                entity.HasDiscriminator(b => b.UserType)
+                    .HasValue<UserData>(0)
+                    .HasValue<Player>(UserType.Zawodnik)
+                    .HasValue<TeamManager>(UserType.Sztab);
 
                 entity.Property(e => e.Citizenship)
                     .HasMaxLength(20)
@@ -83,9 +89,19 @@ namespace SocialballWebAPI.Models
                     .IsUnicode(false);
 
                 entity.HasOne(d => d.Team)
-                    .WithMany(p => p.Players)
+                    .WithMany(p => p.UserDatas)
                     .HasForeignKey(d => d.TeamId)
-                    .HasConstraintName("FK_Players_Teams");
+                    .HasConstraintName("FK_UserDatas_Teams");
+            });
+
+            modelBuilder.Entity<Player>(entity =>
+            {
+                entity.ToTable("UserDatas");
+            });
+
+            modelBuilder.Entity<TeamManager>(entity =>
+            {
+                entity.ToTable("UserDatas");
             });
 
             modelBuilder.Entity<User>(entity =>
@@ -104,27 +120,27 @@ namespace SocialballWebAPI.Models
                     .HasMaxLength(40)
                     .IsUnicode(false);
 
-                entity.HasOne(d => d.Player)
+                entity.HasOne(d => d.UserData)
                     .WithOne(p => p.User)
-                    .HasForeignKey<Player>(d => d.UserId)
-                    .HasConstraintName("FK_Users_Players");
+                    .HasForeignKey<UserData>(d => d.UserId)
+                    .HasConstraintName("FK_Users_UserDatas");
             });
 
             modelBuilder.Entity<Team>(entity =>
-        {
-            entity.ToTable("Teams");
+            {
+                entity.ToTable("Teams");
 
-            entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+                entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
 
-            entity.Property(e => e.Name)
-                .HasMaxLength(30)
-                .IsUnicode(false);
+                entity.Property(e => e.Name)
+                    .HasMaxLength(30)
+                    .IsUnicode(false);
 
-            entity.HasOne(d => d.League)
-                .WithMany(p => p.Teams)
-                .HasForeignKey(d => d.LeagueId)
-                .HasConstraintName("FK_Teams_Leagues");
-        });
+                entity.HasOne(d => d.League)
+                    .WithMany(p => p.Teams)
+                    .HasForeignKey(d => d.LeagueId)
+                    .HasConstraintName("FK_Teams_Leagues");
+            });
 
             modelBuilder.Entity<League>(entity =>
             {
@@ -173,41 +189,31 @@ namespace SocialballWebAPI.Models
 
                 entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
 
-                entity.HasDiscriminator(b => b.MessageType)
-                    .HasValue<Message>(0)
-                    .HasValue<PrivateMessage>(MessageType.Prywatna)
-                    .HasValue<TeamMessage>(MessageType.Druzynowa);
-
                 entity.Property(e => e.Subject)
                     .HasMaxLength(30)
                     .IsUnicode(false);
 
                 entity.HasOne(d => d.FromUser)
-                    .WithMany(p => p.Messages)
+                    .WithMany(p => p.SentMessages)
                     .HasForeignKey(d => d.FromUserId)
                     .HasConstraintName("FK_Messages_Users");
             });
 
-            modelBuilder.Entity<PrivateMessage>(entity =>
+            modelBuilder.Entity<UserMessage>(entity =>
             {
-                entity.ToTable("Messages");
+                entity.ToTable("UserMessages");
+
+                entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
 
                 entity.HasOne(d => d.ToUser)
-                    .WithMany(p => p.PrivateMessages)
+                    .WithMany(p => p.ReceivedMessages)
                     .HasForeignKey(d => d.ToUserId)
-                    .HasConstraintName("FK_PrivateMessages_Users")
-                    .OnDelete(DeleteBehavior.Restrict);
-            });
+                    .HasConstraintName("FK_UserMessages_Users");
 
-            modelBuilder.Entity<TeamMessage>(entity =>
-            {
-                entity.ToTable("Messages");
-
-                entity.HasOne(d => d.ToTeam)
-                    .WithMany(p => p.TeamMessages)
-                    .HasForeignKey(d => d.ToTeamId)
-                    .HasConstraintName("FK_TeamMessages_Teams")
-                    .OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(d => d.Message)
+                    .WithMany(p => p.MessageRecipients)
+                    .HasForeignKey(d => d.MessageId)
+                    .HasConstraintName("FK_UserMessages_Messages");
             });
 
 

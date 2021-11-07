@@ -29,7 +29,7 @@
           <router-link to="/matches" draggable="false">Mecze</router-link>
         </li>
         <li>
-          <router-link to="/messages" draggable="false">Wiadomości</router-link>
+          <router-link to="/messages" draggable="false" v-if="isLoggedIn">Wiadomości</router-link>
         </li>
         <!-- TO DO -->
       </ul>
@@ -37,8 +37,9 @@
         <ul>
           <li class="font-weight-bold" v-if="isLoggedIn">
             <router-link to="/profile" draggable="false">
-              <i class="far fa-user-circle"></i>
-              <span class="ml-2">{{ getUsername }}</span>
+              <i class="far fa-user-circle mr-2"></i>
+              <span class="mr-1 red-color" v-if="getLoggedInUser.userType === userTypeEnum.TEAM_MANAGEMENT">!</span>
+              <span>{{ getUsername }}</span>
             </router-link>
             <a
               v-if="isLoggedIn"
@@ -72,11 +73,13 @@
 import { mapActions, mapGetters } from "vuex";
 import LoginPlayer from "../../pages/authentication/LoginPlayer";
 import { useToast } from "vue-toastification";
+import { userTypeEnum } from "../../enums/userTypeEnum";
 
 export default {
   name: "MainHeader",
   data() {
     return {
+      userTypeEnum,
       loginPopoverVisible: false,
     };
   },
@@ -84,6 +87,7 @@ export default {
     ...mapGetters({
       getUsername: "authentication/getUsername",
       isLoggedIn: "authentication/isLoggedIn",
+      getLoggedInUser: "authentication/getLoggedInUser",
     }),
     checkForTeamsPath() {
       return this.$route.fullPath.includes("/teams") ? true : false;

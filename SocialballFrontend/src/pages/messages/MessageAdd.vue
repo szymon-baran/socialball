@@ -9,7 +9,7 @@
       :width="650"
       :height="650"
       container=".dx-viewport"
-      title="Szczegóły meczu"
+      :title="getTitle()"
       :shading="false"
     >
       <DxToolbarItem
@@ -27,6 +27,16 @@
       <form>
         <DxValidationGroup :ref="groupRefKey">
           <div class="row">
+            <div class="col" v-if="messageType === messageTypeEnum.PRIVATE">
+              <label for="toUserIdSelectBox" class="form-label">Odbiorca</label>
+              <DxSelectBox
+                :dataSource="users"
+                value-expr="id"
+                display-expr="name"
+                v-model="ToUserId"
+                id="toUserIdSelectBox"
+              />
+            </div>
             <div class="col">
               <label for="titleTextBox" class="form-label"
                 >Tytuł wiadomości</label
@@ -73,8 +83,8 @@
 import { DxPopup, DxToolbarItem } from "devextreme-vue/popup";
 import { DxHtmlEditor, DxToolbar, DxItem } from "devextreme-vue/html-editor";
 import DxTextBox from "devextreme-vue/text-box";
-// mapGetters, mapMutations
-import { mapActions, mapGetters } from "vuex";
+import DxSelectBox from "devextreme-vue/select-box";
+import { mapActions, mapGetters, mapMutations } from "vuex";
 import { createHelpers } from "vuex-map-fields";
 const { mapFields } = createHelpers({
   getterType: "messages/getField",
@@ -83,11 +93,20 @@ const { mapFields } = createHelpers({
 import DxValidationGroup from "devextreme-vue/validation-group";
 import DxValidationSummary from "devextreme-vue/validation-summary";
 import { useToast } from "vue-toastification";
+import { messageTypeEnum } from "../../enums/messageTypeEnum";
 
 export default {
-  name: "TeamMessageAdd",
+  name: "MessageAdd",
+  props: {
+    messageType: {
+      type: Number,
+      required: true,
+    },
+  },
   data() {
     return {
+      messageTypeEnum,
+      users: [],
       popupVisible: false,
       sizeValues: ["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"],
       fontValues: [
@@ -122,11 +141,13 @@ export default {
       getPlayerDetails: "players/getPlayerDetails",
     }),
     ...mapFields([
-      "teamMessage.FromUserId",
-      "teamMessage.ToTeamId",
-      "teamMessage.Subject",
-      "teamMessage.Content",
-      "teamMessage.SentOn",
+      "message.FromUserId",
+      "message.ToTeamId",
+      "message.ToUserId",
+      "message.Subject",
+      "message.Content",
+      "message.SentOn",
+      "message.MessageType",
     ]),
     validationGroup: function() {
       return this.$refs[this.groupRefKey].instance;
@@ -134,16 +155,30 @@ export default {
   },
   methods: {
     ...mapActions({
-      sendTeamMessage: "messages/sendTeamMessage",
-      getPlayerDetailsByUserId: "players/getPlayerDetailsByUserId",
+      sendMessage: "messages/sendMessage",
+      getUsersToLookup: "messages/getUsersToLookup",
+      getUserDataByUserId: "players/getUserDataByUserId",
+    }),
+    ...mapMutations({
+      RESET_TEAM_MESSAGE_FORM: "messages/RESET_TEAM_MESSAGE_FORM",
     }),
     async handleSubmit() {
       let validationResult = this.validationGroup.validate();
       if (validationResult.isValid) {
-        await this.sendTeamMessage();
-        useToast().success("Wiadomość drużynowa została wysłana pomyślnie!");
+        await this.sendMessage();
+        useToast().success("Wiadomość została wysłana pomyślnie!");
         this.popupVisible = false;
         this.$emit("close");
+      }
+    },
+    getTitle() {
+      switch (this.messageType) {
+        case messageTypeEnum.PRIVATE:
+          return "Wyślij wiadomość prywatną";
+        case messageTypeEnum.TEAM:
+          return "Wyślij wiadomość do swojej drużyny";
+        default:
+          return "";
       }
     },
   },
@@ -154,15 +189,26 @@ export default {
     DxToolbar,
     DxItem,
     DxTextBox,
+    DxSelectBox,
     DxValidationGroup,
     DxValidationSummary,
   },
   mounted() {
     this.popupVisible = true;
     this.FromUserId = this.getLoggedInUser.id;
-    this.getPlayerDetailsByUserId(this.FromUserId).then(() => {
-      this.ToTeamId = this.getPlayerDetails.TeamId;
-    });
+    this.MessageType = this.messageType;
+    if (this.messageType === messageTypeEnum.PRIVATE) {
+      this.getUsersToLookup().then((response) => {
+        this.users = response.data;
+      });
+    } else if (this.messageType === messageTypeEnum.TEAM) {
+      this.getUserDataByUserId(this.FromUserId).then(() => {
+        this.ToTeamId = this.getPlayerDetails.TeamId;
+      });
+    }
+  },
+  beforeUnmount() {
+    this.RESET_TEAM_MESSAGE_FORM();
   },
 };
 </script>

@@ -33,6 +33,11 @@ import { mapGetters, mapActions, mapMutations } from "vuex";
 
 export default {
   name: "TeamsList",
+  data() {
+    return {
+      leagues: []
+    }
+  },
   computed: {
     ...mapGetters({
       getTeams: "teams/getTeams",

@@ -7,12 +7,14 @@ export default {
   state() {
     return {
       messages: [],
-      teamMessage: {
+      message: {
         FromUserId: "",
+        ToUserId: "",
         ToTeamId: "",
         Subject: "",
         Content: "",
         SentOn: null,
+        MessageType: null,
       },
     };
   },
@@ -20,8 +22,8 @@ export default {
     getMessages(state) {
       return state.messages;
     },
-    getTeamMessageDetails(state) {
-      return state.teamMessage;
+    getMessageDetails(state) {
+      return state.message;
     },
     getField,
   },
@@ -33,18 +35,21 @@ export default {
       state.messages = [];
     },
     SET_TEAM_MESSAGE_DETAILS(state, payload) {
-      state.player.FromUserId = payload.fromUserId;
-      state.player.ToTeamId = payload.toTeamId;
-      state.player.Subject = payload.subject;
-      state.player.Content = payload.content;
-      state.player.SentOn = payload.sentOn;
+      state.message.FromUserId = payload.fromUserId;
+      state.message.ToUserId = payload.toUserId;
+      state.message.ToTeamId = payload.toTeamId;
+      state.message.Subject = payload.subject;
+      state.message.Content = payload.content;
+      state.message.SentOn = payload.sentOn;
     },
     RESET_TEAM_MESSAGE_FORM(state) {
-      state.player.FromUserId = "";
-      state.player.ToTeamId = "";
-      state.player.Subject = "";
-      state.player.Content = "";
-      state.player.SentOn = null;
+      state.message.FromUserId = "";
+      state.message.ToUserId = "";
+      state.message.ToTeamId = "";
+      state.message.Subject = "";
+      state.message.Content = "";
+      state.message.SentOn = null;
+      state.message.MessageType = null;
     },
     updateField,
   },
@@ -60,14 +65,12 @@ export default {
           commit("SET_MESSAGES", response.data);
         });
     },
-    sendTeamMessage: async ({ state, dispatch }) => {
+    sendMessage: async ({ state, dispatch }) => {
+      const userId = state.message.FromUserId;
       await axios
-        .post(
-          "https://localhost:44369/api/messages/addTeamMessage",
-          state.teamMessage
-        )
+        .post("https://localhost:44369/api/messages/addMessage", state.message)
         .then(() => {
-          dispatch("setMessages", state.teamMessage.FromUserId);
+          dispatch("setMessages", userId);
         });
     },
     setMessageTypesToLookup: () => {
@@ -83,6 +86,27 @@ export default {
             }
           )
       );
+    },
+    markMessageAsRead: async ({ dispatch }, message) => {
+      await axios
+        .post("https://localhost:44369/api/messages/markMessageAsRead", {
+          Id: message.id,
+        })
+        .then(() => {
+          dispatch("setMessages", message.toUserId);
+        });
+    },
+    getUsersToLookup: () => {
+      return new Promise((resolve, reject) => {
+        axios.get("https://localhost:44369/api/messages/getUsersToLookup").then(
+          (response) => {
+            resolve(response);
+          },
+          (error) => {
+            reject(error);
+          }
+        );
+      });
     },
     // setPlayerDetails: async ({ commit }, playerId) => {
     //   await axios

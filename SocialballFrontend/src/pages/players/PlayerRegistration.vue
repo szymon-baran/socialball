@@ -84,6 +84,10 @@
               <DxTextBox v-model="LoginUsername" id="loginUsernameTextBox">
                 <DxValidator>
                   <DxRequiredRule message="Nazwa użytkownika jest wymagana!" />
+                  <DxAsyncRule
+                    :validation-callback="validateUsername"
+                    message="Taki użytkownik istnieje już w systemie!"
+                  />
                 </DxValidator>
               </DxTextBox>
             </div>
@@ -140,6 +144,7 @@ import {
   DxRequiredRule,
   DxEmailRule,
   DxCompareRule,
+  DxAsyncRule,
 } from "devextreme-vue/validator";
 import DxValidationGroup from "devextreme-vue/validation-group";
 import DxValidationSummary from "devextreme-vue/validation-summary";
@@ -165,6 +170,7 @@ export default {
     DxCompareRule,
     DxValidationGroup,
     DxValidationSummary,
+    DxAsyncRule,
   },
   props: {
     showAsDetails: {
@@ -205,6 +211,7 @@ export default {
   methods: {
     ...mapActions({
       addPlayer: "players/addPlayer",
+      validateUsername: "players/validateUsername",
       setAllTeams: "teams/setAllTeams",
     }),
     ...mapMutations({
@@ -213,12 +220,18 @@ export default {
     passwordComparison() {
       return this.LoginPassword;
     },
-    async handleSubmit() {
+    handleSubmit() {
       let validationResult = this.validationGroup.validate();
       if (validationResult.isValid) {
-        await this.addPlayer();
-        useToast().success("Zawodnik dodany pomyślnie!");
-        this.$router.push({ path: "/players" });
+        validationResult.status === "pending" &&
+          validationResult.complete.then((res) => {
+            if (res.isValid) {
+              this.addPlayer().then(() => {
+                useToast().success("Zawodnik dodany pomyślnie!");
+                this.$router.push({ path: "/players" });
+              });
+            }
+          });
       }
     },
   },

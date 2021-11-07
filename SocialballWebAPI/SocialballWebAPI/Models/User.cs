@@ -9,8 +9,8 @@ namespace SocialballWebAPI.Models
     {
         public User()
         {
-            Messages = new HashSet<Message>();
-            PrivateMessages = new HashSet<PrivateMessage>();
+            SentMessages = new HashSet<Message>();
+            ReceivedMessages = new HashSet<UserMessage>();
         }
 
         public Guid Id { get; set; }
@@ -19,9 +19,8 @@ namespace SocialballWebAPI.Models
 
         [JsonIgnore]
         public string Password { get; set; }
-        public UserType UserType { get; set; }
-        public virtual Player Player { get; set; }
-        public virtual ICollection<Message> Messages { get; set; }
-        public virtual ICollection<PrivateMessage> PrivateMessages { get; set; }
+        public virtual UserData UserData { get; set; }
+        public virtual ICollection<Message> SentMessages { get; set; }
+        public virtual ICollection<UserMessage> ReceivedMessages { get; set; }
     }
 }

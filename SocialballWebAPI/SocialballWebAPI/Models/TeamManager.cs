@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 
 namespace SocialballWebAPI.Models
 {
-    public class TeamMessage : Message
+    public class TeamManager : UserData
     {
-        public Guid ToTeamId { get; set; }
-        public virtual Team ToTeam { get; set; }
+
     }
 }

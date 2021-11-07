@@ -88,5 +88,28 @@ export default {
           commit("SET_PLAYER_DETAILS", response.data);
         });
     },
+    getUserDataByUserId: async ({ commit }, userId) => {
+      await axios
+        .get("https://localhost:44369/api/players/getUserDataByUserId", {
+          params: { userId: userId },
+        })
+        .then(function(response) {
+          commit("SET_PLAYER_DETAILS", response.data);
+        });
+    },
+    validateUsername: ({ state }) => {
+      return new Promise((resolve, reject) => {
+        axios.get(
+          "https://localhost:44369/api/players/isUsernameUnique",
+          {
+            params: {
+              username: state.player.LoginUsername,
+            },
+          }
+        ).then((result) => {
+          result.data === true ? resolve() : reject();
+        });
+      });
+    },
   },
 };

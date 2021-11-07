@@ -9,7 +9,7 @@
       :width="600"
       :height="700"
       container=".dx-viewport"
-      :title="message.subject"
+      :title="message.message.subject"
       :shading="false"
       v-if="message"
     >
@@ -20,13 +20,14 @@
         :options="closeButtonOptions"
       />
       <div>
-        <span v-html="message.content"></span>
+        <span v-html="message.message.content"></span>
       </div>
     </DxPopup>
   </div>
 </template>
 <script>
 import { DxPopup, DxToolbarItem } from "devextreme-vue/popup";
+import { mapActions } from "vuex";
 
 export default {
   name: "MessageDetails",
@@ -52,8 +53,16 @@ export default {
     DxPopup,
     DxToolbarItem,
   },
+  methods: {
+    ...mapActions({
+      markMessageAsRead: "messages/markMessageAsRead",
+    }),
+  },
   mounted() {
     this.popupVisible = true;
+    if (this.message.isRead === false) {
+      this.markMessageAsRead(this.message);
+    }
   },
 };
 </script>
