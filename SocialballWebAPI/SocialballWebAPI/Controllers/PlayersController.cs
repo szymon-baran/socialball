@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SocialballWebAPI.Abstraction;
 using SocialballWebAPI.DTOs;
 using SocialballWebAPI.Enums;
 using SocialballWebAPI.Models;
@@ -18,130 +19,57 @@ namespace SocialballWebAPI.Controllers
     [ApiController]
     public class PlayersController : ControllerBase
     {
-        private readonly SocialballDBContext _context;
-        private readonly IMapper _mapper;
+        private IPlayerService PlayerService;
 
-        public PlayersController(SocialballDBContext context, IMapper mapper)
+        public PlayersController(IPlayerService service)
         {
-            _context = context;
-            _mapper = mapper;
+            PlayerService = service;
         }
 
-        // GET: api/Players
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Player>>> GetPlayers(Guid? teamId)
+        public ActionResult<IEnumerable<Player>> GetPlayers(Guid? teamId)
         {
             if (teamId.HasValue)
             {
-                return await _context.Players.Where(x => x.UserType == UserType.Zawodnik && x.TeamId == teamId).ToListAsync();
+                return Ok(PlayerService.GetPlayersByTeamId(teamId.Value));
             }
             else
             {
-                return await _context.Players.Where(x => x.UserType == UserType.Zawodnik).ToListAsync();
+                return Ok(PlayerService.GetPlayers());
             }
         }
 
-        // GET: api/Players/5
         [HttpGet("details")]
-        public async Task<ActionResult<GetPlayerDto>> GetPlayer(Guid id)
+        public ActionResult<GetPlayerDto> GetPlayer(Guid id)
         {
-            var player = await _context.Players.Include(x => x.MatchEvents.Where(y => y.MatchEventType == MatchEventType.Goal)).FirstOrDefaultAsync(x => x.Id == id);
-
-            if (player == null)
-            {
-                return NotFound();
-            }
-
-            GetPlayerDto model = _mapper.Map<GetPlayerDto>(player);
-
-            return model;
+            return Ok(PlayerService.GetPlayerDetails(id));
         }
 
-        [HttpGet("getPlayerByUserId")]
-        public async Task<ActionResult<GetPlayerDto>> GetPlayerByUserId(Guid userId)
-        {
-            var player = await _context.Players.Include(x => x.MatchEvents.Where(y => y.MatchEventType == MatchEventType.Goal)).FirstOrDefaultAsync(x => x.UserId == userId);
-
-            if (player == null)
-            {
-                return NotFound();
-            }
-
-            GetPlayerDto model = _mapper.Map<GetPlayerDto>(player);
-
-            return model;
-        }
-
-        [HttpGet("getUserDataByUserId")]
-        public async Task<ActionResult<UserData>> GetUserDataByUserId(Guid userId)
-        {
-            var userData = await _context.UserDatas.FirstOrDefaultAsync(x => x.UserId == userId);
-
-            if (userData == null)
-            {
-                return NotFound();
-            }
-
-            return userData;
-        }
-
-        // POST: api/Players
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Player>> PostPlayer([FromBody] RegisterPlayerDto playerModel)
+        public ActionResult PostPlayer([FromBody] RegisterPlayerDto playerModel)
         {
-            User user = new User()
-            {
-                Username = playerModel.LoginUsername,
-                Password = BCrypt.Net.BCrypt.HashPassword(playerModel.LoginPassword),
-                Email = playerModel.Email
-            };
-            _context.Users.Add(user);
-            _context.SaveChanges();
+            PlayerService.AddPlayer(playerModel);
 
-            Player player = new Player()
-            {
-                FirstName = playerModel.FirstName,
-                LastName = playerModel.LastName,
-                Position = playerModel.Position,
-                TeamId = playerModel.TeamId,
-                Citizenship = playerModel.Citizenship,
-                UserId = user.Id,
-                UserType = UserType.Zawodnik
-            };
-            _context.Players.Add(player);
-
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetPlayer", new { id = player.Id }, player);
-        }
-
-        // DELETE: api/Players/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePlayer(Guid id)
-        {
-            var player = await _context.Players.FindAsync(id);
-            if (player == null)
-            {
-                return NotFound();
-            }
-
-            _context.Players.Remove(player);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return Ok();
         }
 
         [HttpGet("isUsernameUnique")]
         public bool IsUsernameUnique(string username)
         {
-            bool check = !_context.Users.Any(x => x.Username == username);
-            return check;
+            bool result = PlayerService.CheckUsernameUniqueness(username);
+            return result;
         }
 
-        private bool PlayerExists(Guid id)
+        [HttpGet("getPlayerByUserId")]
+        public ActionResult<GetPlayerDto> GetPlayerByUserId(Guid userId)
         {
-            return _context.Players.Any(e => e.Id == id);
+            return Ok(PlayerService.GetPlayerDetailsByUserId(userId));
+        }
+
+        [HttpGet("getUserDataByUserId")]
+        public ActionResult<UserData> GetUserDataByUserId(Guid userId)
+        {
+            return Ok(PlayerService.GetUserDataByUserId(userId));
         }
     }
 }

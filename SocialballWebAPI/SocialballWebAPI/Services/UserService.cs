@@ -10,16 +10,11 @@ using SocialballWebAPI.ViewModels;
 using SocialballWebAPI.Helpers;
 using SocialballWebAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using SocialballWebAPI.Abstraction;
+using SocialballWebAPI.DTOs;
 
 namespace SocialballWebAPI.Services
 {
-    public interface IUserService
-    {
-        AuthenticateResponse Authenticate(AuthenticateRequest model);
-        IEnumerable<User> GetAll();
-        User GetById(Guid id);
-    }
-
     public class UserService : IUserService
     {
         private readonly SocialballDBContext _context;
@@ -54,6 +49,20 @@ namespace SocialballWebAPI.Services
             return _context.Users.FirstOrDefault(x => x.Id == id);
         }
 
+        public Guid AddUserAccountForNewPlayer(RegisterPlayerDto playerModel)
+        {
+            User user = new User()
+            {
+                Username = playerModel.LoginUsername,
+                Password = BCrypt.Net.BCrypt.HashPassword(playerModel.LoginPassword),
+                Email = playerModel.Email
+            };
+            _context.Users.Add(user);
+            _context.SaveChanges();
+
+            return user.Id;
+        }
+
         // helper methods
 
         private string generateJwtToken(User user)
@@ -70,5 +79,17 @@ namespace SocialballWebAPI.Services
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
+
+        public List<SelectList> GetUsersToLookup()
+        {
+            List<SelectList> users = _context.Users.Select(x => new SelectList
+            {
+                Id = x.Id,
+                Name = x.UserData.FirstName + " " + x.UserData.LastName
+            }).ToList();
+
+            return users;
+        }
+
     }
 }

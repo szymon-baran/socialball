@@ -11,6 +11,7 @@ using SocialballWebAPI.ViewModels;
 using SocialballWebAPI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
+using SocialballWebAPI.Abstraction;
 
 namespace SocialballWebAPI.Controllers
 {
@@ -18,21 +19,20 @@ namespace SocialballWebAPI.Controllers
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
-        private IUserService _userService;
+        private IUserService UserService;
 
         public UsersController(IUserService userService)
         {
-            _userService = userService;
+            UserService = userService;
         }
 
         [HttpPost("login")]
         public IActionResult Authenticate(AuthenticateRequest model)
         {
-            var response = _userService.Authenticate(model);
+            var response = UserService.Authenticate(model);
 
             if (response == null)
                 return Ok(new Exception("Nazwa użytkownika lub hasło jest niepoprawne!"));
-                //return BadRequest(new { message = "Username or password is incorrect" });
 
             return Ok(response);
         }
@@ -41,7 +41,7 @@ namespace SocialballWebAPI.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            var users = _userService.GetAll();
+            var users = UserService.GetAll();
             return Ok(users);
         }
     }

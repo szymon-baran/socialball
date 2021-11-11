@@ -31,6 +31,12 @@ namespace SocialballWebAPI.Models
         public virtual DbSet<MatchEventGoal> MatchEventGoals { get; set; }
         public virtual DbSet<Message> Messages { get; set; }
         public virtual DbSet<UserMessage> UserMessages { get; set; }
+        public virtual DbSet<JobAdvertisement> JobAdvertisements { get; set; }
+        public virtual DbSet<FromTeamJobAdvertisement> FromTeamJobAdvertisements { get; set; }
+        public virtual DbSet<FromUserJobAdvertisement> FromUserJobAdvertisements { get; set; }
+        public virtual DbSet<JobAdvertisementAnswer> JobAdvertisementAnswers { get; set; }
+        public virtual DbSet<JobAdvertisementTeamAnswer> JobAdvertisementTeamAnswers { get; set; }
+        public virtual DbSet<JobAdvertisementUserAnswer> JobAdvertisementUserAnswers { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -62,6 +68,8 @@ namespace SocialballWebAPI.Models
                     .HasForeignKey(d => d.HomeTeamId)
                     .HasConstraintName("FK_Matches_Teams");
             });
+
+            #region Users
 
             modelBuilder.Entity<UserData>(entity =>
             {
@@ -126,6 +134,8 @@ namespace SocialballWebAPI.Models
                     .HasConstraintName("FK_Users_UserDatas");
             });
 
+            #endregion Users
+
             modelBuilder.Entity<Team>(entity =>
             {
                 entity.ToTable("Teams");
@@ -148,6 +158,8 @@ namespace SocialballWebAPI.Models
 
                 entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             });
+
+            #region MatchEvents
 
             modelBuilder.Entity<MatchEvent>(entity =>
             {
@@ -183,6 +195,10 @@ namespace SocialballWebAPI.Models
                 entity.ToTable("MatchEvents");
             });
 
+            #endregion MatchEvents
+
+            #region Messages
+
             modelBuilder.Entity<Message>(entity =>
             {
                 entity.ToTable("Messages");
@@ -216,6 +232,79 @@ namespace SocialballWebAPI.Models
                     .HasConstraintName("FK_UserMessages_Messages");
             });
 
+            #endregion Messages
+
+            #region JobAdvertisements
+
+            modelBuilder.Entity<JobAdvertisement>(entity =>
+            {
+                entity.ToTable("JobAdvertisements");
+
+                entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+
+                entity.HasDiscriminator(b => b.JobAdvertisementType)
+                    .HasValue<JobAdvertisement>(0)
+                    .HasValue<FromTeamJobAdvertisement>(JobAdvertisementType.FromTeam)
+                    .HasValue<FromUserJobAdvertisement>(JobAdvertisementType.FromUser);
+            });
+
+            modelBuilder.Entity<FromTeamJobAdvertisement>(entity =>
+            {
+                entity.ToTable("JobAdvertisements");
+
+                entity.HasOne(d => d.Team)
+                    .WithMany(p => p.FromTeamJobAdvertisements)
+                    .HasForeignKey(d => d.TeamId)
+                    .HasConstraintName("FK_FromTeamJobAdvertisements_Teams")
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<FromUserJobAdvertisement>(entity =>
+            {
+                entity.ToTable("JobAdvertisements");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.FromUserJobAdvertisements)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("FK_FromUserJobAdvertisements_Users")
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<JobAdvertisementAnswer>(entity =>
+            {
+                entity.ToTable("JobAdvertisementAnswers");
+
+                entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+
+                entity.HasDiscriminator(b => b.JobAdvertisementAnswerType)
+                    .HasValue<JobAdvertisementAnswer>(0)
+                    .HasValue<JobAdvertisementTeamAnswer>(JobAdvertisementType.FromTeam)
+                    .HasValue<JobAdvertisementUserAnswer>(JobAdvertisementType.FromUser);
+            });
+
+            modelBuilder.Entity<JobAdvertisementTeamAnswer>(entity =>
+            {
+                entity.ToTable("JobAdvertisementAnswers");
+
+                entity.HasOne(d => d.Team)
+                    .WithMany(p => p.JobAdvertisementTeamAnswers)
+                    .HasForeignKey(d => d.TeamId)
+                    .HasConstraintName("FK_JobAdvertisementTeamAnswers_Teams")
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<JobAdvertisementUserAnswer>(entity =>
+            {
+                entity.ToTable("JobAdvertisementAnswers");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.JobAdvertisementUserAnswers)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("FK_JobAdvertisementUserAnswers_Users")
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            #endregion JobAdvertisements
 
             OnModelCreatingPartial(modelBuilder);
         }

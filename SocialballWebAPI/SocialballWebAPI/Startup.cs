@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using SocialballWebAPI.Services;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
+using SocialballWebAPI.Abstraction;
 
 namespace SocialballWebAPI
 {
@@ -50,6 +51,10 @@ namespace SocialballWebAPI
 
             // configure DI for application services
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IPlayerService, PlayerService>();
+            services.AddScoped<IMessageService, MessageService>();
+            services.AddScoped<ITeamService, TeamService>();
+            services.AddScoped<IMatchService, MatchService>();
 
             services.AddControllers().AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddDbContext<SocialballDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SocialballDB")));

@@ -68,7 +68,13 @@ export default {
     sendMessage: async ({ state, dispatch }) => {
       const userId = state.message.FromUserId;
       await axios
-        .post("https://localhost:44369/api/messages/addMessage", state.message)
+        .post(
+          "https://localhost:44369/api/messages/addMessage",
+          state.message,
+          {
+            headers: authHeader(),
+          }
+        )
         .then(() => {
           dispatch("setMessages", userId);
         });

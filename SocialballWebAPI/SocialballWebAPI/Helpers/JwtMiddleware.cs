@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SocialballWebAPI.Services;
+using SocialballWebAPI.Abstraction;
 
 namespace SocialballWebAPI.Helpers
 {

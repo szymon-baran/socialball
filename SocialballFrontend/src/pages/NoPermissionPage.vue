@@ -3,6 +3,7 @@
     <i class="far fa-frown main-color mt-3"></i>
     <h1 class="m-4">403</h1>
     <h3>Brak uprawnień do przeglądania wybranej strony!</h3>
+    <h3>Zaloguj się na odpowiednie konto.</h3>
     <DxButton
       text="Powrót na stronę główną"
       type="default"

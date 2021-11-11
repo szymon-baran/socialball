@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SocialballWebAPI.Abstraction;
 using SocialballWebAPI.Models;
 
 namespace SocialballWebAPI.Controllers
@@ -13,111 +14,31 @@ namespace SocialballWebAPI.Controllers
     [ApiController]
     public class MatchesController : ControllerBase
     {
-        private readonly SocialballDBContext _context;
+        private IMatchService MatchService;
 
-        public MatchesController(SocialballDBContext context)
+        public MatchesController(IMatchService service)
         {
-            _context = context;
+            MatchService = service;
         }
 
-        // GET: api/Matches
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Match>>> GetMatches(Guid? teamId)
+        public ActionResult<IEnumerable<Match>> GetMatches(Guid? teamId)
         {
             if (teamId.HasValue)
             {
-                return await _context.Matches.Where(x => x.HomeTeamId == teamId || x.AwayTeamId == teamId).Include(x => x.MatchEvents).ThenInclude(x => x.Player).ToListAsync();
+                return Ok(MatchService.GetTeamMatches(teamId.Value));
             }
             else
             {
-                return await _context.Matches.Include(x => x.MatchEvents).ThenInclude(x => x.Player).ToListAsync();
+                return Ok(MatchService.GetAllMatches());
             }
         }
 
-        // GET: api/Matches/5
         [HttpGet("details")]
-        public async Task<ActionResult<Match>> GetMatch(Guid id)
+        public ActionResult<Match> GetMatch(Guid id)
         {
-            var match = await _context.Matches
-                .Include(x => x.MatchEvents)
-                    .ThenInclude(x => (x as MatchEventGoal).AssistPlayer)
-                .Include(x => x.MatchEvents)
-                    .ThenInclude(x => x.Player)
-                .Include(x => x.AwayTeam)
-                    .ThenInclude(x => x.League)
-                .Include(x => x.HomeTeam)
-                    .ThenInclude(x => x.League)
-            .FirstOrDefaultAsync(x => x.Id == id);
-
-            if (match == null)
-            {
-                return NotFound();
-            }
-
-            return match;
+            return Ok(MatchService.GetMatchDetails(id));
         }
 
-        // PUT: api/Matches/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutMatch(Guid id, Match match)
-        {
-            if (id != match.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(match).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!MatchExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Matches
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Match>> PostMatch(Match match)
-        {
-            _context.Matches.Add(match);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetMatch", new { id = match.Id }, match);
-        }
-
-        // DELETE: api/Matches/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMatch(Guid id)
-        {
-            var match = await _context.Matches.FindAsync(id);
-            if (match == null)
-            {
-                return NotFound();
-            }
-
-            _context.Matches.Remove(match);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool MatchExists(Guid id)
-        {
-            return _context.Matches.Any(e => e.Id == id);
-        }
     }
 }

@@ -16,5 +16,6 @@ namespace SocialballWebAPI.DTOs
         public string Email { get; set; }
         public string LoginUsername { get; set; }
         public string LoginPassword { get; set; }
+        public bool AddJobAdvertisement { get; set; } 
     }
 }

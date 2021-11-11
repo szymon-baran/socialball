@@ -1,10 +1,14 @@
 <template>
-  <div class="big-data-grid" v-if="getPlayerDetails">
+  <div class="big-data-grid">
     <h3>
       Witaj, {{ getPlayerDetails.FirstName }} {{ getPlayerDetails.LastName }}!
     </h3>
     <p>Twoja drużyna:</p>
-    <PlayersList :isProfileView="true" :teamId="getPlayerDetails.TeamId" />
+    <PlayersList
+      :isProfileView="true"
+      :teamId="getPlayerDetails.TeamId"
+      v-if="getPlayerDetails.TeamId"
+    />
   </div>
 </template>
 <script>

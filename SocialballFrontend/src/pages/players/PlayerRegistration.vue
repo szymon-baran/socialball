@@ -50,7 +50,11 @@
               v-model="Position"
               id="positionSelectBox"
               :disabled="showAsDetails"
-            />
+            >
+              <DxValidator>
+                <DxRequiredRule message="Wybór preferowanej pozycji jest wymagany!" />
+              </DxValidator>
+            </DxSelectBox>
           </div>
           <div class="col">
             <label for="teamSelectBox" class="form-label">Drużyna</label>
@@ -61,6 +65,7 @@
               v-model="TeamId"
               id="teamSelectBox"
               :disabled="showAsDetails"
+              :show-clear-button="true"
             />
           </div>
           <div class="col">
@@ -130,6 +135,19 @@
               />
             </div>
           </div>
+          <div class="row" v-if="!TeamId">
+            <div class="col">
+              <DxCheckBox
+                id="addJobAdvertisementCheckbox"
+                v-model="AddJobAdvertisement"
+                class="mr-2"
+              />
+              <label for="addJobAdvertisementCheckbox" class="form-label">
+                Utwórz ogłoszenie poszukiwania klubu, zgodne z
+                danymi umieszczonymi w formularzu rejestracji
+              </label>
+            </div>
+          </div>
         </div>
       </DxValidationGroup>
     </form>
@@ -148,6 +166,7 @@ import {
 } from "devextreme-vue/validator";
 import DxValidationGroup from "devextreme-vue/validation-group";
 import DxValidationSummary from "devextreme-vue/validation-summary";
+import { DxCheckBox } from "devextreme-vue/check-box";
 
 import { mapActions, mapGetters, mapMutations } from "vuex";
 import { createHelpers } from "vuex-map-fields";
@@ -171,6 +190,7 @@ export default {
     DxValidationGroup,
     DxValidationSummary,
     DxAsyncRule,
+    DxCheckBox,
   },
   props: {
     showAsDetails: {
@@ -203,6 +223,7 @@ export default {
       "player.Citizenship",
       "player.LoginUsername",
       "player.LoginPassword",
+      "player.AddJobAdvertisement",
     ]),
     validationGroup: function() {
       return this.$refs[this.groupRefKey].instance;

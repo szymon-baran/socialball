@@ -11,6 +11,8 @@ namespace SocialballWebAPI.Models
         {
             SentMessages = new HashSet<Message>();
             ReceivedMessages = new HashSet<UserMessage>();
+            FromUserJobAdvertisements = new HashSet<FromUserJobAdvertisement>();
+            JobAdvertisementUserAnswers = new HashSet<JobAdvertisementUserAnswer>();
         }
 
         public Guid Id { get; set; }
@@ -22,5 +24,7 @@ namespace SocialballWebAPI.Models
         public virtual UserData UserData { get; set; }
         public virtual ICollection<Message> SentMessages { get; set; }
         public virtual ICollection<UserMessage> ReceivedMessages { get; set; }
+        public virtual ICollection<FromUserJobAdvertisement> FromUserJobAdvertisements { get; set; }
+        public virtual ICollection<JobAdvertisementUserAnswer> JobAdvertisementUserAnswers { get; set; }
     }
 }

@@ -16,6 +16,7 @@ export default {
         Citizenship: "",
         LoginUsername: "",
         LoginPassword: "",
+        AddJobAdvertisement: false,
       },
     };
   },
@@ -52,6 +53,7 @@ export default {
       state.player.Citizenship = "";
       state.player.LoginUsername = "";
       state.player.LoginPassword = "";
+      state.player.AddJobAdvertisement = false;
     },
     updateField,
   },
