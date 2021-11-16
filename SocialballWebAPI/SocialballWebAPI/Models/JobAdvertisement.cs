@@ -17,6 +17,7 @@ namespace SocialballWebAPI.Models
         public JobAdvertisementType JobAdvertisementType { get; set; }
         public string Location { get; set; }
         public string Content { get; set; }
+        public bool IsActive { get; set; }
 
         public virtual ICollection<JobAdvertisementAnswer> JobAdvertisementAnswers { get; set; }
     }

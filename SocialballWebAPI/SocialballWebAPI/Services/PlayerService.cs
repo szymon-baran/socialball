@@ -48,7 +48,7 @@ namespace SocialballWebAPI.Services
 
         public GetPlayerDto GetPlayerDetailsByUserId(Guid userId)
         {
-            Player player = _context.Players.Include(x => x.MatchEvents.Where(y => y.MatchEventType == MatchEventType.Goal)).FirstOrDefault(x => x.UserId == userId);
+            Player player = _context.Players.Include(x => x.MatchEvents.Where(y => y.MatchEventType == MatchEventType.Goal)).Include(x => x.Team).FirstOrDefault(x => x.UserId == userId);
             if (player == null)
             {
                 throw new KeyNotFoundException();
@@ -60,7 +60,7 @@ namespace SocialballWebAPI.Services
 
         public UserData GetUserDataByUserId(Guid userId)
         {
-            UserData userData = _context.UserDatas.FirstOrDefault(x => x.UserId == userId);
+            UserData userData = _context.UserDatas.Include(x => x.Team).FirstOrDefault(x => x.UserId == userId);
             if (userData == null)
             {
                 throw new KeyNotFoundException();

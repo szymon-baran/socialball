@@ -14,7 +14,7 @@
             :class="{ 'router-link-active': checkForTeamsPath }"
             to="/teams"
             draggable="false"
-            >Drużyny</router-link
+            >Baza drużyn</router-link
           >
         </li>
         <li>
@@ -22,16 +22,18 @@
             :class="{ 'router-link-active': checkForPlayersPath }"
             to="/players"
             draggable="false"
-            >Piłkarze</router-link
+            >Baza zawodników</router-link
           >
         </li>
         <li>
-          <router-link to="/matches" draggable="false">Mecze</router-link>
+          <router-link to="/matches" draggable="false">Baza meczy</router-link>
         </li>
         <li>
           <router-link to="/messages" draggable="false" v-if="isLoggedIn">Wiadomości</router-link>
         </li>
-        <!-- TO DO -->
+        <li>
+          <router-link to="/job-advertisements" draggable="false" v-if="isLoggedIn">Poszukiwanie drużyny</router-link>
+        </li>
       </ul>
       <div>
         <ul>

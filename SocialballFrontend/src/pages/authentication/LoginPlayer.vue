@@ -97,7 +97,8 @@ export default {
           useToast().error("Logowanie nieudane!");
         } else if (result.token) {
           this.hideLoginPopover();
-          this.$router.go();
+          this.$router.push({ path: "/profile" });
+          // this.$router.go();
           useToast().success("Zalogowano pomyślnie!");
         }
       }

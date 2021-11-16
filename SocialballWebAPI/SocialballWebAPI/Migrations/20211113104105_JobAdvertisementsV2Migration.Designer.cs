@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SocialballWebAPI.Models;
 
 namespace SocialballWebAPI.Migrations
 {
     [DbContext(typeof(SocialballDBContext))]
-    partial class SocialballDBContextModelSnapshot : ModelSnapshot
+    [Migration("20211113104105_JobAdvertisementsV2Migration")]
+    partial class JobAdvertisementsV2Migration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,9 +57,6 @@ namespace SocialballWebAPI.Migrations
 
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsResponded")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("IsResponsePositive")
                         .HasColumnType("bit");

@@ -25,10 +25,6 @@
       </DxColumn>
       <DxColumn data-field="citizenship" caption="Narodowość" />
     </DxDataGrid>
-    <p v-if="!isProfileView" class="mt-3">
-      Na liście nie ma zawodnika? Zarejestruj go
-      <router-link to="/register">tutaj</router-link>!
-    </p>
   </div>
 </template>
 

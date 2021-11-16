@@ -17,6 +17,7 @@ export default {
         LoginUsername: "",
         LoginPassword: "",
         AddJobAdvertisement: false,
+        Team: {}
       },
     };
   },
@@ -43,6 +44,7 @@ export default {
       state.player.Position = payload.position;
       state.player.TeamId = payload.teamId;
       state.player.Citizenship = payload.citizenship;
+      state.player.Team = payload.team;
     },
     RESET_PLAYER_FORM(state) {
       state.player.FirstName = "";
@@ -54,6 +56,7 @@ export default {
       state.player.LoginUsername = "";
       state.player.LoginPassword = "";
       state.player.AddJobAdvertisement = false;
+      state.player.Team = {};
     },
     updateField,
   },

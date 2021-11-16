@@ -1,6 +1,5 @@
 <template>
   <!-- TO DO: wyrzucic druzyne: moze jakies zaproszenia wysylane przez zarzad + prosby o dodanie ze strony zawodnikow -->
-  <!-- Potwierdzenie hasla -->
   <div :class="{ 'big-data-grid': !showAsDetails }">
     <h3 v-if="!showAsDetails">Rejestracja zawodnika</h3>
     <h4 class="line">Dane personalne</h4>
@@ -257,6 +256,7 @@ export default {
     },
   },
   mounted() {
+    this.RESET_PLAYER_FORM();
     this.setAllTeams();
   },
   beforeUnmount() {
