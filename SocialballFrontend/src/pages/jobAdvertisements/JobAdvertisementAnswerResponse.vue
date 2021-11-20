@@ -33,10 +33,10 @@
         :options="closeButtonOptions"
       />
       <div>
-        <div class="text-center" v-if="TeamId">
+        <div class="text-center" v-if="JobAdvertisementAnswerType == 1">
           <h3>Odpowiedź drużyny {{ Team.name }}</h3>
         </div>
-        <div class="text-center" v-if="UserId">
+        <div class="text-center" v-if="JobAdvertisementAnswerType == 2">
           <h3>
             Odpowiedź użytkownika {{ User.userData.firstName }}
             {{ User.userData.lastName }}
@@ -89,6 +89,7 @@ const { mapFields } = createHelpers({
 import DxValidationGroup from "devextreme-vue/validation-group";
 import { useToast } from "vue-toastification";
 import { jobAdvertisementTypeEnum } from "../../enums/jobAdvertisementTypeEnum";
+import { userTypeEnum } from "../../enums/userTypeEnum";
 
 export default {
   name: "JobAdvertisementAnswerResponse",
@@ -101,6 +102,7 @@ export default {
   data() {
     return {
       jobAdvertisementTypeEnum,
+      userTypeEnum,
       popupVisible: false,
       sendButtonOptionsReject: {
         icon: "close",
@@ -153,9 +155,11 @@ export default {
   },
   methods: {
     ...mapActions({
-      updateJobAdvertisementAnswer: "jobAdvertisements/updateJobAdvertisementAnswer",
+      updateJobAdvertisementAnswer:
+        "jobAdvertisements/updateJobAdvertisementAnswer",
       setJobAdvertisementAnswerDetails:
         "jobAdvertisements/setJobAdvertisementAnswerDetails",
+      getUserTeamId: "authentication/getUserTeamId",
     }),
     ...mapMutations({
       RESET_JOB_ADVERTISEMENT_ANSWER_FORM:
@@ -165,6 +169,7 @@ export default {
       let validationResult = this.validationGroup.validate();
       if (validationResult.isValid) {
         await this.updateJobAdvertisementAnswer();
+        this.$router.push({ path: "/profile" });
         useToast().success(
           "Odpowiedź na zgłoszenie została wysłana pomyślnie!"
         );
@@ -182,6 +187,18 @@ export default {
   mounted() {
     this.setJobAdvertisementAnswerDetails(this.jobAdvertisementAnswerId);
     this.popupVisible = true;
+    if (this.getLoggedInUser) {
+      switch (this.getLoggedInUser.userType) {
+        case userTypeEnum.PLAYER:
+          this.UserId = this.getLoggedInUser.id;
+          break;
+        case userTypeEnum.TEAM_MANAGEMENT:
+          this.getUserTeamId().then((response) => {
+            this.TeamId = response.data;
+          });
+          break;
+      }
+    }
   },
   beforeUnmount() {
     this.RESET_JOB_ADVERTISEMENT_ANSWER_FORM();

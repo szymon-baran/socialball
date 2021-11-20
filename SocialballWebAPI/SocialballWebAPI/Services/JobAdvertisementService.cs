@@ -256,9 +256,17 @@ namespace SocialballWebAPI.Services
             answer.IsResponded = true;
             answer.IsResponsePositive = model.IsResponsePositive;
             answer.ResponseContent = model.ResponseContent;
+            if (model.IsResponsePositive)
+            {
+                UserData userData = _context.UserDatas.Single(x => x.UserId == model.UserId);
+                if (userData.TeamId == null || userData.TeamId == Guid.Empty)
+                {
+                    userData.TeamId = model.TeamId;
+                }
+                _context.UserDatas.Update(userData);
+            }
             _context.JobAdvertisementAnswers.Update(answer);
             _context.SaveChanges();
-            return;
         }
 
     }

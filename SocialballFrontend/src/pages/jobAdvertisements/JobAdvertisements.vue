@@ -3,7 +3,7 @@
     class="big-data-grid"
     v-if="
       getLoggedInUser.userType === userTypeEnum.TEAM_MANAGEMENT ||
-        getLoggedInUser.teamId == null
+        (userTeamId == null || userTeamId == '')
     "
   >
     <h3>Ogłoszenia poszukiwania drużyny</h3>
@@ -72,7 +72,7 @@ import AddEditPlayerAdvertisement from "./forUser/AddEditPlayerAdvertisement";
 import JobAdvertisementsAnswersList from "./JobAdvertisementsAnswersList";
 import TeamAdvertisementsList from "./forTeam/TeamAdvertisementsList";
 import MyTeamAdvertisementsList from "./forTeam/MyTeamAdvertisementsList";
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import { userTypeEnum } from "../../enums/userTypeEnum";
 import DxButton from "devextreme-vue/button";
 
@@ -81,6 +81,7 @@ export default {
   data() {
     return {
       userTypeEnum,
+      userTeamId: null,
     };
   },
   computed: {
@@ -89,9 +90,17 @@ export default {
     }),
   },
   methods: {
+    ...mapActions({
+      getUserTeamId: "authentication/getUserTeamId",
+    }),
     routerPushToHome() {
       this.$router.push("/profile");
     },
+  },
+  mounted() {
+    this.getUserTeamId().then((response) => {
+      this.userTeamId = response.data;
+    });
   },
   components: {
     DxTabPanel,

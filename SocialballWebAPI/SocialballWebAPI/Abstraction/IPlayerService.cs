@@ -14,6 +14,7 @@ namespace SocialballWebAPI.Abstraction
         GetPlayerDto GetPlayerDetails(Guid id);
         GetPlayerDto GetPlayerDetailsByUserId(Guid userId);
         UserData GetUserDataByUserId(Guid userId);
+        Guid? GetUserTeamId(Guid userId);
         void AddPlayer(RegisterPlayerDto playerModel);
         bool CheckUsernameUniqueness(string username);
     }

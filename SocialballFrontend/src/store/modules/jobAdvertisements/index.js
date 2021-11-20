@@ -99,8 +99,8 @@ export default {
       state.answer.IsResponsePositive = payload.isResponsePositive;
       state.answer.ResponseContent = payload.responseContent;
       state.answer.Content = payload.content;
-      state.answer.TeamId = payload.teamId;
-      state.answer.UserId = payload.userId;
+      state.answer.TeamId = payload.teamId ?? state.answer.TeamId;
+      state.answer.UserId = payload.userId ?? state.answer.UserId;
       state.answer.Team = payload.team;
       state.answer.User = payload.user;
     },

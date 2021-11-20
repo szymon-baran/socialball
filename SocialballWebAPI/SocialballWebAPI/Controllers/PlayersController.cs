@@ -71,5 +71,11 @@ namespace SocialballWebAPI.Controllers
         {
             return Ok(PlayerService.GetUserDataByUserId(userId));
         }
+
+        [HttpGet("getUserTeamId")]
+        public ActionResult<Guid?> GetUserTeamId(Guid userId)
+        {
+            return Ok(PlayerService.GetUserTeamId(userId));
+        }
     }
 }

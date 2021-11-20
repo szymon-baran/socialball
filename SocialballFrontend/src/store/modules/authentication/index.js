@@ -2,6 +2,7 @@
 import { getField, updateField } from "vuex-map-fields";
 import AuthService from "../../../services/auth.service";
 import router from "../../../router";
+import axios from "axios";
 
 const user = JSON.parse(localStorage.getItem("user"));
 const initialState = user
@@ -88,6 +89,24 @@ export default {
       AuthService.logout();
       commit("LOGOUT");
       router.push({ path: "/" });
+    },
+    getUserTeamId({ state }) {
+      return new Promise((resolve, reject) =>
+        axios
+          .get("https://localhost:44369/api/players/getUserTeamId", {
+            params: {
+              userId: state.user.id,
+            },
+          })
+          .then(
+            (response) => {
+              resolve(response);
+            },
+            (error) => {
+              reject(error);
+            }
+          )
+      );
     },
   },
 };

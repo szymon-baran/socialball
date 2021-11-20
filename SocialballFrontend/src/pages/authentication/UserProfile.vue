@@ -3,7 +3,7 @@
     <h3>
       Witaj, {{ getPlayerDetails.FirstName }} {{ getPlayerDetails.LastName }}!
     </h3>
-    <div v-if="getLoggedInUser.teamId">
+    <div v-if="userTeamId">
       <h4 class="line">
         Twoja drużyna to {{ getPlayerDetails.Team.name }}, a jej aktualna kadra
         składa się z następujących zawodników:
@@ -43,6 +43,7 @@ export default {
   data() {
     return {
       userTypeEnum,
+      userTeamId: null,
     };
   },
   computed: {
@@ -55,12 +56,16 @@ export default {
     ...mapActions({
       getPlayerDetailsByUserId: "players/getPlayerDetailsByUserId",
       getUserDataByUserId: "players/getUserDataByUserId",
+      getUserTeamId: "authentication/getUserTeamId",
     }),
     routerPushToJobAdvertisements() {
       this.$router.push({ path: `/job-advertisements` });
     },
   },
   mounted() {
+    this.getUserTeamId().then((response) => {
+      this.userTeamId = response.data;
+    });
     if (this.getLoggedInUser) {
       switch (this.getLoggedInUser.userType) {
         case userTypeEnum.PLAYER:

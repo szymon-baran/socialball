@@ -68,6 +68,16 @@ namespace SocialballWebAPI.Services
             return userData;
         }
 
+        public Guid? GetUserTeamId(Guid userId)
+        {
+            UserData userData = _context.UserDatas.FirstOrDefault(x => x.UserId == userId);
+            if (userData == null)
+            {
+                throw new KeyNotFoundException();
+            }
+            return userData.TeamId.HasValue ? userData.TeamId.Value : null;
+        }
+
         public void AddPlayer(RegisterPlayerDto playerModel)
         {
             Guid userId = UserService.AddUserAccountForNewPlayer(playerModel);

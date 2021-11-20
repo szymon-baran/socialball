@@ -215,6 +215,7 @@ export default {
       addMyTeamJobAdvertisement: "jobAdvertisements/addMyTeamJobAdvertisement",
       editMyTeamJobAdvertisement:
         "jobAdvertisements/editMyTeamJobAdvertisement",
+      getUserTeamId: "authentication/getUserTeamId",
     }),
     ...mapMutations({
       RESET_JOB_ADVERTISEMENT_FORM:
@@ -247,7 +248,9 @@ export default {
       this.positions = response.data;
     });
     this.popupVisible = true;
-    this.TeamId = this.getLoggedInUser.teamId;
+    this.getUserTeamId().then((response) => {
+      this.TeamId = response.data;
+    });
     if (this.showToEdit) {
       this.setJobAdvertisementDetails(this.jobAdvertisementId);
     }
