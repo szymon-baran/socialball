@@ -51,7 +51,9 @@
               :disabled="showAsDetails"
             >
               <DxValidator>
-                <DxRequiredRule message="Wybór preferowanej pozycji jest wymagany!" />
+                <DxRequiredRule
+                  message="Wybór preferowanej pozycji jest wymagany!"
+                />
               </DxValidator>
             </DxSelectBox>
           </div>
@@ -122,6 +124,39 @@
               </DxTextBox>
             </div>
           </div>
+          <div class="row mt-4" v-if="!TeamId">
+            <div class="col">
+              <DxCheckBox
+                id="addJobAdvertisementCheckbox"
+                v-model="AddJobAdvertisement"
+                class="mr-2"
+              />
+              <label for="addJobAdvertisementCheckbox" class="form-label">
+                Utwórz ogłoszenie poszukiwania klubu, zgodne z danymi
+                umieszczonymi w formularzu rejestracji
+              </label>
+            </div>
+          </div>
+          <div class="row mt-4">
+            <div class="px-3">
+              <vue-recaptcha
+                v-show="true"
+                siteKey="6LejOUwdAAAAAJYhE8VtA-J0PNrriXDlNyLg9ETw"
+                size="normal"
+                theme="dark"
+                hl="pl"
+                @verify="recaptchaVerified"
+                @expire="recaptchaExpired"
+                @fail="recaptchaFailed"
+                ref="vueRecaptcha"
+                :style="{ border: borderStyle }"
+              >
+              </vue-recaptcha>
+              <DxValidator :adapter="recaptchaValidatorConfig">
+                <DxRequiredRule message="Zaznacz pole 'Nie jestem robotem'." />
+              </DxValidator>
+            </div>
+          </div>
           <div class="row mt-4">
             <div class="col">
               <DxValidationSummary />
@@ -132,19 +167,6 @@
                 type="default"
                 @click="handleSubmit"
               />
-            </div>
-          </div>
-          <div class="row" v-if="!TeamId">
-            <div class="col">
-              <DxCheckBox
-                id="addJobAdvertisementCheckbox"
-                v-model="AddJobAdvertisement"
-                class="mr-2"
-              />
-              <label for="addJobAdvertisementCheckbox" class="form-label">
-                Utwórz ogłoszenie poszukiwania klubu, zgodne z
-                danymi umieszczonymi w formularzu rejestracji
-              </label>
             </div>
           </div>
         </div>
@@ -176,6 +198,7 @@ const { mapFields } = createHelpers({
 
 import { useToast } from "vue-toastification";
 import DataSource from "devextreme/data/data_source";
+import vueRecaptcha from "vue3-recaptcha2";
 
 export default {
   components: {
@@ -190,6 +213,7 @@ export default {
     DxValidationSummary,
     DxAsyncRule,
     DxCheckBox,
+    vueRecaptcha,
   },
   props: {
     showAsDetails: {
@@ -205,10 +229,23 @@ export default {
       { Id: 2, Name: "Pomocnik" },
       { Id: 3, Name: "Napastnik" },
     ];
+    const callbacks = [];
+    const recaptchaValidatorConfig = {
+      getValue: () => {
+        return this.isRecaptchaVerified;
+      },
+      applyValidationResults: (e) => {
+        this.borderStyle = e.isValid ? "none" : ".5px solid #813e3c";
+      },
+      validationRequestsCallbacks: callbacks,
+    };
     return {
       player: {},
       positionsStore: new DataSource({ store: positions }),
       groupRefKey: "targetGroup",
+      isRecaptchaVerified: false,
+      recaptchaValidatorConfig,
+      borderStyle: "none",
     };
   },
   computed: {
@@ -242,7 +279,7 @@ export default {
     },
     handleSubmit() {
       let validationResult = this.validationGroup.validate();
-      if (validationResult.isValid) {
+      if (validationResult.isValid && this.isRecaptchaVerified) {
         validationResult.status === "pending" &&
           validationResult.complete.then((res) => {
             if (res.isValid) {
@@ -253,6 +290,16 @@ export default {
             }
           });
       }
+    },
+    recaptchaVerified() {
+      this.isRecaptchaVerified = true;
+    },
+    recaptchaExpired() {
+      this.isRecaptchaVerified = false;
+      this.$refs.vueRecaptcha.reset();
+    },
+    recaptchaFailed() {
+      this.isRecaptchaVerified = false;
     },
   },
   mounted() {

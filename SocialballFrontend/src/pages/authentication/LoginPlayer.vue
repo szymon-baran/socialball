@@ -18,7 +18,7 @@
               <label for="loginTextBox">Login</label>
               <DxTextBox v-model="Username" id="loginTextBox">
                 <DxValidator>
-                  <DxRequiredRule message="Nazwisko jest wymagane!" />
+                  <DxRequiredRule message="Login jest wymagany!" />
                 </DxValidator>
               </DxTextBox>
             </div>
@@ -32,7 +32,7 @@
                 mode="password"
               >
                 <DxValidator>
-                  <DxRequiredRule message="Nazwisko jest wymagane!" />
+                  <DxRequiredRule message="Hasło jest wymagane!" />
                 </DxValidator>
               </DxTextBox>
             </div>
