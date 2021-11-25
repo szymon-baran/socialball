@@ -128,7 +128,7 @@ export default {
         text: "Zamknij",
         onClick: () => {
           this.popupVisible = false;
-          this.$emit("closed");
+          this.$emit("close");
         },
         type: "normal",
       },

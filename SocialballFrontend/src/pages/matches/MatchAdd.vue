@@ -1,0 +1,314 @@
+<template>
+  <div>
+    <DxPopup
+      v-model:visible="popupVisible"
+      :drag-enabled="false"
+      :close-on-outside-click="false"
+      :show-close-button="false"
+      :show-title="true"
+      :width="800"
+      :height="700"
+      container=".dx-viewport"
+      title="Dodaj mecz"
+      :shading="false"
+    >
+      <DxToolbarItem
+        widget="dxButton"
+        toolbar="bottom"
+        location="after"
+        :options="sendButtonOptions"
+      />
+      <DxToolbarItem
+        widget="dxButton"
+        toolbar="bottom"
+        location="before"
+        :options="closeButtonOptions"
+      />
+      <form>
+        <DxValidationGroup :ref="groupRefKey">
+          <div class="row">
+            <div class="col">
+              <label for="homeTeamIdSelectBox" class="form-label"
+                >Drużyna domowa</label
+              >
+              <DxSelectBox
+                :dataSource="getTeams"
+                value-expr="id"
+                display-expr="name"
+                v-model="HomeTeamId"
+                id="homeTeamIdSelectBox"
+                @value-changed="onTeamChange"
+              >
+                <DxValidator>
+                  <DxRequiredRule message="Drużyna domowa jest wymagana!" />
+                </DxValidator>
+              </DxSelectBox>
+            </div>
+            <div class="col">
+              <label for="awayTeamIdSelectBox" class="form-label"
+                >Drużyna wyjazdowa</label
+              >
+              <DxSelectBox
+                :dataSource="getTeams"
+                value-expr="id"
+                display-expr="name"
+                v-model="AwayTeamId"
+                id="awayTeamIdSelectBox"
+                @value-changed="onTeamChange"
+              >
+                <DxValidator>
+                  <DxRequiredRule message="Drużyna wyjazdowa jest wymagana!" />
+                </DxValidator>
+              </DxSelectBox>
+            </div>
+            <DxValidator :adapter="teamValidatorConfig">
+              <DxRequiredRule
+                message="Możesz dodać wyłącznie mecz, w którym uczestniczy Twoja drużyna."
+              />
+            </DxValidator>
+          </div>
+          <div class="row mt-4">
+            <div class="col">
+              <label for="stadiumTextBox" class="form-label">Stadion</label>
+              <DxTextBox id="stadiumTextBox" v-model="Stadium" />
+            </div>
+            <div class="col">
+              <label for="dateTimeTextBox" class="form-label"
+                >Data i godzina meczu</label
+              >
+              <DxDateBox
+                id="dateTimeTextBox"
+                v-model="DateTime"
+                type="datetime"
+                display-format="dd/MM/yyyy HH:mm"
+                cancel-button-text="Anuluj"
+                invalid-date-message="Wartość musi być datą lub czasem"
+              />
+            </div>
+          </div>
+          <div
+            class="row mt-4"
+            v-if="DateTime != null && DateTime < Date.now()"
+          >
+            <div class="col">
+              <h4>Zdarzenia meczowe</h4>
+              <DxDataGrid
+                :data-source="MatchEvents"
+                :remote-operations="false"
+                :row-alternation-enabled="true"
+                :show-borders="true"
+                :hover-state-enabled="true"
+                :column-auto-width="true"
+                width="100%"
+                @editor-preparing="onEditorPreparing"
+              >
+                <DxEditing
+                  :allow-updating="true"
+                  :allow-deleting="true"
+                  :allow-adding="true"
+                  mode="row"
+                />
+                <DxColumn data-field="MatchEventType" caption="Typ zdarzenia">
+                  <DxLookup
+                    :data-source="eventTypes"
+                    display-expr="name"
+                    value-expr="value"
+                  />
+                </DxColumn>
+                <DxColumn data-field="EventTeamId" caption="Drużyna">
+                  <DxLookup
+                    :data-source="teamsSelected"
+                    display-expr="name"
+                    value-expr="id"
+                  />
+                </DxColumn>
+                <DxColumn data-field="PlayerId" caption="Zawodnik">
+                  <DxLookup
+                    :data-source="players"
+                    display-expr="name"
+                    value-expr="id"
+                  />
+                </DxColumn>
+                <DxColumn data-field="Minute" caption="Minuta" />
+                <DxColumn data-field="AssistPlayerId" caption="Asystujący">
+                  <DxLookup
+                    :data-source="players"
+                    display-expr="name"
+                    value-expr="id"
+                  />
+                </DxColumn>
+                <DxColumn data-field="PenaltyType" caption="Rodzaj kary">
+                  <DxLookup
+                    :data-source="penaltyTypes"
+                    display-expr="name"
+                    value-expr="value"
+                  />
+                </DxColumn>
+              </DxDataGrid>
+            </div>
+          </div>
+          <div class="row mt-4">
+            <div class="col">
+              <DxValidationSummary />
+            </div>
+          </div>
+        </DxValidationGroup>
+      </form>
+      <h4 class="mt-4 text-center">
+        Aby mecz został dodany, członek zarządu przeciwnej drużyny musi go
+        zatwierdzić.
+      </h4>
+    </DxPopup>
+  </div>
+</template>
+<script>
+import { DxPopup, DxToolbarItem } from "devextreme-vue/popup";
+import DxTextBox from "devextreme-vue/text-box";
+import DxSelectBox from "devextreme-vue/select-box";
+import { mapActions, mapGetters, mapMutations } from "vuex";
+import { createHelpers } from "vuex-map-fields";
+import { DxValidator, DxRequiredRule } from "devextreme-vue/validator";
+const { mapFields } = createHelpers({
+  getterType: "matches/getField",
+  mutationType: "matches/updateField",
+});
+import DxValidationGroup from "devextreme-vue/validation-group";
+import DxValidationSummary from "devextreme-vue/validation-summary";
+import { useToast } from "vue-toastification";
+import DxDateBox from "devextreme-vue/date-box";
+import {
+  DxDataGrid,
+  DxColumn,
+  DxEditing,
+  DxLookup,
+} from "devextreme-vue/data-grid";
+
+export default {
+  name: "MatchAdd",
+  data() {
+    const callbacks = [];
+    const teamValidatorConfig = {
+      getValue: () => {
+        return (
+          this.HomeTeamId === this.userTeamId ||
+          this.AwayTeamId === this.userTeamId
+        );
+      },
+      validationRequestsCallbacks: callbacks,
+    };
+    return {
+      eventTypes: [],
+      players: [],
+      penaltyTypes: [],
+      teamsSelected: [],
+      popupVisible: false,
+      sendButtonOptions: {
+        text: "Dodaj",
+        onClick: () => this.handleSubmit(),
+      },
+      closeButtonOptions: {
+        text: "Zamknij",
+        onClick: () => {
+          this.popupVisible = false;
+          this.$emit("close");
+        },
+        type: "normal",
+      },
+      groupRefKey: "targetGroup",
+      userTeamId: null,
+      teamValidatorConfig,
+    };
+  },
+  computed: {
+    ...mapGetters({
+      getLoggedInUser: "authentication/getLoggedInUser",
+      getTeams: "teams/getTeams",
+    }),
+    ...mapFields([
+      "match.HomeTeamId",
+      "match.AwayTeamId",
+      "match.Stadium",
+      "match.DateTime",
+      "match.MatchEvents",
+      "match.AddedByTeamId",
+    ]),
+    validationGroup: function() {
+      return this.$refs[this.groupRefKey].instance;
+    },
+  },
+  methods: {
+    ...mapActions({
+      addMatch: "matches/addMatch",
+      getUserTeamId: "authentication/getUserTeamId",
+      setAllTeams: "teams/setAllTeams",
+      getEventTypesToLookup: "matches/getEventTypesToLookup",
+      getPenaltyTypesToLookup: "matches/getPenaltyTypesToLookup",
+      getPlayersByTeam: "matches/getPlayersByTeam",
+    }),
+    ...mapMutations({
+      RESET_MATCH_FORM: "matches/RESET_MATCH_FORM",
+    }),
+    async handleSubmit() {
+      let validationResult = this.validationGroup.validate();
+      if (validationResult.isValid) {
+        await this.addMatch(this.userTeamId);
+        useToast().success(
+          "Mecz został dodany pomyślnie! Teraz musisz poczekać na akceptację ze strony drużyny przeciwnej."
+        );
+        this.popupVisible = false;
+        this.$emit("close");
+      }
+    },
+    onEditorPreparing(e) {
+      if (e.dataField === "EventTeamId") {
+        e.editorOptions.onValueChanged = (ev) => {
+          this.getPlayersByTeam(ev.value).then((response) => {
+            this.players = response.data;
+          });
+        };
+      }
+    },
+    onTeamChange() {
+      this.teamsSelected = this.getTeams.filter(x => x.id == this.HomeTeamId || x.id == this.AwayTeamId);
+    }
+  },
+  components: {
+    DxPopup,
+    DxToolbarItem,
+    DxTextBox,
+    DxSelectBox,
+    DxValidationGroup,
+    DxValidationSummary,
+    DxDateBox,
+    DxValidator,
+    DxRequiredRule,
+    DxDataGrid,
+    DxColumn,
+    DxEditing,
+    DxLookup,
+  },
+  mounted() {
+    this.getUserTeamId().then((response) => {
+      this.userTeamId = response.data;
+      this.AddedByTeamId = response.data;
+    });
+    this.getEventTypesToLookup().then((response) => {
+      this.eventTypes = response.data;
+      this.eventTypes[0].name = "Gol";
+      this.eventTypes[1].name = "Faul";
+    });
+    this.getPenaltyTypesToLookup().then((response) => {
+      this.penaltyTypes = response.data;
+      this.penaltyTypes[0].name = "Brak";
+      this.penaltyTypes[1].name = "Żółta kartka";
+      this.penaltyTypes[2].name = "Czerwona kartka";
+    });
+
+    this.setAllTeams();
+    this.popupVisible = true;
+  },
+  beforeUnmount() {
+    this.RESET_MATCH_FORM();
+  },
+};
+</script>

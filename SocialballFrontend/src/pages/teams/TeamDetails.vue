@@ -30,7 +30,7 @@
         </DxPieChart>
       </div>
       <div class="col mt-2">
-        <h4 class="line text-right">Terminarz zespołu na aktualny miesiąc</h4>
+        <h4 class="line text-right">Mecze zespołu</h4>
           <MatchesList 
             :teamId="this.$route.params.id"
           />

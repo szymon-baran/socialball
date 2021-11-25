@@ -27,16 +27,16 @@
             </DxTextBox>
           </div>
           <div class="col">
-            <label for="emailTextBox" class="form-label">E-mail</label>
-            <DxTextBox
-              v-model="Email"
-              id="emailTextBox"
+            <label for="dateOfBirthDateBox" class="form-label">Data urodzenia</label>
+            <DxDateBox
+              v-model="DateOfBirth"
+              id="dateOfBirthDateBox"
+              type="date"
+              display-format="dd/MM/yyyy"
               :disabled="showAsDetails"
-            >
-              <DxValidator>
-                <DxEmailRule message="E-mail jest nieprawidłowy." />
-              </DxValidator>
-            </DxTextBox>
+              cancel-button-text="Anuluj"
+              invalid-date-message="Wartość musi być datą lub czasem"
+            />
           </div>
         </div>
         <div class="row mt-4">
@@ -97,6 +97,20 @@
                 </DxValidator>
               </DxTextBox>
             </div>
+            <div class="col">
+              <label for="emailTextBox" class="form-label">E-mail</label>
+              <DxTextBox
+                v-model="Email"
+                id="emailTextBox"
+                :disabled="showAsDetails"
+              >
+                <DxValidator>
+                  <DxEmailRule message="E-mail jest nieprawidłowy." />
+                </DxValidator>
+              </DxTextBox>
+            </div>
+          </div>
+          <div class="row mt-4">
             <div class="col">
               <label for="loginPasswordTextBox" class="form-label">Hasło</label>
               <DxTextBox
@@ -199,6 +213,7 @@ const { mapFields } = createHelpers({
 import { useToast } from "vue-toastification";
 import DataSource from "devextreme/data/data_source";
 import vueRecaptcha from "vue3-recaptcha2";
+import DxDateBox from 'devextreme-vue/date-box';
 
 export default {
   components: {
@@ -214,6 +229,7 @@ export default {
     DxAsyncRule,
     DxCheckBox,
     vueRecaptcha,
+    DxDateBox,
   },
   props: {
     showAsDetails: {
@@ -253,6 +269,7 @@ export default {
     ...mapFields([
       "player.FirstName",
       "player.LastName",
+      "player.DateOfBirth",
       "player.Email",
       "player.Position",
       "player.TeamId",

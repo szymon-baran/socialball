@@ -196,7 +196,7 @@ export default {
           "Odpowiedź na zgłoszenie została wysłana pomyślnie!"
         );
         this.popupVisible = false;
-        this.$emit("close");
+        this.$emit("closed");
       }
     },
   },

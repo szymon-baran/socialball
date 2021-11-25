@@ -12,6 +12,9 @@ namespace SocialballWebAPI.Abstraction
     {
         object GetAllMatches();
         object GetTeamMatches(Guid teamId);
+        object GetUnconfirmedMatches(Guid teamId);
         Match GetMatchDetails(Guid id);
+        void AddMatch(MatchDto model);
+        void SendMatchAnswer(MatchAnswerDto model);
     }
 }

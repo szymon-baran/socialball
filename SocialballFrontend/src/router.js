@@ -14,8 +14,8 @@ import TeamDetails from "./pages/teams/TeamDetails.vue";
 import TeamsList from "./pages/teams/TeamsList.vue";
 
 //Matches
-import MatchAdd from "./pages/matches/MatchAdd.vue";
 import MatchesList from "./pages/matches/MatchesList.vue";
+import UnconfirmedMatchesList from "./pages/matches/UnconfirmedMatchesList.vue";
 
 //Messages
 import MessagesList from "./pages/messages/MessagesList.vue";
@@ -48,10 +48,11 @@ const router = createRouter({
       path: "/teams/:id",
       component: TeamDetails,
       params: true,
+      name: "teamDetails",
       // children: [{ path: "contact", component: ContactTeam }],
     },
-    { path: "/addMatch", component: MatchAdd },
     { path: "/matches", component: MatchesList },
+    { path: "/unconfirmed-matches", component: UnconfirmedMatchesList },
     { path: "/messages", component: MessagesList, meta: { guest: false }  },
     { path: "/job-advertisements", component: JobAdvertisements, meta: { guest: false }  },
     { path: "/:pageNotFound(.*)", component: PageNotFound },

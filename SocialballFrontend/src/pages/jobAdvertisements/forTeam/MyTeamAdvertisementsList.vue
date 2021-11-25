@@ -19,6 +19,8 @@
       :show-borders="true"
       :hover-state-enabled="true"
       @row-click="showEditPopup"
+      :column-auto-width="true"
+      width="100%"
     >
       <DxFilterRow :visible="true" />
       <DxLoadPanel :enabled="true" />
@@ -42,7 +44,7 @@
   <AddEditMyTeamAdvertisement
     :showToEdit="false"
     v-if="addPopupOptions.isVisible"
-    @closed="onPopupClose"
+    @closed="onAddPopupClose"
   />
 
   <!-- Edit popup -->
@@ -50,7 +52,7 @@
     :showToEdit="true"
     :jobAdvertisementId="editPopupOptions.jobAdvertisementId"
     v-if="editPopupOptions.isVisible"
-    @closed="onPopupClose"
+    @closed="onEditPopupClose"
   />
 </template>
 <script>
@@ -103,7 +105,14 @@ export default {
       this.editPopupOptions.isVisible = true;
       this.editPopupOptions.jobAdvertisementId = e.data.id;
     },
-    onPopupClose() {
+    onAddPopupClose() {
+      this.addPopupOptions.isVisible = false;
+      this.addPopupOptions.jobAdvertisementId = "";
+      this.setMyTeamAdvertisements(this.getLoggedInUser.id);
+    },
+    onEditPopupClose() {
+      this.editPopupOptions.isVisible = false;
+      this.editPopupOptions.jobAdvertisementId = "";
       this.setMyTeamAdvertisements(this.getLoggedInUser.id);
     },
   },

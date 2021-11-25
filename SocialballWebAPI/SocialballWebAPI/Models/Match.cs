@@ -15,8 +15,10 @@ namespace SocialballWebAPI.Models
         public Guid Id { get; set; }
         public Guid? HomeTeamId { get; set; }
         public Guid? AwayTeamId { get; set; }
+        public Guid? AddedByTeamId { get; set; }
         public string Stadium { get; set; }
         public DateTime DateTime { get; set; }
+        public bool IsConfirmed { get; set; }
 
         public virtual Team AwayTeam { get; set; }
         public virtual Team HomeTeam { get; set; }

@@ -13,5 +13,6 @@ namespace SocialballWebAPI.Abstraction
         Message GetMessageDetails(Guid id);
         void AddMessage(SendMessageDto model);
         void MarkMessageAsRead(Guid id);
+        void DeleteMessage(Guid id);
     }
 }

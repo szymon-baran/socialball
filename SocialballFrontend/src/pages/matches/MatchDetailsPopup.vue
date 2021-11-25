@@ -16,8 +16,22 @@
       <DxToolbarItem
         widget="dxButton"
         toolbar="bottom"
-        location="after"
+        location="before"
         :options="closeButtonOptions"
+      />
+      <DxToolbarItem
+        widget="dxButton"
+        toolbar="bottom"
+        location="after"
+        :options="sendButtonOptionsReject"
+        v-if="isUnconfirmedByYourTeam"
+      />
+      <DxToolbarItem
+        widget="dxButton"
+        toolbar="bottom"
+        location="after"
+        :options="sendButtonOptionsConfirm"
+        v-if="isUnconfirmedByYourTeam"
       />
       <div class="m-3 text-center">
         <div class="line">
@@ -52,10 +66,10 @@
           </div>
         </div>
         <div class="row">
-          <div class="col">
+          <div class="col" v-if="HomeTeam.league">
             {{ HomeTeam.league.name }}
           </div>
-          <div class="col">
+          <div class="col" v-if="AwayTeam.league">
             {{ AwayTeam.league.name }}
           </div>
         </div>
@@ -65,20 +79,25 @@
           <div class="row">
             <div class="col" v-if="event.player.teamId === AwayTeamId" />
             <div class="col" v-if="event.matchEventType === 1">
-              <i class="fas fa-futbol ico main-color"></i> {{ event.minute }}' {{ event.player.lastName }}
+              <i class="fas fa-futbol ico main-color"></i> {{ event.minute }}'
+              {{ event.player.lastName }}
               <div v-if="event.assistPlayerId">
-                <i class="far fa-handshake ico main-color"></i> {{ event.assistPlayer.lastName }}
+                <i class="far fa-handshake ico main-color"></i>
+                {{ event.assistPlayer.lastName }}
               </div>
             </div>
             <div class="col" v-if="event.matchEventType === 2">
               <span v-if="event.penaltyType === 0">
-                <i class="fas fa-exclamation ico main-color"></i> {{ event.minute }}' {{ event.player.lastName }}
+                <i class="fas fa-exclamation ico main-color"></i>
+                {{ event.minute }}' {{ event.player.lastName }}
               </span>
               <span v-if="event.penaltyType === 1">
-                <i class="fas fa-square ico yellow-color"></i> {{ event.minute }}' {{ event.player.lastName }}
+                <i class="fas fa-square ico yellow-color"></i>
+                {{ event.minute }}' {{ event.player.lastName }}
               </span>
               <span v-if="event.penaltyType === 2">
-                <i class="fas fa-square ico red-color"></i> {{ event.minute }}' {{ event.player.lastName }}
+                <i class="fas fa-square ico red-color"></i> {{ event.minute }}'
+                {{ event.player.lastName }}
               </span>
             </div>
             <div class="col" v-if="event.player.teamId === HomeTeamId" />
@@ -96,6 +115,7 @@ const { mapFields } = createHelpers({
   getterType: "matches/getField",
   mutationType: "matches/updateField",
 });
+import { useToast } from "vue-toastification";
 
 export default {
   name: "MatchDetails",
@@ -108,6 +128,10 @@ export default {
       type: String,
       default: "",
     },
+    isUnconfirmedByYourTeam: {
+      type: Boolean,
+      required: false,
+    },
   },
   data() {
     return {
@@ -118,7 +142,24 @@ export default {
           this.popupVisible = false;
           this.$emit("closed");
         },
+        type: "normal",
       },
+      sendButtonOptionsConfirm: {
+        icon: "check",
+        text: "Potwierdź",
+        onClick: () => {
+          this.handleSubmit(true);
+        },
+      },
+      sendButtonOptionsReject: {
+        icon: "remove",
+        text: "Odrzuć",
+        type: "danger",
+        onClick: () => {
+          this.handleSubmit(false);
+        },
+      },
+      userTeamId: null,
     };
   },
   computed: {
@@ -135,18 +176,29 @@ export default {
     getFormattedDateTime() {
       var tmpDate = new Date(this.DateTime);
       return tmpDate.toLocaleString();
-    }
+    },
   },
   methods: {
     ...mapActions({
       setMatchDetails: "matches/setMatchDetails",
+      sendMatchAnswer: "matches/sendMatchAnswer",
+      getUserTeamId: "authentication/getUserTeamId",
     }),
+    async handleSubmit(isAccepted) {
+      await this.sendMatchAnswer({ isAccepted: isAccepted, teamId: this.userTeamId });
+      useToast().success("Odpowiedź na mecz została wysłana pomyślnie!");
+      this.popupVisible = false;
+      this.$emit("closed");
+    },
   },
   components: {
     DxPopup,
     DxToolbarItem,
   },
   mounted() {
+    this.getUserTeamId().then((response) => {
+      this.userTeamId = response.data;
+    });
     this.popupVisible = true;
     this.setMatchDetails(this.matchId);
   },

@@ -1,8 +1,21 @@
 <template>
-  <div v-bind:class="{ 'big-data-grid': !teamId }">
+  <div
+    class="big-data-grid"
+    v-if="getLoggedInUser.userType === userTypeEnum.TEAM_MANAGEMENT"
+  >
     <div class="row mb-2">
       <div class="col">
-        <h3 v-if="!teamId">Lista wszystkich meczy</h3>
+        <h3>Lista niepotwierdzonych meczy</h3>
+        <h4 class="mt-2">
+          Potwierdzone mecze znajdziesz na stronie szczegółów swojej drużyny.
+        </h4>
+      </div>
+      <div class="col text-right">
+        <DxButton
+          text="Dodaj nowy mecz"
+          @click="showAddMatchPopup"
+          type="default"
+        />
       </div>
     </div>
     <DxDataGrid
@@ -34,25 +47,22 @@
         format="dd/MM/yyyy"
         :editorOptions="{ showClearButton: true }"
       />
+      <DxColumn
+        data-field="isUnconfirmedByYourTeam"
+        caption="Niepotwierdzone przez Twoją drużynę"
+        data-type="boolean"
+      />
     </DxDataGrid>
-    <div class="row mt-2">
-      <div class="col text-right">
-        <p
-          v-if="
-            getLoggedInUser.userType === userTypeEnum.TEAM_MANAGEMENT &&
-              userTeamId === teamId
-          "
-        >
-          Aby dodać lub zaakceptować mecz, przejdź na stronę zarządzania
-          w profilu lub kliknij <router-link to="/unconfirmed-matches">tutaj</router-link>.
-        </p>
-      </div>
-    </div>
     <MatchDetailsPopup
       :matchId="detailsPopupOptions.selectedMatchId"
       :matchResult="detailsPopupOptions.selectedMatchResult"
+      :isUnconfirmedByYourTeam="detailsPopupOptions.isUnconfirmedByYourTeam"
       v-if="detailsPopupOptions.isVisible"
       @closed="onPopupClosed()"
+    />
+    <MatchAdd
+      v-if="addMatchPopupOptions.isVisible"
+      @close="onAddMatchPopupClose()"
     />
   </div>
 </template>
@@ -66,18 +76,14 @@ import {
   DxFilterRow,
 } from "devextreme-vue/data-grid";
 import { mapGetters, mapActions, mapMutations } from "vuex";
+import DxButton from "devextreme-vue/button";
 
 import MatchDetailsPopup from "./MatchDetailsPopup";
+import MatchAdd from "./MatchAdd";
 import { userTypeEnum } from "../../enums/userTypeEnum";
 
 export default {
-  name: "Matches",
-  props: {
-    teamId: {
-      type: String,
-      required: false,
-    },
-  },
+  name: "UnconfirmedMatches",
   data() {
     return {
       detailsPopupOptions: {
@@ -101,7 +107,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      setMatches: "matches/setMatches",
+      setUnconfirmedMatches: "matches/setUnconfirmedMatches",
       setAllTeams: "teams/setAllTeams",
       getUserTeamId: "authentication/getUserTeamId",
     }),
@@ -112,11 +118,13 @@ export default {
       this.detailsPopupOptions.isVisible = true;
       this.detailsPopupOptions.selectedMatchId = e.data.id;
       this.detailsPopupOptions.selectedMatchResult = e.data.result;
+      this.detailsPopupOptions.isUnconfirmedByYourTeam = e.data.isUnconfirmedByYourTeam;
     },
     onPopupClosed() {
       this.detailsPopupOptions.isVisible = false;
       this.detailsPopupOptions.selectedMatchId = "";
       this.detailsPopupOptions.selectedMatchResult = "";
+      this.detailsPopupOptions.isUnconfirmedByYourTeam = false;
     },
     showAddMatchPopup() {
       this.addMatchPopupOptions.isVisible = true;
@@ -128,8 +136,8 @@ export default {
   mounted() {
     this.getUserTeamId().then((response) => {
       this.userTeamId = response.data;
+      this.setUnconfirmedMatches(this.userTeamId);
     });
-    this.setMatches(this.teamId);
     this.setAllTeams();
   },
   components: {
@@ -139,6 +147,8 @@ export default {
     DxLookup,
     DxFilterRow,
     MatchDetailsPopup,
+    MatchAdd,
+    DxButton,
   },
   beforeUnmount() {
     this.RESET_MATCHES();

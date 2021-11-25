@@ -24,7 +24,7 @@ namespace SocialballWebAPI.Services
 
         public object GetUserMessages(Guid userId)
         {
-            return _context.UserMessages.Include(x => x.Message).Where(x => x.ToUserId == userId).ToList();
+            return _context.UserMessages.Include(x => x.Message).Where(x => x.IsActive && x.ToUserId == userId).ToList();
         }
 
 
@@ -83,6 +83,13 @@ namespace SocialballWebAPI.Services
         {
             UserMessage userMessage = _context.UserMessages.Single(x => x.Id == id);
             userMessage.IsRead = true;
+            _context.SaveChanges();
+        }
+
+        public void DeleteMessage(Guid id)
+        {
+            UserMessage userMessage = _context.UserMessages.Single(x => x.Id == id);
+            userMessage.IsActive = false;
             _context.SaveChanges();
         }
 

@@ -10,6 +10,7 @@ export default {
       player: {
         FirstName: "",
         LastName: "",
+        DateOfBirth: null,
         Email: "",
         Position: null,
         TeamId: "",
@@ -40,6 +41,7 @@ export default {
     SET_PLAYER_DETAILS(state, payload) {
       state.player.FirstName = payload.firstName;
       state.player.LastName = payload.lastName;
+      state.player.DateOfBirth = payload.dateOfBirth;
       state.player.Email = payload.email;
       state.player.Position = payload.position;
       state.player.TeamId = payload.teamId;
@@ -49,6 +51,7 @@ export default {
     RESET_PLAYER_FORM(state) {
       state.player.FirstName = "";
       state.player.LastName = "";
+      state.player.DateOfBirth = null;
       state.player.Email = "";
       state.player.Position = null;
       state.player.TeamId = "";

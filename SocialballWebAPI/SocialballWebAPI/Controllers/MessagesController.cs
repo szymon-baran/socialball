@@ -64,6 +64,13 @@ namespace SocialballWebAPI.Controllers
             return Ok();
         }
 
+        [HttpPost("deleteMessage")]
+        public ActionResult DeleteMessage(GuidDto model)
+        {
+            MessageService.DeleteMessage(model.Id);
+            return Ok();
+        }
+
         [HttpGet("getUsersToLookup")]
         public ActionResult GetUsersToLookup()
         {

@@ -4,6 +4,7 @@ using SocialballWebAPI.Abstraction;
 using SocialballWebAPI.DTOs;
 using SocialballWebAPI.Enums;
 using SocialballWebAPI.Models;
+using SocialballWebAPI.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -78,6 +79,17 @@ namespace SocialballWebAPI.Services
             return userData.TeamId.HasValue ? userData.TeamId.Value : null;
         }
 
+        public List<SelectList> GetPlayersByTeamToLookup(Guid teamId)
+        {
+            List<SelectList> players = _context.Players.Where(x => x.TeamId == teamId).Select(x => new SelectList
+            {
+                Id = x.Id,
+                Name = x.FirstName + " " + x.LastName
+            }).ToList();
+
+            return players;
+        }
+
         public void AddPlayer(RegisterPlayerDto playerModel)
         {
             Guid userId = UserService.AddUserAccountForNewPlayer(playerModel);
@@ -89,8 +101,9 @@ namespace SocialballWebAPI.Services
                 Position = playerModel.Position,
                 TeamId = playerModel.TeamId,
                 Citizenship = playerModel.Citizenship,
+                DateOfBirth = playerModel.DateOfBirth.AddHours(12),
                 UserId = userId,
-                UserType = UserType.Zawodnik
+                UserType = UserType.Zawodnik,
             };
             _context.Players.Add(player);
             _context.SaveChanges();

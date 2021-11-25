@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getField, updateField } from "vuex-map-fields";
+import authHeader from "../../../services/auth-header";
 
 export default {
   namespaced: true,
@@ -15,6 +16,9 @@ export default {
         Stadium: "",
         DateTime: null,
         MatchEvents: [],
+        IsConfirmed: false,
+        IsUnconfirmedByYourTeam: false,
+        AddedByTeamId: "",
       },
     };
   },
@@ -54,7 +58,25 @@ export default {
       state.match.AwayTeam = payload.awayTeam;
       state.match.Stadium = payload.stadium;
       state.match.DateTime = payload.dateTime;
-      state.match.MatchEvents = payload.matchEvents.sort((x, y) => x.minute - y.minute);
+      state.match.MatchEvents = payload.matchEvents.sort(
+        (x, y) => x.minute - y.minute
+      );
+      state.match.IsConfirmed = payload.isConfirmed;
+      state.match.IsUnconfirmedByYourTeam = payload.isUnconfirmedByYourTeam;
+      state.match.AddedByTeamId = payload.addedByTeamId;
+    },
+    RESET_MATCH_FORM(state) {
+      state.match.Id = "";
+      state.match.HomeTeamId = "";
+      state.match.HomeTeam = {};
+      state.match.AwayTeamId = "";
+      state.match.AwayTeam = {};
+      state.match.Stadium = "";
+      state.match.DateTime = null;
+      state.match.MatchEvents = [];
+      state.match.IsConfirmed = false;
+      state.match.IsUnconfirmedByYourTeam = false;
+      state.match.AddedByTeamId = "";
     },
     updateField,
   },
@@ -69,6 +91,16 @@ export default {
           commit("SET_MATCHES", response.data);
         });
     },
+    setUnconfirmedMatches({ commit }, teamId) {
+      axios
+        .get("https://localhost:44369/api/matches/getUnconfirmedMatches", {
+          params: { teamId: teamId },
+          headers: authHeader(),
+        })
+        .then((response) => {
+          commit("SET_MATCHES", response.data);
+        });
+    },
     setMatchDetails: async ({ commit }, matchId) => {
       await axios
         .get("https://localhost:44369/api/matches/details", {
@@ -76,6 +108,75 @@ export default {
         })
         .then(function(response) {
           commit("SET_MATCH_DETAILS", response.data);
+        });
+    },
+    addMatch: async ({ state, dispatch }, teamId) => {
+      await axios
+        .post("https://localhost:44369/api/matches/addMatch", state.match, {
+          headers: authHeader(),
+        })
+        .then(() => {
+          dispatch("setUnconfirmedMatches", teamId);
+        });
+    },
+    getEventTypesToLookup: () => {
+      return new Promise((resolve, reject) => {
+        axios
+          .get("https://localhost:44369/api/matches/getEventTypesToLookup")
+          .then(
+            (response) => {
+              resolve(response);
+            },
+            (error) => {
+              reject(error);
+            }
+          );
+      });
+    },
+    getPenaltyTypesToLookup: () => {
+      return new Promise((resolve, reject) => {
+        axios
+          .get("https://localhost:44369/api/matches/getPenaltyTypesToLookup")
+          .then(
+            (response) => {
+              resolve(response);
+            },
+            (error) => {
+              reject(error);
+            }
+          );
+      });
+    },
+    // eslint-disable-next-line no-unused-vars
+    getPlayersByTeam: ({ commit }, teamId) => {
+      return new Promise((resolve, reject) => {
+        axios
+          .get("https://localhost:44369/api/matches/getPlayersByTeam", {
+            params: {
+              teamId: teamId,
+            },
+          })
+          .then(
+            (response) => {
+              resolve(response);
+            },
+            (error) => {
+              reject(error);
+            }
+          );
+      });
+    },
+    sendMatchAnswer: async ({ state, dispatch }, { isAccepted: isAccepted, teamId: teamId }) => {
+      let wrapper = {
+        Id: state.match.Id,
+        IsAccepted: isAccepted
+      }
+      await axios
+        .post("https://localhost:44369/api/matches/sendMatchAnswer", wrapper, {
+          headers: authHeader(),
+        })
+        .then(() => {
+          dispatch("setUnconfirmedMatches", teamId);
         });
     },
   },

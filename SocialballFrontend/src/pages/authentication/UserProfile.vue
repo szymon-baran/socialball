@@ -4,15 +4,13 @@
       Witaj, {{ getPlayerDetails.FirstName }} {{ getPlayerDetails.LastName }}!
     </h3>
     <div v-if="userTeamId">
-      <h4 class="line">
-        Twoja drużyna to {{ getPlayerDetails.Team.name }}, a jej aktualna kadra
-        składa się z następujących zawodników:
+      <h4>
+        Drużyna:
+        <router-link
+          :to="{ name: 'teamDetails', params: { id: userTeamId } }"
+          >{{ getPlayerDetails.Team.name }}</router-link
+        >
       </h4>
-      <PlayersList
-        :isProfileView="true"
-        :teamId="getPlayerDetails.TeamId"
-        v-if="getPlayerDetails.TeamId"
-      />
     </div>
     <div v-else>
       <h4>
@@ -28,13 +26,88 @@
       />
     </div>
     <div>
-      <h4 class="line">Akcje</h4>
+      <h4 class="line">Co chcesz dzisiaj zrobić?</h4>
+      <div class="row mb-4 text-center">
+        <div class="col-6 col-md-3 mb-3">
+          <DxButton
+            text="Edytuj profil"
+            type="default"
+            width="300px"
+            height="150px"
+          />
+        </div>
+        <div class="col-6 col-md-3 mb-3">
+          <DxButton
+            text="Baza zawodników"
+            type="default"
+            @click="routerPushToPlayers"
+            width="300px"
+            height="150px"
+          />
+        </div>
+        <div class="col-6 col-md-3 mb-3">
+          <DxButton
+            text="Baza drużyn"
+            type="default"
+            @click="routerPushToTeams"
+            width="300px"
+            height="150px"
+          />
+        </div>
+        <div class="col-6 col-md-3 mb-3">
+          <DxButton
+            text="Baza meczy"
+            type="default"
+            @click="routerPushToMatches"
+            width="300px"
+            height="150px"
+          />
+        </div>
+      </div>
+    </div>
+    <div>
+      <h4 class="line">Funkcje zarządu drużyny</h4>
+      <div class="row text-center">
+        <div class="col-6 col-md-3 mb-3">
+          <DxButton
+            text="Edycja drużyny"
+            type="danger"
+            width="300px"
+            height="150px"
+          />
+        </div>
+        <div class="col-6 col-md-3 mb-3">
+          <DxButton
+            text="Ogłoszenia zawodników"
+            type="danger"
+            @click="routerPushToJobAdvertisements"
+            width="300px"
+            height="150px"
+          />
+        </div>
+        <div class="col-6 col-md-3 mb-3">
+          <DxButton
+            text="Niepotwierdzone mecze"
+            type="danger"
+            @click="routerPushToUnconfirmedMatches"
+            width="300px"
+            height="150px"
+          />
+        </div>
+        <div class="col-6 col-md-3 mb-3">
+          <DxButton
+            text="Transfery drużyny"
+            type="danger"
+            width="300px"
+            height="150px"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 <script>
 import { mapGetters, mapActions } from "vuex";
-import PlayersList from "../players/PlayersList";
 import { userTypeEnum } from "../../enums/userTypeEnum";
 import DxButton from "devextreme-vue/button";
 
@@ -58,8 +131,20 @@ export default {
       getUserDataByUserId: "players/getUserDataByUserId",
       getUserTeamId: "authentication/getUserTeamId",
     }),
+    routerPushToPlayers() {
+      this.$router.push({ path: `/players` });
+    },
+    routerPushToTeams() {
+      this.$router.push({ path: `/teams` });
+    },
+    routerPushToMatches() {
+      this.$router.push({ path: `/matches` });
+    },
     routerPushToJobAdvertisements() {
       this.$router.push({ path: `/job-advertisements` });
+    },
+    routerPushToUnconfirmedMatches() {
+      this.$router.push({ path: `/unconfirmed-matches` });
     },
   },
   mounted() {
@@ -79,7 +164,6 @@ export default {
   },
   components: {
     DxButton,
-    PlayersList,
   },
 };
 </script>

@@ -268,5 +268,8 @@ export default {
     DxNumberBox,
     DxSelectBox,
   },
+  beforeUnmount() {
+    this.RESET_JOB_ADVERTISEMENT_FORM();
+  }
 };
 </script>

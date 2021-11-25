@@ -27,6 +27,8 @@
       :show-borders="true"
       :hover-state-enabled="true"
       @row-click="showMessageDetails"
+      :column-auto-width="true"
+      width="100%"
     >
       <DxFilterRow :visible="true" />
       <DxLoadPanel :enabled="true" />

@@ -264,6 +264,11 @@ namespace SocialballWebAPI.Services
                     userData.TeamId = model.TeamId;
                 }
                 _context.UserDatas.Update(userData);
+                List<FromUserJobAdvertisement> userAdvertisements = _context.FromUserJobAdvertisements.Where(x => x.UserId == userData.UserId).ToList();
+                if (userAdvertisements.Count > 0)
+                {
+                    _context.FromUserJobAdvertisements.RemoveRange(userAdvertisements);
+                }
             }
             _context.JobAdvertisementAnswers.Update(answer);
             _context.SaveChanges();

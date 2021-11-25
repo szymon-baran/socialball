@@ -102,6 +102,15 @@ export default {
           dispatch("setMessages", message.toUserId);
         });
     },
+    deleteMessage: async ({ dispatch }, message) => {
+      await axios
+        .post("https://localhost:44369/api/messages/deleteMessage", {
+          Id: message.id,
+        })
+        .then(() => {
+          dispatch("setMessages", message.toUserId);
+        });
+    },
     getUsersToLookup: () => {
       return new Promise((resolve, reject) => {
         axios.get("https://localhost:44369/api/messages/getUsersToLookup").then(

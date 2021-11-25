@@ -6,13 +6,19 @@
       :close-on-outside-click="false"
       :show-close-button="false"
       :show-title="true"
-      :width="600"
-      :height="700"
+      :width="400"
+      :height="500"
       container=".dx-viewport"
       :title="message.message.subject"
       :shading="false"
       v-if="message"
     >
+      <DxToolbarItem
+        widget="dxButton"
+        toolbar="bottom"
+        location="before"
+        :options="deleteButtonOptions"
+      />
       <DxToolbarItem
         widget="dxButton"
         toolbar="bottom"
@@ -28,6 +34,7 @@
 <script>
 import { DxPopup, DxToolbarItem } from "devextreme-vue/popup";
 import { mapActions } from "vuex";
+import { confirm } from "devextreme/ui/dialog";
 
 export default {
   name: "MessageDetails",
@@ -40,6 +47,14 @@ export default {
   data() {
     return {
       popupVisible: true,
+      deleteButtonOptions: {
+        text: "Usuń",
+        icon: "trash",
+        onClick: () => {
+          this.delete();
+        },
+        type: "danger",
+      },
       closeButtonOptions: {
         text: "Zamknij",
         onClick: () => {
@@ -56,7 +71,18 @@ export default {
   methods: {
     ...mapActions({
       markMessageAsRead: "messages/markMessageAsRead",
+      deleteMessage: "messages/deleteMessage",
     }),
+    delete() {
+      let result = confirm("Czy na pewno chcesz usunąć wiadomość o tytule " + this.message.message.subject + "?", "Usuwanie");
+      result.then((dialogResult) => {
+        if (dialogResult === true) {
+          this.deleteMessage(this.message);
+          this.popupVisible = false;
+          this.$emit("closed");
+        }
+      });
+    },
   },
   mounted() {
     this.popupVisible = true;

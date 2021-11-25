@@ -8,13 +8,13 @@
           SOCIALBALL</router-link
         >
       </h2>
-      <ul>
-        <li>
+      <ul class="nav-menu" v-bind:class="[isMobileMenuOpened ? 'active' : '']">
+        <!-- <li>
           <router-link
             :class="{ 'router-link-active': checkForTeamsPath }"
             to="/teams"
             draggable="false"
-            >Baza drużyn</router-link
+            >Drużyny</router-link
           >
         </li>
         <li>
@@ -22,25 +22,38 @@
             :class="{ 'router-link-active': checkForPlayersPath }"
             to="/players"
             draggable="false"
-            >Baza zawodników</router-link
+            >Zawodnicy</router-link
           >
         </li>
         <li>
-          <router-link to="/matches" draggable="false">Baza meczy</router-link>
-        </li>
+          <router-link to="/matches" draggable="false">Mecze</router-link>
+        </li> -->
         <li>
-          <router-link to="/messages" draggable="false" v-if="isLoggedIn">Wiadomości</router-link>
+          <router-link to="/messages" draggable="false" v-if="isLoggedIn"
+            >Wiadomości</router-link
+          >
         </li>
-        <li>
-          <router-link to="/job-advertisements" draggable="false" v-if="isLoggedIn">Poszukiwanie drużyny</router-link>
+        <li v-if="isLoggedIn && !userTeamId">
+          <router-link
+            to="/job-advertisements"
+            draggable="false"
+            >Poszukiwanie drużyny</router-link
+          >
         </li>
-      </ul>
+        <li v-if="isLoggedIn && userTeamId">
+          <router-link :to="{ name: 'teamDetails', params: { id: userTeamId } }" draggable="false">Moja drużyna</router-link>
+        </li>
+      <!-- </ul>
       <div>
-        <ul>
+        <ul class="nav-menu" v-bind:class="[isMobileMenuOpened ? 'active' : '']"> -->
           <li class="font-weight-bold" v-if="isLoggedIn">
             <router-link to="/profile" draggable="false">
               <i class="far fa-user-circle mr-2"></i>
-              <span class="mr-1 red-color" v-if="getLoggedInUser.userType === userTypeEnum.TEAM_MANAGEMENT">!</span>
+              <span
+                class="mr-1 red-color"
+                v-if="getLoggedInUser.userType === userTypeEnum.TEAM_MANAGEMENT"
+                >!</span
+              >
               <span>{{ getUsername }}</span>
             </router-link>
             <a
@@ -62,6 +75,11 @@
             ></span>
           </li>
         </ul>
+      <!-- </div> -->
+      <div class="hamburger" @click="openMobileMenu" v-bind:class="[isMobileMenuOpened ? 'active' : '']">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
       </div>
     </nav>
   </header>
@@ -83,6 +101,8 @@ export default {
     return {
       userTypeEnum,
       loginPopoverVisible: false,
+      userTeamId: null,
+      isMobileMenuOpened: false,
     };
   },
   computed: {
@@ -99,7 +119,10 @@ export default {
     },
   },
   methods: {
-    ...mapActions({ logout: "authentication/logout" }),
+    ...mapActions({
+      logout: "authentication/logout",
+      getUserTeamId: "authentication/getUserTeamId",
+    }),
     showLoginPopover() {
       this.loginPopoverVisible = true;
     },
@@ -109,7 +132,15 @@ export default {
     logoutMethod() {
       this.logout();
       useToast().success("Wylogowano pomyślnie!");
-    }
+    },
+    openMobileMenu() {
+      this.isMobileMenuOpened = !this.isMobileMenuOpened;
+    },
+  },
+  mounted() {
+    this.getUserTeamId().then((response) => {
+      this.userTeamId = response.data;
+    });
   },
   components: {
     LoginPlayer,
@@ -125,6 +156,7 @@ header {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 99999;
 }
 
 header a {
@@ -168,9 +200,10 @@ nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-radius: 10px;
 }
 
-ul {
+.nav-menu {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -190,5 +223,60 @@ router-link {
 
 .login-buttons {
   cursor: pointer;
+}
+
+.hamburger {
+  display: none;
+}
+
+.bar {
+  display: block;
+  width: 25px;
+  height: 3px;
+  margin: 5px auto;
+  -webkit-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+  background-color: whitesmoke;
+}
+
+@media only screen and (max-width: 940px) {
+  .nav-menu {
+    position: fixed;
+    left: -100%;
+    top: 6vh;
+    flex-direction: column;
+    background-color: #363640;
+    width: 100%;
+    border-radius: 10px;
+    text-align: center;
+    transition: 0.5s;
+    box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
+    z-index: 99999;
+  }
+
+  .nav-menu.active {
+    left: 0;
+  }
+
+  li {
+    margin: 2.5vh 0;
+  }
+
+  .hamburger {
+    display: block;
+    cursor: pointer;
+  }
+
+  .hamburger.active .bar:nth-child(2) {
+    opacity: 0;
+  }
+
+  .hamburger.active .bar:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+  }
+
+  .hamburger.active .bar:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+  }
 }
 </style>

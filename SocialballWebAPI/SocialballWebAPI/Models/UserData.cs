@@ -15,6 +15,7 @@ namespace SocialballWebAPI.Models
         public Guid? TeamId { get; set; }
         public string Citizenship { get; set; }
         public Guid? UserId { get; set; }
+        public DateTime DateOfBirth { get; set; }
         public virtual Team Team { get; set; }
         public virtual User User { get; set; }
     }
