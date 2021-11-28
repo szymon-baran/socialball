@@ -1,7 +1,9 @@
 <template>
   <div class="big-data-grid">
-    <h3>Szczegóły drużyny</h3>
-    <h4 class="line">Lista zawodników</h4>
+    <h3>{{ team.Name }} - szczegóły drużyny</h3>
+    <h4 v-if="team.LeagueName">Liga: {{ team.LeagueName }}</h4>
+    <h4 v-else>Brak przypisanej ligi</h4>
+    <h4 class="line mt-3">Lista zawodników</h4>
     <PlayersList :isProfileView="true" :teamId="this.$route.params.id" />
     <div class="row">
       <div class="col mt-2">
@@ -31,9 +33,7 @@
       </div>
       <div class="col mt-2">
         <h4 class="line text-right">Mecze zespołu</h4>
-          <MatchesList 
-            :teamId="this.$route.params.id"
-          />
+        <MatchesList :teamId="this.$route.params.id" />
       </div>
     </div>
     <div class="mt-5">
@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters, mapState, mapMutations } from "vuex";
 import DxButton from "devextreme-vue/button";
 import PlayersList from "../players/PlayersList.vue";
 import DxPieChart, {
@@ -58,12 +58,6 @@ import MatchesList from "../matches/MatchesList.vue";
 
 export default {
   name: "TeamDetails",
-  params: {
-    teamName: {
-      type: String,
-      required: true,
-    },
-  },
   data() {
     return {
       positions: [],
@@ -73,11 +67,16 @@ export default {
     ...mapGetters({
       getPositionsData: "teams/getPositionsData",
     }),
+    ...mapState("teams", ["team"]),
   },
   methods: {
     ...mapActions({
       setPositionsInsideOfTeam: "teams/setPositionsInsideOfTeam",
       setPositionsToLookup: "teams/setPositionsToLookup",
+      setTeamDetails: "teams/setTeamDetails",
+    }),
+    ...mapMutations({
+      RESET_TEAM_DETAILS: "teams/RESET_TEAM_DETAILS",
     }),
     routerPushToContact() {
       let generatePath = "/teams/" + this.$route.params.id + "/contact";
@@ -95,6 +94,8 @@ export default {
     },
   },
   mounted() {
+    this.setTeamDetails(this.$route.params.id);
+
     this.setPositionsInsideOfTeam(this.$route.params.id);
 
     this.setPositionsToLookup().then((response) => {
@@ -112,6 +113,9 @@ export default {
     DxConnector,
     DxSize,
     MatchesList,
+  },
+  beforeUnmount() {
+    this.RESET_TEAM_DETAILS();
   },
 };
 </script>

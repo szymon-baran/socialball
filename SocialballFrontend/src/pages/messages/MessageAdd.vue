@@ -35,6 +35,7 @@
                 display-expr="name"
                 v-model="ToUserId"
                 id="toUserIdSelectBox"
+                :read-only="isUserSelectorReadOnly"
               />
             </div>
             <div class="col">
@@ -102,12 +103,17 @@ export default {
       type: Number,
       required: true,
     },
+    userIdFromProfile: {
+      type: String,
+      required: false,
+    },
   },
   data() {
     return {
       messageTypeEnum,
       users: [],
       popupVisible: false,
+      isUserSelectorReadOnly: false,
       sizeValues: ["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"],
       fontValues: [
         "Arial",
@@ -205,6 +211,10 @@ export default {
       this.getUserDataByUserId(this.FromUserId).then(() => {
         this.ToTeamId = this.getPlayerDetails.TeamId;
       });
+    }
+    if (this.userIdFromProfile) {
+      this.isUserSelectorReadOnly = true;
+      this.ToUserId = this.userIdFromProfile;
     }
   },
   beforeUnmount() {

@@ -56,9 +56,9 @@ export default {
 
     onRowClick(e) {
       this.$router.push({
-        path: `/teams/${e.data.id}`,
+        name: 'teamDetails',
         params: {
-          teamName: e.data.name,
+          id: e.data.id,
         },
       });
     },

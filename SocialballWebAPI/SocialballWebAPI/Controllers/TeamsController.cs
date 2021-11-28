@@ -44,7 +44,7 @@ namespace SocialballWebAPI.Controllers
             return Ok(TeamService.GetTeamsToChart(teamId));
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("details")]
         public ActionResult<TeamDto> GetTeamDetails(Guid id)
         {
             return Ok(TeamService.GetTeamDetails(id));

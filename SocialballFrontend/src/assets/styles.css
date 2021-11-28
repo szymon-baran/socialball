@@ -103,3 +103,17 @@ a:hover {
   padding: 15px 0 10px 0;
   margin-bottom: 20px;
 }
+
+.avatar {
+  object-fit: cover;
+  border-radius: 50%;
+  width: 150px;
+  height: 150px;
+  border: 8px solid #009385;
+}
+
+.avatar:hover {
+  transition: all .2s linear;
+  border: 10px solid #009385;
+  cursor: pointer;
+}

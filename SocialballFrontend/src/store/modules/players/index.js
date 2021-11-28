@@ -8,6 +8,7 @@ export default {
     return {
       players: [],
       player: {
+        Id: "",
         FirstName: "",
         LastName: "",
         DateOfBirth: null,
@@ -17,8 +18,11 @@ export default {
         Citizenship: "",
         LoginUsername: "",
         LoginPassword: "",
-        AddJobAdvertisement: false,
-        Team: {}
+        Team: {},
+        Image: null,
+        Goals: [],
+        TeamName: "",
+        UserId: "",
       },
     };
   },
@@ -39,6 +43,7 @@ export default {
       state.players = [];
     },
     SET_PLAYER_DETAILS(state, payload) {
+      state.player.Id = payload.id;
       state.player.FirstName = payload.firstName;
       state.player.LastName = payload.lastName;
       state.player.DateOfBirth = payload.dateOfBirth;
@@ -47,8 +52,13 @@ export default {
       state.player.TeamId = payload.teamId;
       state.player.Citizenship = payload.citizenship;
       state.player.Team = payload.team;
+      state.player.Image = payload.image;
+      state.player.Goals = payload.goals;
+      state.player.TeamName = payload.teamName;
+      state.player.UserId = payload.userId;
     },
     RESET_PLAYER_FORM(state) {
+      state.player.Id = "";
       state.player.FirstName = "";
       state.player.LastName = "";
       state.player.DateOfBirth = null;
@@ -58,8 +68,12 @@ export default {
       state.player.Citizenship = "";
       state.player.LoginUsername = "";
       state.player.LoginPassword = "";
-      state.player.AddJobAdvertisement = false;
       state.player.Team = {};
+      state.player.Image = null;
+      state.player.MatchEvents = [];
+      state.player.Goals = [];
+      state.player.TeamName = "";
+      state.player.UserId = "";
     },
     updateField,
   },

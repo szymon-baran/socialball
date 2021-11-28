@@ -39,12 +39,14 @@
       <div class="col text-right">
         <p
           v-if="
-            getLoggedInUser.userType === userTypeEnum.TEAM_MANAGEMENT &&
+            getLoggedInUser &&
+              getLoggedInUser.userType === userTypeEnum.TEAM_MANAGEMENT &&
               userTeamId === teamId
           "
         >
-          Aby dodać lub zaakceptować mecz, przejdź na stronę zarządzania
-          w profilu lub kliknij <router-link to="/unconfirmed-matches">tutaj</router-link>.
+          Aby dodać lub zaakceptować mecz, przejdź na stronę zarządzania w
+          profilu lub kliknij
+          <router-link to="/unconfirmed-matches">tutaj</router-link>.
         </p>
       </div>
     </div>
@@ -126,10 +128,12 @@ export default {
     },
   },
   mounted() {
-    this.getUserTeamId().then((response) => {
-      this.userTeamId = response.data;
-    });
-    this.setMatches(this.teamId);
+    if (this.getLoggedInUser) {
+      this.getUserTeamId().then((response) => {
+        this.userTeamId = response.data;
+      });
+    }
+    this.setMatches(this.$route.params.id);
     this.setAllTeams();
   },
   components: {

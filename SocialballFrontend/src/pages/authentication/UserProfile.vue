@@ -1,23 +1,33 @@
 <template>
   <div class="big-data-grid">
-    <h3>
-      Witaj, {{ getPlayerDetails.FirstName }} {{ getPlayerDetails.LastName }}!
-    </h3>
+    <div v-if="getPlayerDetails.Id" class="text-center mb-4">
+      <h3>
+        Witaj, {{ getPlayerDetails.FirstName }} {{ getPlayerDetails.LastName }}!
+      </h3>
+      <router-link
+        :to="{ name: 'playerDetails', params: { id: getPlayerDetails.Id } }"
+      >
+        <img
+          :src="getPlayerDetails.Image"
+          alt="Zdjęcie profilowe użytkownika"
+          class="avatar"
+        />
+      </router-link>
+    </div>
     <div v-if="userTeamId">
       <h4>
         Drużyna:
         <router-link
           :to="{ name: 'teamDetails', params: { id: userTeamId } }"
-          >{{ getPlayerDetails.Team.name }}</router-link
+          >{{ getPlayerDetails.TeamName }}</router-link
         >
       </h4>
     </div>
     <div v-else>
-      <h4>
-        Aktualnie nie posiadasz drużyny. Ale nie przejmuj się! Nasza strona może
-        pomóc Ci rozwiązać ten problem! Jeżeli jesteś zainteresowany, skorzystaj
-        z przycisku poniżej.
-      </h4>
+      <p>
+        Aktualnie nie posiadasz drużyny. Nasza strona udostępnia rozwiązanie
+        umożliwiające zmianę tej sytuacji! Kliknij przycisk poniżej.
+      </p>
       <DxButton
         text="Poszukiwanie drużyny"
         type="default"
@@ -107,7 +117,7 @@
   </div>
 </template>
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions, mapMutations } from "vuex";
 import { userTypeEnum } from "../../enums/userTypeEnum";
 import DxButton from "devextreme-vue/button";
 
@@ -130,6 +140,9 @@ export default {
       getPlayerDetailsByUserId: "players/getPlayerDetailsByUserId",
       getUserDataByUserId: "players/getUserDataByUserId",
       getUserTeamId: "authentication/getUserTeamId",
+    }),
+    ...mapMutations({
+      RESET_PLAYER_FORM: "players/RESET_PLAYER_FORM",
     }),
     routerPushToPlayers() {
       this.$router.push({ path: `/players` });
@@ -165,5 +178,8 @@ export default {
   components: {
     DxButton,
   },
+  beforeUnmount() {
+    this.RESET_PLAYER_FORM();
+  }
 };
 </script>

@@ -38,6 +38,7 @@ const router = createRouter({
     {
       path: "/players/:id",
       component: PlayerDetails,
+      name: "playerDetails",
       // children: [
       //   { path: "contact", component: ContactPlayer }, // /players/:id/contact
       // ],

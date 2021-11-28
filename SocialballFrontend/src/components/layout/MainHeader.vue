@@ -5,11 +5,11 @@
         <router-link to="/" draggable="false"
           ><i class="fas fa-futbol"></i>
 
-          SOCIALBALL</router-link
+          socialball</router-link
         >
       </h2>
       <ul class="nav-menu" v-bind:class="[isMobileMenuOpened ? 'active' : '']">
-        <!-- <li>
+        <li v-if="!isLoggedIn">
           <router-link
             :class="{ 'router-link-active': checkForTeamsPath }"
             to="/teams"
@@ -17,7 +17,7 @@
             >Drużyny</router-link
           >
         </li>
-        <li>
+        <li v-if="!isLoggedIn">
           <router-link
             :class="{ 'router-link-active': checkForPlayersPath }"
             to="/players"
@@ -25,58 +25,64 @@
             >Zawodnicy</router-link
           >
         </li>
-        <li>
+        <li v-if="!isLoggedIn">
           <router-link to="/matches" draggable="false">Mecze</router-link>
-        </li> -->
-        <li>
-          <router-link to="/messages" draggable="false" v-if="isLoggedIn"
+        </li>
+        <li v-if="isLoggedIn">
+          <router-link to="/messages" draggable="false"
             >Wiadomości</router-link
           >
         </li>
         <li v-if="isLoggedIn && !userTeamId">
-          <router-link
-            to="/job-advertisements"
-            draggable="false"
+          <router-link to="/job-advertisements" draggable="false"
             >Poszukiwanie drużyny</router-link
           >
         </li>
         <li v-if="isLoggedIn && userTeamId">
-          <router-link :to="{ name: 'teamDetails', params: { id: userTeamId } }" draggable="false">Moja drużyna</router-link>
+          <router-link
+            :to="{ name: 'teamDetails', params: { id: userTeamId } }"
+            draggable="false"
+            >Moja drużyna</router-link
+          >
         </li>
-      <!-- </ul>
+        <!-- </ul>
       <div>
         <ul class="nav-menu" v-bind:class="[isMobileMenuOpened ? 'active' : '']"> -->
-          <li class="font-weight-bold" v-if="isLoggedIn">
-            <router-link to="/profile" draggable="false">
-              <i class="far fa-user-circle mr-2"></i>
-              <span
-                class="mr-1 red-color"
-                v-if="getLoggedInUser.userType === userTypeEnum.TEAM_MANAGEMENT"
-                >!</span
-              >
-              <span>{{ getUsername }}</span>
-            </router-link>
-            <a
-              v-if="isLoggedIn"
-              class="login-buttons"
-              @click="logoutMethod"
-              title="Wyloguj"
-              ><i class="fas fa-sign-out-alt"></i
-            ></a>
-          </li>
-          <li v-if="!isLoggedIn">
+        <li class="font-weight-bold" v-if="isLoggedIn">
+          <router-link to="/profile" draggable="false">
+            <i class="far fa-user-circle mr-2"></i>
             <span
-              ><a
-                class="login-buttons"
-                id="showLoginButton"
-                @click="showLoginPopover"
-                title="Zaloguj"
-                ><i class="fas fa-sign-in-alt"></i> </a
-            ></span>
-          </li>
-        </ul>
+              class="mr-1 red-color"
+              v-if="getLoggedInUser.userType === userTypeEnum.TEAM_MANAGEMENT"
+              >!</span
+            >
+            <span>{{ getUsername }}</span>
+          </router-link>
+          <a
+            v-if="isLoggedIn"
+            class="login-buttons"
+            @click="logoutMethod"
+            title="Wyloguj"
+            ><i class="fas fa-sign-out-alt"></i
+          ></a>
+        </li>
+        <li v-if="!isLoggedIn">
+          <span
+            ><a
+              class="login-buttons"
+              id="showLoginButton"
+              @click="showLoginPopover"
+              title="Zaloguj"
+              ><i class="fas fa-sign-in-alt"></i> </a
+          ></span>
+        </li>
+      </ul>
       <!-- </div> -->
-      <div class="hamburger" @click="openMobileMenu" v-bind:class="[isMobileMenuOpened ? 'active' : '']">
+      <div
+        class="hamburger"
+        @click="openMobileMenu"
+        v-bind:class="[isMobileMenuOpened ? 'active' : '']"
+      >
         <span class="bar"></span>
         <span class="bar"></span>
         <span class="bar"></span>
@@ -138,9 +144,11 @@ export default {
     },
   },
   mounted() {
-    this.getUserTeamId().then((response) => {
-      this.userTeamId = response.data;
-    });
+    if (this.isLoggedIn) {
+      this.getUserTeamId().then((response) => {
+        this.userTeamId = response.data;
+      });
+    }
   },
   components: {
     LoginPlayer,
@@ -157,6 +165,7 @@ header {
   justify-content: center;
   align-items: center;
   z-index: 99999;
+  border-bottom: 1px solid #898d90;
 }
 
 header a {
@@ -183,6 +192,7 @@ h2 {
   font-size: 150%;
   margin: 0;
   font-weight: bold;
+  letter-spacing: 0.07  em
 }
 
 h2 a:hover,

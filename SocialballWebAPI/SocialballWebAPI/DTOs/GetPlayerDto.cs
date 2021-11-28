@@ -14,8 +14,11 @@ namespace SocialballWebAPI.DTOs
         public string LastName { get; set; }
         public PositionType? Position { get; set; }
         public Guid? TeamId { get; set; }
+        public Guid? UserId { get; set; }
         public string Citizenship { get; set; }
         public string Email { get; set; }
-        public Team Team { get; set; }
+        public string TeamName { get; set; }
+        public string Image { get; set; }
+        public List<GoalInPlayerDetailsDto> Goals { get; set; }
     }
 }

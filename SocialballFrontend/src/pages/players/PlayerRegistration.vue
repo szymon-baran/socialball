@@ -27,7 +27,9 @@
             </DxTextBox>
           </div>
           <div class="col">
-            <label for="dateOfBirthDateBox" class="form-label">Data urodzenia</label>
+            <label for="dateOfBirthDateBox" class="form-label"
+              >Data urodzenia</label
+            >
             <DxDateBox
               v-model="DateOfBirth"
               id="dateOfBirthDateBox"
@@ -77,6 +79,22 @@
               v-model="Citizenship"
               id="citizenshipTextBox"
               :disabled="showAsDetails"
+            />
+          </div>
+        </div>
+        <div class="row mt-4">
+          <div class="col">
+            <label for="imageUploader" class="form-label"
+              >Zdjęcie profilowe</label
+            >
+            <DxFileUploader
+              select-button-text="Dodaj zdjęcie"
+              label-text="Postaraj się wybrać obraz jak najbardziej zbliżony do kwadratu"
+              accept="image/*"
+              upload-mode="useForm"
+              id="imageUploader"
+              readyToUploadMessage="Gotowe do przesłania"
+              @value-changed="imageAdded"
             />
           </div>
         </div>
@@ -138,19 +156,6 @@
               </DxTextBox>
             </div>
           </div>
-          <div class="row mt-4" v-if="!TeamId">
-            <div class="col">
-              <DxCheckBox
-                id="addJobAdvertisementCheckbox"
-                v-model="AddJobAdvertisement"
-                class="mr-2"
-              />
-              <label for="addJobAdvertisementCheckbox" class="form-label">
-                Utwórz ogłoszenie poszukiwania klubu, zgodne z danymi
-                umieszczonymi w formularzu rejestracji
-              </label>
-            </div>
-          </div>
           <div class="row mt-4">
             <div class="px-3">
               <vue-recaptcha
@@ -201,7 +206,6 @@ import {
 } from "devextreme-vue/validator";
 import DxValidationGroup from "devextreme-vue/validation-group";
 import DxValidationSummary from "devextreme-vue/validation-summary";
-import { DxCheckBox } from "devextreme-vue/check-box";
 
 import { mapActions, mapGetters, mapMutations } from "vuex";
 import { createHelpers } from "vuex-map-fields";
@@ -213,7 +217,8 @@ const { mapFields } = createHelpers({
 import { useToast } from "vue-toastification";
 import DataSource from "devextreme/data/data_source";
 import vueRecaptcha from "vue3-recaptcha2";
-import DxDateBox from 'devextreme-vue/date-box';
+import DxDateBox from "devextreme-vue/date-box";
+import { DxFileUploader } from "devextreme-vue/file-uploader";
 
 export default {
   components: {
@@ -227,9 +232,9 @@ export default {
     DxValidationGroup,
     DxValidationSummary,
     DxAsyncRule,
-    DxCheckBox,
     vueRecaptcha,
     DxDateBox,
+    DxFileUploader,
   },
   props: {
     showAsDetails: {
@@ -276,7 +281,7 @@ export default {
       "player.Citizenship",
       "player.LoginUsername",
       "player.LoginPassword",
-      "player.AddJobAdvertisement",
+      "player.Image",
     ]),
     validationGroup: function() {
       return this.$refs[this.groupRefKey].instance;
@@ -317,6 +322,21 @@ export default {
     },
     recaptchaFailed() {
       this.isRecaptchaVerified = false;
+    },
+    imageAdded(e) {
+      var reader = new FileReader();
+      var fileByteArray = [];
+      reader.readAsArrayBuffer(e.value[0]);
+      reader.onloadend = function(evt) {
+        if (evt.target.readyState == FileReader.DONE) {
+          var arrayBuffer = evt.target.result,
+            array = new Uint8Array(arrayBuffer);
+          for (var i = 0; i < array.length; i++) {
+            fileByteArray.push(array[i]);
+          }
+        }
+      };
+      this.Image = fileByteArray;
     },
   },
   mounted() {

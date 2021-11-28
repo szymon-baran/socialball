@@ -56,12 +56,17 @@ namespace SocialballWebAPI.Services
 
         public TeamDto GetTeamDetails(Guid id)
         {
-            Team team = _context.Teams.FirstOrDefault(x => x.Id == id);
+            Team team = _context.Teams.Include(x => x.League).FirstOrDefault(x => x.Id == id);
             if (team == null)
             {
                 throw new KeyNotFoundException();
             }
+
             TeamDto model = _mapper.Map<TeamDto>(team);
+            if (team.League != null)
+            {
+                model.LeagueName = team.League.Name;
+            }
 
             return model;
         }

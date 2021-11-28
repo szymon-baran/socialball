@@ -14,7 +14,7 @@ namespace SocialballWebAPI.Abstraction
         object GetPlayersByTeamId(Guid teamId);
         GetPlayerDto GetPlayerDetails(Guid id);
         GetPlayerDto GetPlayerDetailsByUserId(Guid userId);
-        UserData GetUserDataByUserId(Guid userId);
+        GetUserDataDto GetUserDataByUserId(Guid userId);
         Guid? GetUserTeamId(Guid userId);
         List<SelectList> GetPlayersByTeamToLookup(Guid teamId);
         void AddPlayer(RegisterPlayerDto playerModel);

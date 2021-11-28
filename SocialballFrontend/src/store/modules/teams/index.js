@@ -5,6 +5,12 @@ export default {
   state() {
     return {
       teams: [],
+      team: {
+        Id: "",
+        Name: "",
+        LeagueId: "",
+        LeagueName: "",
+      },
       positionsData: [],
     };
   },
@@ -23,6 +29,18 @@ export default {
     RESET_TEAMS(state) {
       state.teams = [];
     },
+    SET_TEAM_DETAILS(state, payload) {
+      state.team.Id = payload.id;
+      state.team.Name = payload.name;
+      state.team.LeagueId = payload.leagueId;
+      state.team.LeagueName = payload.leagueName;
+    },
+    RESET_TEAM_DETAILS(state) {
+      state.team.Id = "";
+      state.team.Name = "";
+      state.team.LeagueId = "";
+      state.team.LeagueName = "";
+    },
     SET_POSITIONS_DATA(state, payload) {
       state.positionsData = payload;
     },
@@ -32,6 +50,15 @@ export default {
       axios.get("https://localhost:44369/api/teams").then((response) => {
         commit("SET_TEAMS", response.data);
       });
+    },
+    setTeamDetails: async ({ commit }, teamId) => {
+      await axios
+        .get("https://localhost:44369/api/teams/details", {
+          params: { id: teamId },
+        })
+        .then(function(response) {
+          commit("SET_TEAM_DETAILS", response.data);
+        });
     },
     setPositionsInsideOfTeam: async ({ commit }, teamId) => {
       await axios

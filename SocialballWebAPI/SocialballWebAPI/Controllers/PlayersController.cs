@@ -67,7 +67,7 @@ namespace SocialballWebAPI.Controllers
         }
 
         [HttpGet("getUserDataByUserId")]
-        public ActionResult<UserData> GetUserDataByUserId(Guid userId)
+        public ActionResult<GetUserDataDto> GetUserDataByUserId(Guid userId)
         {
             return Ok(PlayerService.GetUserDataByUserId(userId));
         }
