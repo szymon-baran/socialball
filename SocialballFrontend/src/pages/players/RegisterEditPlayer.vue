@@ -1,26 +1,18 @@
 <template>
   <!-- TO DO: wyrzucic druzyne: moze jakies zaproszenia wysylane przez zarzad + prosby o dodanie ze strony zawodnikow -->
-  <div :class="{ 'big-data-grid': !showAsDetails }">
-    <h3 v-if="!showAsDetails">Rejestracja zawodnika</h3>
+  <div class="big-data-grid">
+    <h3>{{ getTitle() }}</h3>
     <h4 class="line">Dane personalne</h4>
     <form>
       <DxValidationGroup :ref="groupRefKey">
         <div class="row">
           <div class="col">
             <label for="firstNameTextBox" class="form-label">Imię</label>
-            <DxTextBox
-              v-model="FirstName"
-              id="firstNameTextBox"
-              :disabled="showAsDetails"
-            />
+            <DxTextBox v-model="FirstName" id="firstNameTextBox" />
           </div>
           <div class="col">
             <label for="lastNameTextBox" class="form-label">Nazwisko</label>
-            <DxTextBox
-              v-model="LastName"
-              id="lastNameTextBox"
-              :disabled="showAsDetails"
-            >
+            <DxTextBox v-model="LastName" id="lastNameTextBox">
               <DxValidator>
                 <DxRequiredRule message="Nazwisko jest wymagane!" />
               </DxValidator>
@@ -35,14 +27,13 @@
               id="dateOfBirthDateBox"
               type="date"
               display-format="dd/MM/yyyy"
-              :disabled="showAsDetails"
               cancel-button-text="Anuluj"
               invalid-date-message="Wartość musi być datą lub czasem"
             />
           </div>
         </div>
         <div class="row mt-4">
-          <div class="col">
+          <div class="col" v-if="!this.showToEdit || this.getLoggedInUser.userType === 1">
             <label for="positionSelectBox" class="form-label">Pozycja</label>
             <DxSelectBox
               :dataSource="positionsStore"
@@ -50,7 +41,6 @@
               display-expr="Name"
               v-model="Position"
               id="positionSelectBox"
-              :disabled="showAsDetails"
             >
               <DxValidator>
                 <DxRequiredRule
@@ -67,19 +57,15 @@
               display-expr="name"
               v-model="TeamId"
               id="teamSelectBox"
-              :disabled="showAsDetails"
               :show-clear-button="true"
+              :read-only="showToEdit"
             />
           </div>
           <div class="col">
             <label for="citizenshipTextBox" class="form-label"
               >Narodowość</label
             >
-            <DxTextBox
-              v-model="Citizenship"
-              id="citizenshipTextBox"
-              :disabled="showAsDetails"
-            />
+            <DxTextBox v-model="Citizenship" id="citizenshipTextBox" />
           </div>
         </div>
         <div class="row mt-4">
@@ -89,7 +75,7 @@
             >
             <DxFileUploader
               select-button-text="Dodaj zdjęcie"
-              label-text="Postaraj się wybrać obraz jak najbardziej zbliżony do kwadratu"
+              label-text="zaleca się obraz kwadratowy"
               accept="image/*"
               upload-mode="useForm"
               id="imageUploader"
@@ -98,10 +84,10 @@
             />
           </div>
         </div>
-        <div v-if="!showAsDetails">
+        <div>
           <h4 class="line">Dane techniczne</h4>
           <div class="row">
-            <div class="col">
+            <div class="col" v-if="!showToEdit">
               <label for="loginUsernameTextBox" class="form-label"
                 >Nazwa użytkownika</label
               >
@@ -117,18 +103,14 @@
             </div>
             <div class="col">
               <label for="emailTextBox" class="form-label">E-mail</label>
-              <DxTextBox
-                v-model="Email"
-                id="emailTextBox"
-                :disabled="showAsDetails"
-              >
+              <DxTextBox v-model="Email" id="emailTextBox">
                 <DxValidator>
                   <DxEmailRule message="E-mail jest nieprawidłowy." />
                 </DxValidator>
               </DxTextBox>
             </div>
           </div>
-          <div class="row mt-4">
+          <div class="row mt-4" v-if="!showToEdit">
             <div class="col">
               <label for="loginPasswordTextBox" class="form-label">Hasło</label>
               <DxTextBox
@@ -156,7 +138,7 @@
               </DxTextBox>
             </div>
           </div>
-          <div class="row mt-4">
+          <div class="row mt-4" v-if="!this.$route.params.playerToEditId">
             <div class="px-3">
               <vue-recaptcha
                 v-show="true"
@@ -182,7 +164,7 @@
             </div>
             <div class="col text-right">
               <DxButton
-                text="Zarejestruj zawodnika"
+                :text="getSubmitText()"
                 type="default"
                 @click="handleSubmit"
               />
@@ -219,30 +201,9 @@ import DataSource from "devextreme/data/data_source";
 import vueRecaptcha from "vue3-recaptcha2";
 import DxDateBox from "devextreme-vue/date-box";
 import { DxFileUploader } from "devextreme-vue/file-uploader";
+import { userTypeEnum } from "../../enums/userTypeEnum";
 
 export default {
-  components: {
-    DxTextBox,
-    DxSelectBox,
-    DxButton,
-    DxValidator,
-    DxRequiredRule,
-    DxEmailRule,
-    DxCompareRule,
-    DxValidationGroup,
-    DxValidationSummary,
-    DxAsyncRule,
-    vueRecaptcha,
-    DxDateBox,
-    DxFileUploader,
-  },
-  props: {
-    showAsDetails: {
-      type: Boolean,
-      default: false,
-      required: false,
-    },
-  },
   data() {
     const positions = [
       { Id: 0, Name: "Bramkarz" },
@@ -261,17 +222,23 @@ export default {
       validationRequestsCallbacks: callbacks,
     };
     return {
+      showToEdit: false,
       player: {},
       positionsStore: new DataSource({ store: positions }),
       groupRefKey: "targetGroup",
       isRecaptchaVerified: false,
       recaptchaValidatorConfig,
       borderStyle: "none",
+      userTypeEnum,
     };
   },
   computed: {
-    ...mapGetters({ getTeams: "teams/getTeams" }),
+    ...mapGetters({
+      getTeams: "teams/getTeams",
+      getLoggedInUser: "authentication/getLoggedInUser",
+    }),
     ...mapFields([
+      "player.Id",
       "player.FirstName",
       "player.LastName",
       "player.DateOfBirth",
@@ -290,27 +257,46 @@ export default {
   methods: {
     ...mapActions({
       addPlayer: "players/addPlayer",
+      editPlayer: "players/editPlayer",
       validateUsername: "players/validateUsername",
       setAllTeams: "teams/setAllTeams",
+      setPlayerDetails: "players/setPlayerDetails",
+      setUserDataDetails: "players/setUserDataDetails",
     }),
     ...mapMutations({
       RESET_PLAYER_FORM: "players/RESET_PLAYER_FORM",
     }),
+    getTitle() {
+      if (this.showToEdit) {
+        return "Edycja profilu";
+      } else {
+        return "Rejestracja zawodnika";
+      }
+    },
     passwordComparison() {
       return this.LoginPassword;
     },
     handleSubmit() {
       let validationResult = this.validationGroup.validate();
-      if (validationResult.isValid && this.isRecaptchaVerified) {
+      if (
+        !this.showToEdit &&
+        validationResult.isValid &&
+        this.isRecaptchaVerified
+      ) {
         validationResult.status === "pending" &&
           validationResult.complete.then((res) => {
             if (res.isValid) {
               this.addPlayer().then(() => {
                 useToast().success("Zawodnik dodany pomyślnie!");
-                this.$router.push({ path: "/players" });
+                this.$router.push({ path: "/" });
               });
             }
           });
+      } else if (this.showToEdit && validationResult.isValid) {
+        this.editPlayer().then(() => {
+          useToast().success("Edycja zakończona pomyślnie!");
+          this.$router.push({ path: "/profile" });
+        });
       }
     },
     recaptchaVerified() {
@@ -338,10 +324,47 @@ export default {
       };
       this.Image = fileByteArray;
     },
+    getSubmitText() {
+      if (this.showToEdit) {
+        return "Edytuj profil";
+      } else {
+        return "Zarejestruj zawodnika";
+      }
+    },
   },
   mounted() {
+    if (this.$route.params.playerToEditId) {
+      this.showToEdit = true;
+    }
     this.RESET_PLAYER_FORM();
+    if (this.showToEdit) {
+      if (this.getLoggedInUser) {
+        switch (this.getLoggedInUser.userType) {
+          case userTypeEnum.PLAYER:
+            this.setPlayerDetails(this.$route.params.playerToEditId);
+            break;
+          default:
+            this.setUserDataDetails(this.$route.params.playerToEditId);
+            break;
+        }
+      }
+    }
     this.setAllTeams();
+  },
+  components: {
+    DxTextBox,
+    DxSelectBox,
+    DxButton,
+    DxValidator,
+    DxRequiredRule,
+    DxEmailRule,
+    DxCompareRule,
+    DxValidationGroup,
+    DxValidationSummary,
+    DxAsyncRule,
+    vueRecaptcha,
+    DxDateBox,
+    DxFileUploader,
   },
   beforeUnmount() {
     this.RESET_PLAYER_FORM();

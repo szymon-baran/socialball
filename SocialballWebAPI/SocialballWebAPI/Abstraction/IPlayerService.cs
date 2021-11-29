@@ -13,11 +13,13 @@ namespace SocialballWebAPI.Abstraction
         object GetPlayers();
         object GetPlayersByTeamId(Guid teamId);
         GetPlayerDto GetPlayerDetails(Guid id);
+        GetUserDataDto GetUserDataDetails(Guid id);
         GetPlayerDto GetPlayerDetailsByUserId(Guid userId);
         GetUserDataDto GetUserDataByUserId(Guid userId);
         Guid? GetUserTeamId(Guid userId);
         List<SelectList> GetPlayersByTeamToLookup(Guid teamId);
         void AddPlayer(RegisterPlayerDto playerModel);
+        void EditUserData(EditPlayerDto model);
         bool CheckUsernameUniqueness(string username);
     }
 }

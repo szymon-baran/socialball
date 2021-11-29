@@ -29,8 +29,7 @@
     </div>
     <div class="row">
       <div class="col">
-        <h4 class="line">Strzelone bramki</h4>
-        <p>W sumie zawodnik strzelił {{ player.Goals.length }} goli.</p>
+        <h4 class="line">Strzelone bramki ({{ player.Goals.length }})</h4>
         <DxDataGrid
           :data-source="player.Goals"
           :remote-operations="false"

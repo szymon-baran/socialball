@@ -45,10 +45,24 @@ namespace SocialballWebAPI.Controllers
             return Ok(PlayerService.GetPlayerDetails(id));
         }
 
+        [HttpGet("userDataDetails")]
+        public ActionResult<GetUserDataDto> GetUserDataDetails(Guid id)
+        {
+            return Ok(PlayerService.GetUserDataDetails(id));
+        }
+
         [HttpPost]
         public ActionResult PostPlayer([FromBody] RegisterPlayerDto playerModel)
         {
             PlayerService.AddPlayer(playerModel);
+
+            return Ok();
+        }
+
+        [HttpPost("edit")]
+        public ActionResult EditPlayer([FromBody] EditPlayerDto playerModel)
+        {
+            PlayerService.EditUserData(playerModel);
 
             return Ok();
         }

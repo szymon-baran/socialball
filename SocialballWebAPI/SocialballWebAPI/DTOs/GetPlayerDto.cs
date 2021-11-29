@@ -19,6 +19,7 @@ namespace SocialballWebAPI.DTOs
         public string Email { get; set; }
         public string TeamName { get; set; }
         public string Image { get; set; }
+        public DateTime DateOfBirth { get; set; }
         public List<GoalInPlayerDetailsDto> Goals { get; set; }
     }
 }

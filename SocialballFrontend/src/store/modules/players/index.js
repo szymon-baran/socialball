@@ -92,10 +92,32 @@ export default {
     addPlayer: async ({ state }) => {
       await axios.post("https://localhost:44369/api/players", state.player);
     },
+    editPlayer: async ({ state }) => {
+      const wrapper = {
+        Id: state.player.Id,
+        FirstName: state.player.FirstName,
+        LastName: state.player.LastName,
+        Position: state.player.Position,
+        Citizenship: state.player.Citizenship,
+        Email: state.player.Email,
+        DateOfBirth: state.player.DateOfBirth,
+      }
+      wrapper.Image = Array.isArray(state.player.Image) ? state.player.Image : null;
+      await axios.post("https://localhost:44369/api/players/edit", wrapper);
+    },
     setPlayerDetails: async ({ commit }, playerId) => {
       await axios
         .get("https://localhost:44369/api/players/details", {
           params: { id: playerId },
+        })
+        .then(function(response) {
+          commit("SET_PLAYER_DETAILS", response.data);
+        });
+    },
+    setUserDataDetails: async ({ commit }, userDataId) => {
+      await axios
+        .get("https://localhost:44369/api/players/userDataDetails", {
+          params: { id: userDataId },
         })
         .then(function(response) {
           commit("SET_PLAYER_DETAILS", response.data);

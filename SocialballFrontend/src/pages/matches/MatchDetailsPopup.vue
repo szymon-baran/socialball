@@ -36,13 +36,13 @@
       <div class="m-3 text-center">
         <div class="line">
           <div class="row">
-            <h3 class="col header-font">
+            <h3 class="col">
               {{ HomeTeam.name }}
             </h3>
-            <h3 class="col header-font">
+            <h3 class="col">
               {{ matchResult }}
             </h3>
-            <h3 class="col header-font">
+            <h3 class="col">
               {{ AwayTeam.name }}
             </h3>
           </div>

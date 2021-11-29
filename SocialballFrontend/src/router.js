@@ -6,7 +6,7 @@ import UserProfile from "./pages/authentication/UserProfile.vue";
 
 //Players
 import PlayerDetails from "./pages/players/PlayerDetails.vue";
-import PlayerRegistration from "./pages/players/PlayerRegistration.vue";
+import RegisterEditPlayer from "./pages/players/RegisterEditPlayer.vue";
 import PlayersList from "./pages/players/PlayersList.vue";
 
 //Teams
@@ -43,7 +43,14 @@ const router = createRouter({
       //   { path: "contact", component: ContactPlayer }, // /players/:id/contact
       // ],
     },
-    { path: "/register", component: PlayerRegistration, meta: { guest: true } },
+    { path: "/register", component: RegisterEditPlayer, meta: { guest: true } },
+    {
+      path: "/profile-edit",
+      name: 'editProfile',
+      component: RegisterEditPlayer,
+      params: true,
+      meta: { guest: false },
+    },
     { path: "/teams", component: TeamsList },
     {
       path: "/teams/:id",
@@ -54,10 +61,14 @@ const router = createRouter({
     },
     { path: "/matches", component: MatchesList },
     { path: "/unconfirmed-matches", component: UnconfirmedMatchesList },
-    { path: "/messages", component: MessagesList, meta: { guest: false }  },
-    { path: "/job-advertisements", component: JobAdvertisements, meta: { guest: false }  },
+    { path: "/messages", component: MessagesList, meta: { guest: false } },
+    {
+      path: "/job-advertisements",
+      component: JobAdvertisements,
+      meta: { guest: false },
+    },
     { path: "/:pageNotFound(.*)", component: PageNotFound },
-    { path: "/no-permission", component: NoPermissionPage }
+    { path: "/no-permission", component: NoPermissionPage },
   ],
 });
 

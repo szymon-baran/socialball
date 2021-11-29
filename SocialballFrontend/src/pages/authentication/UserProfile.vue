@@ -6,6 +6,7 @@
       </h3>
       <router-link
         :to="{ name: 'playerDetails', params: { id: getPlayerDetails.Id } }"
+        v-if="getLoggedInUser.userType === 1"
       >
         <img
           :src="getPlayerDetails.Image"
@@ -13,6 +14,12 @@
           class="avatar"
         />
       </router-link>
+      <img
+        :src="getPlayerDetails.Image"
+        alt="Zdjęcie profilowe użytkownika"
+        class="avatar"
+        v-else
+      />
     </div>
     <div v-if="userTeamId">
       <h4>
@@ -42,6 +49,7 @@
           <DxButton
             text="Edytuj profil"
             type="default"
+            @click="routerPushToEditProfile"
             width="300px"
             height="150px"
           />
@@ -75,7 +83,7 @@
         </div>
       </div>
     </div>
-    <div>
+    <div v-if="getLoggedInUser.userType === 2">
       <h4 class="line">Funkcje zarządu drużyny</h4>
       <div class="row text-center">
         <div class="col-6 col-md-3 mb-3">
@@ -144,6 +152,9 @@ export default {
     ...mapMutations({
       RESET_PLAYER_FORM: "players/RESET_PLAYER_FORM",
     }),
+    routerPushToEditProfile() {
+      this.$router.push({ name: 'editProfile', params: { playerToEditId: this.getPlayerDetails.Id } });
+    },
     routerPushToPlayers() {
       this.$router.push({ path: `/players` });
     },
@@ -180,6 +191,6 @@ export default {
   },
   beforeUnmount() {
     this.RESET_PLAYER_FORM();
-  }
+  },
 };
 </script>

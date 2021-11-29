@@ -192,7 +192,7 @@ h2 {
   font-size: 150%;
   margin: 0;
   font-weight: bold;
-  letter-spacing: 0.07  em
+  letter-spacing: 0.06em;
 }
 
 h2 a:hover,
