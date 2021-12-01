@@ -51,6 +51,16 @@ namespace SocialballWebAPI.Services
                 .Include(x => x.MatchEvents)
                     .ThenInclude(y => y.Match)
                         .ThenInclude(z => z.AwayTeam)
+                .Include(x => x.MatchEvents)
+                    .ThenInclude(y => ((MatchEventGoal)y).AssistPlayer)
+                .Include(x => x.MatchGoalsAssisted)
+                    .ThenInclude(y => y.Match)
+                        .ThenInclude(z => z.HomeTeam)
+                .Include(x => x.MatchGoalsAssisted)
+                    .ThenInclude(y => y.Match)
+                        .ThenInclude(z => z.AwayTeam)
+                .Include(x => x.MatchGoalsAssisted)
+                    .ThenInclude(y => y.Player)
                 .Include(x => x.User)
             .FirstOrDefault(x => x.Id == id);
             if (player == null)
@@ -66,12 +76,21 @@ namespace SocialballWebAPI.Services
             {
                 model.Email = player.User.Email;
             }
-            model.Goals = player.MatchEvents.Where(x => x.MatchEventType == MatchEventType.Goal).Select(x => new GoalInPlayerDetailsDto {
+            model.Goals = player.MatchEvents.Where(x => x.MatchEventType == MatchEventType.Goal && x.Match.IsConfirmed).Select(x => new GoalInPlayerDetailsDto {
                 Id = x.Id,
                 Minute = x.Minute,
                 MatchId = x.MatchId,
                 MatchBetween = x.Match.HomeTeam.Name + " - " + x.Match.AwayTeam.Name,
-                DateTime = x.Match.DateTime
+                DateTime = x.Match.DateTime,
+                GoalAssistPlayerName = ((MatchEventGoal)x).AssistPlayer.FirstName + " " + ((MatchEventGoal)x).AssistPlayer.LastName
+            }).OrderByDescending(x => x.DateTime).ToList();
+            model.Assists = player.MatchGoalsAssisted.Where(x => x.Match.IsConfirmed).Select(x => new GoalInPlayerDetailsDto {
+                Id = x.Id,
+                Minute = x.Minute,
+                MatchId = x.MatchId,
+                MatchBetween = x.Match.HomeTeam.Name + " - " + x.Match.AwayTeam.Name,
+                DateTime = x.Match.DateTime,
+                GoalScorerName = x.Player.FirstName + " " + x.Player.LastName
             }).OrderByDescending(x => x.DateTime).ToList();
 
             model.Image = "https://socialball-avatars.s3.eu-central-1.amazonaws.com/" + player.Id;

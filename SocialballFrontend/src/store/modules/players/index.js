@@ -21,6 +21,7 @@ export default {
         Team: {},
         Image: null,
         Goals: [],
+        Assists: [],
         TeamName: "",
         UserId: "",
       },
@@ -54,6 +55,7 @@ export default {
       state.player.Team = payload.team;
       state.player.Image = payload.image;
       state.player.Goals = payload.goals;
+      state.player.Assists = payload.assists;
       state.player.TeamName = payload.teamName;
       state.player.UserId = payload.userId;
     },
@@ -72,6 +74,7 @@ export default {
       state.player.Image = null;
       state.player.MatchEvents = [];
       state.player.Goals = [];
+      state.player.Assists = [];
       state.player.TeamName = "";
       state.player.UserId = "";
     },

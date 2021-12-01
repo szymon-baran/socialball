@@ -10,6 +10,7 @@ namespace SocialballWebAPI.Abstraction
     public interface IMessageService
     {
         object GetUserMessages(Guid userId);
+        object GetUserSentMessages(Guid userId);
         Message GetMessageDetails(Guid id);
         void AddMessage(SendMessageDto model);
         void MarkMessageAsRead(Guid id);

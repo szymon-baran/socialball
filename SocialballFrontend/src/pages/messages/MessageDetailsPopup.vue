@@ -18,6 +18,7 @@
         toolbar="bottom"
         location="before"
         :options="deleteButtonOptions"
+        v-if="!isSentMessage"
       />
       <DxToolbarItem
         widget="dxButton"
@@ -33,8 +34,8 @@
 </template>
 <script>
 import { DxPopup, DxToolbarItem } from "devextreme-vue/popup";
-import { mapActions } from "vuex";
-import { confirm } from "devextreme/ui/dialog";
+import { mapActions, mapMutations } from "vuex";
+import { custom } from "devextreme/ui/dialog";
 
 export default {
   name: "MessageDetails",
@@ -42,6 +43,10 @@ export default {
     message: {
       type: Object,
       required: true,
+    },
+    isSentMessage: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -73,9 +78,32 @@ export default {
       markMessageAsRead: "messages/markMessageAsRead",
       deleteMessage: "messages/deleteMessage",
     }),
+    ...mapMutations({
+      RESET_TEAM_MESSAGE_FORM: "messages/RESET_TEAM_MESSAGE_FORM",
+    }),
     delete() {
-      let result = confirm("Czy na pewno chcesz usunąć wiadomość o tytule " + this.message.message.subject + "?", "Usuwanie");
-      result.then((dialogResult) => {
+      let dialog = custom({
+        title: "Usuwanie",
+        messageHtml:
+          "Czy na pewno chcesz usunąć wiadomość o tytule " +
+          this.message.message.subject +
+          "?",
+        buttons: [
+          {
+            text: "Tak",
+            onClick: () => {
+              return true;
+            },
+          },
+          {
+            text: "Nie",
+            onClick: () => {
+              return false;
+            },
+          },
+        ],
+      });
+      dialog.show().then((dialogResult) => {
         if (dialogResult === true) {
           this.deleteMessage(this.message);
           this.popupVisible = false;
@@ -86,9 +114,12 @@ export default {
   },
   mounted() {
     this.popupVisible = true;
-    if (this.message.isRead === false) {
+    if (!this.isSentMessage && this.message.isRead === false) {
       this.markMessageAsRead(this.message);
     }
+  },
+  beforeUnmount() {
+    this.RESET_TEAM_MESSAGE_FORM();
   },
 };
 </script>

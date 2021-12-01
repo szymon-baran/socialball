@@ -6,6 +6,7 @@ export default {
   namespaced: true,
   state() {
     return {
+      unreadMessagesCount: 0,
       messages: [],
       message: {
         FromUserId: "",
@@ -30,9 +31,17 @@ export default {
   mutations: {
     SET_MESSAGES(state, payload) {
       state.messages = payload;
+      state.messages.some((object) => {
+        if (object.isRead === false) {
+          state.unreadMessagesCount++;
+        }
+      })
     },
     RESET_MESSAGES(state) {
       state.messages = [];
+    },
+    RESET_UNREAD_MESSAGES_COUNT(state) {
+      state.unreadMessagesCount = 0;
     },
     SET_TEAM_MESSAGE_DETAILS(state, payload) {
       state.message.FromUserId = payload.fromUserId;
@@ -58,6 +67,16 @@ export default {
     setMessages({ commit }, userId) {
       axios
         .get("https://localhost:44369/api/messages", {
+          params: { userId: userId },
+          headers: authHeader(),
+        })
+        .then((response) => {
+          commit("SET_MESSAGES", response.data);
+        });
+    },
+    setSentMessages({ commit }, userId) {
+      axios
+        .get("https://localhost:44369/api/messages/getSentMessages", {
           params: { userId: userId },
           headers: authHeader(),
         })
@@ -93,21 +112,23 @@ export default {
           )
       );
     },
-    markMessageAsRead: async ({ dispatch }, message) => {
+    markMessageAsRead: async ({ dispatch, commit }, message) => {
       await axios
         .post("https://localhost:44369/api/messages/markMessageAsRead", {
           Id: message.id,
         })
         .then(() => {
+          commit("RESET_UNREAD_MESSAGES_COUNT");
           dispatch("setMessages", message.toUserId);
         });
     },
-    deleteMessage: async ({ dispatch }, message) => {
+    deleteMessage: async ({ dispatch, commit }, message) => {
       await axios
         .post("https://localhost:44369/api/messages/deleteMessage", {
           Id: message.id,
         })
         .then(() => {
+          commit("RESET_UNREAD_MESSAGES_COUNT");
           dispatch("setMessages", message.toUserId);
         });
     },
@@ -123,23 +144,5 @@ export default {
         );
       });
     },
-    // setPlayerDetails: async ({ commit }, playerId) => {
-    //   await axios
-    //     .get("https://localhost:44369/api/players/details", {
-    //       params: { id: playerId },
-    //     })
-    //     .then(function(response) {
-    //       commit("SET_PLAYER_DETAILS", response.data);
-    //     });
-    // },
-    // getPlayerDetailsByUserId: async ({ commit }, userId) => {
-    //   await axios
-    //     .get("https://localhost:44369/api/players/getPlayerByUserId", {
-    //       params: { userId: userId },
-    //     })
-    //     .then(function(response) {
-    //       commit("SET_PLAYER_DETAILS", response.data);
-    //     });
-    // },
   },
 };

@@ -53,7 +53,7 @@
             <i class="far fa-user-circle mr-2"></i>
             <span
               class="mr-1 red-color"
-              v-if="getLoggedInUser.userType === userTypeEnum.TEAM_MANAGEMENT"
+              v-if="isLoggedIn && getLoggedInUser.userType === userTypeEnum.TEAM_MANAGEMENT"
               >!</span
             >
             <span>{{ getUsername }}</span>
@@ -130,6 +130,7 @@ export default {
       getUserTeamId: "authentication/getUserTeamId",
     }),
     showLoginPopover() {
+      this.isMobileMenuOpened = false;
       this.loginPopoverVisible = true;
     },
     onLoginFormHiding() {
@@ -164,7 +165,7 @@ header {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 99999;
+  z-index: 88888;
   border-bottom: 1px solid #898d90;
 }
 
@@ -261,7 +262,7 @@ router-link {
     text-align: center;
     transition: 0.5s;
     box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
-    z-index: 99999;
+    z-index: 88888;
   }
 
   .nav-menu.active {

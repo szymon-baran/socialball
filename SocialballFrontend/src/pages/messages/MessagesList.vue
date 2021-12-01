@@ -1,5 +1,5 @@
 <template>
-  <div class="big-data-grid">
+  <div class="big-data-grid" v-if="isLoggedIn">
     <div class="row">
       <div class="col">
         <h3>Wiadomości</h3>
@@ -20,99 +20,85 @@
         />
       </div>
     </div>
-    <DxDataGrid
-      :data-source="getMessages"
-      :remote-operations="false"
-      :row-alternation-enabled="true"
-      :show-borders="true"
-      :hover-state-enabled="true"
-      @row-click="showMessageDetails"
-      :column-auto-width="true"
-      width="100%"
+    <DxTabPanel
+      @title-click="tabChanged"
+      v-model:selected-index="selectedIndex"
     >
-      <DxFilterRow :visible="true" />
-      <DxLoadPanel :enabled="true" />
-      <DxSorting mode="none" />
-      <DxColumn data-field="message.subject" caption="Tytuł wiadomości" />
-      <DxColumn
-        data-field="message.sentOn"
-        caption="Data otrzymania wiadomości"
-        data-type="datetime"
-        format="dd/MM/yyyy HH:mm"
-        :editorOptions="{ showClearButton: true }"
-        :sort-index="1"
-        sort-order="desc"
-      />
-      <DxColumn data-field="message.messageType" caption="Typ wiadomości">
-        <DxLookup
-          :data-source="messageTypes"
-          value-expr="value"
-          display-expr="name"
-        />
-      </DxColumn>
-      <DxColumn
-        data-field="isRead"
-        caption="Czy odczytana?"
-        :sort-index="0"
-        sort-order="asc"
-      />
-    </DxDataGrid>
+      <DxItem
+        :badge="unreadMessagesCount.toString()"
+        title="Skrzynka odbiorcza"
+      >
+        <div>
+          <ReceivedMessagesList />
+        </div>
+      </DxItem>
+      <DxItem title="Wysłane wiadomości">
+        <div>
+          <SentMessagesList />
+        </div>
+      </DxItem>
+    </DxTabPanel>
+  </div>
+  <div class="big-data-grid text-center" v-else>
+    <h3>Wiadomości są dostępne wyłącznie dla zalogowanych użytkowników!</h3>
+    <DxButton
+      text="Przejdź na stronę główną"
+      type="default"
+      styling-mode="outlined"
+      @click="routerPushToHome"
+    />
   </div>
   <MessageAdd
     v-if="addMessagePopupOptions.isVisible"
     :messageType="addMessagePopupOptions.messageType"
     @close="onAddMessagePopupClose"
   />
-  <MessageDetailsPopup
-    :message="detailsPopupOptions.selectedMessage"
-    v-if="detailsPopupOptions.isVisible"
-    @closed="onDetailsPopupClose"
-  />
 </template>
 <script>
-import DxButton from "devextreme-vue/button";
-import { mapActions, mapGetters } from "vuex";
-import {
-  DxDataGrid,
-  DxLoadPanel,
-  DxColumn,
-  DxFilterRow,
-  DxLookup,
-  DxSorting,
-} from "devextreme-vue/data-grid";
-import MessageAdd from "./MessageAdd.vue";
-import MessageDetailsPopup from "./MessageDetailsPopup.vue";
-import { messageTypeEnum } from "../../enums/messageTypeEnum";
+import DxTabPanel, { DxItem } from "devextreme-vue/tab-panel";
+import ReceivedMessagesList from "./ReceivedMessagesList";
+import SentMessagesList from "./SentMessagesList";
+import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
 import { userTypeEnum } from "../../enums/userTypeEnum";
+import DxButton from "devextreme-vue/button";
+import { messageTypeEnum } from "../../enums/messageTypeEnum";
+import MessageAdd from "./MessageAdd.vue";
 
 export default {
   name: "MessagesList",
   data() {
     return {
+      selectedIndex: 0,
       messageTypeEnum,
       userTypeEnum,
+      userTeamId: null,
       addMessagePopupOptions: {
         isVisible: false,
         messageType: null,
       },
-      detailsPopupOptions: {
-        isVisible: false,
-        selectedMessage: {},
-      },
-      messageTypes: [],
     };
   },
   computed: {
     ...mapGetters({
       getLoggedInUser: "authentication/getLoggedInUser",
-      getMessages: "messages/getMessages",
+      isLoggedIn: "authentication/isLoggedIn",
+    }),
+    ...mapState({
+      ...mapState("messages", ["unreadMessagesCount"]),
     }),
   },
   methods: {
+    ...mapMutations({
+      RESET_MESSAGES: "messages/RESET_MESSAGES",
+      RESET_UNREAD_MESSAGES_COUNT: "messages/RESET_UNREAD_MESSAGES_COUNT",
+    }),
     ...mapActions({
       setMessages: "messages/setMessages",
-      setMessageTypesToLookup: "messages/setMessageTypesToLookup",
+      setSentMessages: "messages/setSentMessages",
     }),
+    routerPushToHome() {
+      this.$router.push("/profile");
+    },
     showAddMessagePopup(messageType) {
       this.addMessagePopupOptions.messageType = messageType;
       this.addMessagePopupOptions.isVisible = true;
@@ -121,36 +107,33 @@ export default {
       this.addMessagePopupOptions.messageType = null;
       this.addMessagePopupOptions.isVisible = false;
     },
-    showMessageDetails(e) {
-      this.detailsPopupOptions.isVisible = true;
-      this.detailsPopupOptions.selectedMessage = e.data;
-    },
-    onDetailsPopupClose() {
-      this.detailsPopupOptions.isVisible = false;
-      this.detailsPopupOptions.selectedMessage = {};
+    tabChanged() {
+      this.RESET_MESSAGES();
+      switch (this.selectedIndex) {
+        case 0:
+          this.RESET_UNREAD_MESSAGES_COUNT();
+          this.setMessages(this.getLoggedInUser.id);
+          break;
+        case 1:
+          this.setSentMessages(this.getLoggedInUser.id);
+          break;
+      }
     },
   },
   components: {
+    DxTabPanel,
+    DxItem,
     DxButton,
-    DxDataGrid,
-    DxLoadPanel,
-    DxColumn,
-    DxFilterRow,
-    DxLookup,
-    DxSorting,
+    ReceivedMessagesList,
+    SentMessagesList,
     MessageAdd,
-    MessageDetailsPopup,
   },
   mounted() {
-    this.setMessageTypesToLookup().then((response) => {
-      this.messageTypes = response.data;
-    });
     this.setMessages(this.getLoggedInUser.id);
+  },
+  beforeUnmount() {
+    this.RESET_MESSAGES();
+    this.RESET_UNREAD_MESSAGES_COUNT();
   },
 };
 </script>
-<style scoped>
-h4 {
-  font-weight: bolder;
-}
-</style>

@@ -1,6 +1,6 @@
 <template>
   <div class="big-data-grid">
-    <h3>{{ team.Name }} - szczegóły drużyny</h3>
+    <h3>{{ team.Name }}</h3>
     <h4 v-if="team.LeagueName">Liga: {{ team.LeagueName }}</h4>
     <h4 v-else>Brak przypisanej ligi</h4>
     <h4 class="line mt-3">Lista zawodników</h4>

@@ -4,14 +4,14 @@
       <div class="glass">
         <h3 class="mb-4">Połącz się z innymi na boisku już teraz!</h3>
         <div class="row">
-          <div class="col">
+          <div class="col mt-2">
             <DxButton
               text="Dołącz jako zawodnik"
               @click="routerPushToRegister"
               type="default"
             />
           </div>
-          <div class="col">
+          <div class="col mt-2">
             <DxButton text="Dodaj swoją drużynę" type="normal" />
           </div>
         </div>

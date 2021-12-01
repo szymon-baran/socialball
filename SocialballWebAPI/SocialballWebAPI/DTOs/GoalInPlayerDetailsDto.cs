@@ -12,5 +12,7 @@ namespace SocialballWebAPI.DTOs
         public int Minute { get; set; }
         public string MatchBetween { get; set; }
         public DateTime DateTime { get; set; }
+        public string GoalScorerName { get; set; }
+        public string GoalAssistPlayerName { get; set; }
     }
 }

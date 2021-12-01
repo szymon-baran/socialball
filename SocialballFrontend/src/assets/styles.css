@@ -57,9 +57,15 @@ h4 {
 
 .main-text {
   font-size: 110%;
-  width: 40rem;
+  width: 38vw;
   height: 32rem;
   text-align: center;
+}
+
+@media only screen and (max-width: 940px) {
+ .main-text {
+   width: 90vw;
+ }
 }
 
 .glass {

@@ -21,5 +21,6 @@ namespace SocialballWebAPI.DTOs
         public string Image { get; set; }
         public DateTime DateOfBirth { get; set; }
         public List<GoalInPlayerDetailsDto> Goals { get; set; }
+        public List<GoalInPlayerDetailsDto> Assists { get; set; }
     }
 }

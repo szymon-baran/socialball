@@ -36,6 +36,14 @@ namespace SocialballWebAPI.Controllers
             return Ok(MessageService.GetUserMessages(userId));
         }
 
+
+        [HttpGet("getSentMessages")]
+        [Authorize]
+        public ActionResult<IEnumerable<UserMessage>> GetSentMessages(Guid userId)
+        {
+            return Ok(MessageService.GetUserSentMessages(userId));
+        }
+
         [HttpGet("{id}")]
         [Authorize]
         public ActionResult<Message> GetMessage(Guid id)
