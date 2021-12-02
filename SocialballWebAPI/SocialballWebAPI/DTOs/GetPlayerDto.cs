@@ -22,5 +22,6 @@ namespace SocialballWebAPI.DTOs
         public DateTime DateOfBirth { get; set; }
         public List<GoalInPlayerDetailsDto> Goals { get; set; }
         public List<GoalInPlayerDetailsDto> Assists { get; set; }
+        public object CurrentYearGoalsToChart { get; set; }
     }
 }

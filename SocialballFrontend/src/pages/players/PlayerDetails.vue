@@ -39,56 +39,80 @@
         type="default"
       />
     </div>
-    <div class="row" v-if="areStatsVisible">
-      <div class="col">
-        <h4 class="line">Strzelone bramki ({{ player.Goals.length }})</h4>
-        <DxDataGrid
-          :data-source="player.Goals"
-          :remote-operations="false"
-          :row-alternation-enabled="true"
-          :show-borders="true"
-          :column-auto-width="true"
-          width="100%"
-          no-data-text="Brak strzelonych goli"
-        >
-          <DxLoadPanel :enabled="true" />
-          <DxColumn data-field="matchBetween" caption="Mecz pomiędzy" />
-          <DxColumn data-field="minute" caption="Minuta" />
-          <DxColumn data-field="goalAssistPlayerName" caption="Asystent" />
-          <DxColumn
-            data-field="dateTime"
-            caption="Data"
-            data-type="date"
-            format="dd/MM/yyyy"
-          />
-          <DxPaging :page-size="10" />
-          <DxPager :visible="true" :allowed-page-sizes="[5, 10]" />
-        </DxDataGrid>
+    <div id="stats" class="mt-3" v-if="areStatsVisible">
+      <div class="row">
+        <div class="col">
+          <h4 class="line">Strzelone bramki ({{ player.Goals.length }})</h4>
+          <DxDataGrid
+            :data-source="player.Goals"
+            :remote-operations="false"
+            :row-alternation-enabled="true"
+            :show-borders="true"
+            :column-auto-width="true"
+            width="100%"
+            no-data-text="Brak strzelonych goli"
+          >
+            <DxLoadPanel :enabled="true" />
+            <DxColumn data-field="matchBetween" caption="Mecz pomiędzy" />
+            <DxColumn data-field="minute" caption="Minuta" />
+            <DxColumn data-field="goalAssistPlayerName" caption="Asystent" />
+            <DxColumn
+              data-field="dateTime"
+              caption="Data"
+              data-type="date"
+              format="dd/MM/yyyy"
+            />
+            <DxPaging :page-size="10" />
+            <DxPager :visible="true" :allowed-page-sizes="[5, 10]" />
+          </DxDataGrid>
+        </div>
+        <div class="col">
+          <h4 class="line">
+            Asystowane bramki ({{ player.Assists.length }})
+          </h4>
+          <DxDataGrid
+            :data-source="player.Assists"
+            :remote-operations="false"
+            :row-alternation-enabled="true"
+            :show-borders="true"
+            :column-auto-width="true"
+            width="100%"
+            no-data-text="Brak asyst"
+          >
+            <DxLoadPanel :enabled="true" />
+            <DxColumn data-field="matchBetween" caption="Mecz pomiędzy" />
+            <DxColumn data-field="minute" caption="Minuta" />
+            <DxColumn data-field="goalScorerName" caption="Strzelec" />
+            <DxColumn
+              data-field="dateTime"
+              caption="Data"
+              data-type="date"
+              format="dd/MM/yyyy"
+            />
+            <DxPaging :page-size="10" />
+            <DxPager :visible="true" :allowed-page-sizes="[5, 10]" />
+          </DxDataGrid>
+        </div>
       </div>
-      <div class="col">
-        <h4 class="line text-right">Asystowane bramki ({{ player.Assists.length }})</h4>
-        <DxDataGrid
-          :data-source="player.Assists"
-          :remote-operations="false"
-          :row-alternation-enabled="true"
-          :show-borders="true"
-          :column-auto-width="true"
-          width="100%"
-          no-data-text="Brak asyst"
-        >
-          <DxLoadPanel :enabled="true" />
-          <DxColumn data-field="matchBetween" caption="Mecz pomiędzy" />
-          <DxColumn data-field="minute" caption="Minuta" />
-          <DxColumn data-field="goalScorerName" caption="Strzelec" />
-          <DxColumn
-            data-field="dateTime"
-            caption="Data"
-            data-type="date"
-            format="dd/MM/yyyy"
-          />
-          <DxPaging :page-size="10" />
-          <DxPager :visible="true" :allowed-page-sizes="[5, 10]" />
-        </DxDataGrid>
+      <div class="row">
+        <div class="col">
+          <h4 class="line">
+            Wykres goli strzelonych w aktualnym roku kalendarzowym
+          </h4>
+          <DxChart
+            :data-source="player.CurrentYearGoalsToChart"
+            :legend="{ visible: false }"
+            :value-axis="{ allowDecimals: false, title: { text: 'Liczba goli' } }"
+            :argument-axis="{ allowDecimals: false, title: { text: 'Miesiąc' } }"
+          >
+            <DxSeries
+              argument-field="month"
+              value-field="number"
+              type="bar"
+              color="#009385"
+            />
+          </DxChart>
+        </div>
       </div>
     </div>
     <div class="mt-4" v-if="isLoggedIn">
@@ -114,6 +138,7 @@ import {
   DxPaging,
 } from "devextreme-vue/data-grid";
 import MessageAdd from "../messages/MessageAdd";
+import { DxChart, DxSeries } from "devextreme-vue/chart";
 
 export default {
   name: "PlayerDetails",
@@ -182,6 +207,8 @@ export default {
     DxColumn,
     DxPager,
     DxPaging,
+    DxChart,
+    DxSeries,
     MessageAdd,
   },
   beforeUnmount() {
@@ -189,3 +216,10 @@ export default {
   },
 };
 </script>
+<style scoped>
+#stats {
+  background-color: rgba(54, 54, 64, 0.6);
+  padding: 1vh 1vw;
+  border-radius: 10px;
+}
+</style>

@@ -76,7 +76,8 @@ namespace SocialballWebAPI.Services
             {
                 model.Email = player.User.Email;
             }
-            model.Goals = player.MatchEvents.Where(x => x.MatchEventType == MatchEventType.Goal && x.Match.IsConfirmed).Select(x => new GoalInPlayerDetailsDto {
+            model.Goals = player.MatchEvents.Where(x => x.MatchEventType == MatchEventType.Goal && x.Match.IsConfirmed).Select(x => new GoalInPlayerDetailsDto
+            {
                 Id = x.Id,
                 Minute = x.Minute,
                 MatchId = x.MatchId,
@@ -84,7 +85,8 @@ namespace SocialballWebAPI.Services
                 DateTime = x.Match.DateTime,
                 GoalAssistPlayerName = ((MatchEventGoal)x).AssistPlayer.FirstName + " " + ((MatchEventGoal)x).AssistPlayer.LastName
             }).OrderByDescending(x => x.DateTime).ToList();
-            model.Assists = player.MatchGoalsAssisted.Where(x => x.Match.IsConfirmed).Select(x => new GoalInPlayerDetailsDto {
+            model.Assists = player.MatchGoalsAssisted.Where(x => x.Match.IsConfirmed).Select(x => new GoalInPlayerDetailsDto
+            {
                 Id = x.Id,
                 Minute = x.Minute,
                 MatchId = x.MatchId,
@@ -92,6 +94,16 @@ namespace SocialballWebAPI.Services
                 DateTime = x.Match.DateTime,
                 GoalScorerName = x.Player.FirstName + " " + x.Player.LastName
             }).OrderByDescending(x => x.DateTime).ToList();
+
+            var lookup = player.MatchEvents.Where(x => x.Match.DateTime.Year == DateTime.Today.Year && x.MatchEventType == MatchEventType.Goal && x.Match.IsConfirmed).ToLookup(y => y.Match.DateTime.Month);
+
+            model.CurrentYearGoalsToChart =
+                from month in Enumerable.Range(1, 12)
+                select new
+                {
+                    Month = month,
+                    Number = lookup[month].Count()
+                };
 
             model.Image = "https://socialball-avatars.s3.eu-central-1.amazonaws.com/" + player.Id;
 

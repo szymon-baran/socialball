@@ -22,6 +22,7 @@ export default {
         Image: null,
         Goals: [],
         Assists: [],
+        CurrentYearGoalsToChart: [],
         TeamName: "",
         UserId: "",
       },
@@ -56,6 +57,7 @@ export default {
       state.player.Image = payload.image;
       state.player.Goals = payload.goals;
       state.player.Assists = payload.assists;
+      state.player.CurrentYearGoalsToChart = payload.currentYearGoalsToChart;
       state.player.TeamName = payload.teamName;
       state.player.UserId = payload.userId;
     },
@@ -75,6 +77,7 @@ export default {
       state.player.MatchEvents = [];
       state.player.Goals = [];
       state.player.Assists = [];
+      state.player.CurrentYearGoalsToChart = [];
       state.player.TeamName = "";
       state.player.UserId = "";
     },
