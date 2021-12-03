@@ -37,6 +37,7 @@ namespace SocialballWebAPI.Models
         public virtual DbSet<JobAdvertisementAnswer> JobAdvertisementAnswers { get; set; }
         public virtual DbSet<JobAdvertisementTeamAnswer> JobAdvertisementTeamAnswers { get; set; }
         public virtual DbSet<JobAdvertisementUserAnswer> JobAdvertisementUserAnswers { get; set; }
+        public virtual DbSet<PlayerTransferOffer> PlayerTransferOffers { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -305,6 +306,31 @@ namespace SocialballWebAPI.Models
             });
 
             #endregion JobAdvertisements
+
+            modelBuilder.Entity<PlayerTransferOffer>(entity =>
+            {
+                entity.ToTable("PlayerTransferOffers");
+
+                entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+
+                entity.HasOne(d => d.Player)
+                    .WithMany(p => p.PlayerTransferOffers)
+                    .HasForeignKey(d => d.PlayerId)
+                    .HasConstraintName("FK_PlayerTransferOffers_Players")
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(d => d.FromTeam)
+                    .WithMany(p => p.FromTeamPlayerTransferOffers)
+                    .HasForeignKey(d => d.FromTeamId)
+                    .HasConstraintName("FK_FromTeamPlayerTransferOffers_Teams")
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(d => d.ToTeam)
+                    .WithMany(p => p.ToTeamPlayerTransferOffers)
+                    .HasForeignKey(d => d.ToTeamId)
+                    .HasConstraintName("FK_ToTeamPlayerTransferOffers_Teams")
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
 
             OnModelCreatingPartial(modelBuilder);
         }

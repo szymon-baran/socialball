@@ -12,6 +12,7 @@ export default {
         FirstName: "",
         LastName: "",
         DateOfBirth: null,
+        IsInjuredUntil: null,
         Email: "",
         Position: null,
         TeamId: "",
@@ -49,6 +50,7 @@ export default {
       state.player.FirstName = payload.firstName;
       state.player.LastName = payload.lastName;
       state.player.DateOfBirth = payload.dateOfBirth;
+      state.player.IsInjuredUntil = payload.isInjuredUntil;
       state.player.Email = payload.email;
       state.player.Position = payload.position;
       state.player.TeamId = payload.teamId;
@@ -66,6 +68,7 @@ export default {
       state.player.FirstName = "";
       state.player.LastName = "";
       state.player.DateOfBirth = null;
+      state.player.IsInjuredUntil = null;
       state.player.Email = "";
       state.player.Position = null;
       state.player.TeamId = "";

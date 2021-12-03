@@ -20,6 +20,7 @@ namespace SocialballWebAPI.DTOs
         public string TeamName { get; set; }
         public string Image { get; set; }
         public DateTime DateOfBirth { get; set; }
+        public DateTime IsInjuredUntil { get; set; }
         public List<GoalInPlayerDetailsDto> Goals { get; set; }
         public List<GoalInPlayerDetailsDto> Assists { get; set; }
         public object CurrentYearGoalsToChart { get; set; }

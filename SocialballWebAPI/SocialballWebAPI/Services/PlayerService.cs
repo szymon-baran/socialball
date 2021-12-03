@@ -39,7 +39,15 @@ namespace SocialballWebAPI.Services
 
         public object GetPlayersByTeamId(Guid teamId)
         {
-            return _context.Players.Where(x => x.UserType == UserType.Zawodnik && x.TeamId == teamId).ToList();
+            return _context.Players.Where(x => x.UserType == UserType.Zawodnik && x.TeamId == teamId).Select(x => new {
+                x.Id,
+                x.FirstName,
+                x.LastName,
+                x.Position,
+                x.TeamId,
+                x.Citizenship,
+                IsInjured = x.IsInjuredUntil > DateTime.Now ? true : false
+            }).ToList();
         }
 
         public GetPlayerDto GetPlayerDetails(Guid id)

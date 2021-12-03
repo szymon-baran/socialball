@@ -13,19 +13,30 @@
     >
       <DxFilterRow :visible="true" />
       <DxLoadPanel :enabled="true" />
-      <DxColumn data-field="firstName" caption="Imię" />
-      <DxColumn data-field="lastName" caption="Nazwisko" />
-      <DxColumn data-field="position" caption="Pozycja">
+      <DxColumn data-field="firstName" caption="Imię" data-type="string" />
+      <DxColumn data-field="lastName" caption="Nazwisko" data-type="string" />
+      <DxColumn data-field="position" caption="Pozycja" data-type="number">
         <DxLookup
           :data-source="positions"
           value-expr="value"
           display-expr="name"
         />
       </DxColumn>
-      <DxColumn data-field="teamId" caption="Klub">
+      <DxColumn data-field="teamId" caption="Klub" data-type="string">
         <DxLookup :data-source="getTeams" value-expr="id" display-expr="name" />
       </DxColumn>
-      <DxColumn data-field="citizenship" caption="Narodowość" />
+      <DxColumn
+        data-field="citizenship"
+        caption="Narodowość"
+        data-type="string"
+      />
+      <DxColumn
+        v-if="teamId"
+        data-field="isInjured"
+        caption="Czy kontuzjowany"
+        data-type="boolean"
+        :filter-value="false"
+      />
     </DxDataGrid>
   </div>
 </template>

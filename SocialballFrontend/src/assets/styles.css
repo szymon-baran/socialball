@@ -123,3 +123,17 @@ a:hover {
   border: 10px solid #009385;
   cursor: pointer;
 }
+
+.primary-border {
+  background-color: #2F363C;
+  padding: 12px 14px;
+  margin: 2vh 0 2vh 0;
+  border-radius: 10px;
+}
+
+.secondary-border {
+  background-color: rgba(54, 54, 64, 0.6);
+  padding: 12px 14px;
+  margin: 2vh 0 2vh 0;
+  border-radius: 10px;
+}

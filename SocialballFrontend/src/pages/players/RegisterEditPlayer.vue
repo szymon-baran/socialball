@@ -2,160 +2,178 @@
   <!-- TO DO: wyrzucic druzyne: moze jakies zaproszenia wysylane przez zarzad + prosby o dodanie ze strony zawodnikow -->
   <div class="big-data-grid">
     <h3>{{ getTitle() }}</h3>
-    <h4 class="line">Dane personalne</h4>
     <form>
       <DxValidationGroup :ref="groupRefKey">
-        <div class="row">
-          <div class="col">
-            <label for="firstNameTextBox" class="form-label">Imię</label>
-            <DxTextBox v-model="FirstName" id="firstNameTextBox" />
+        <div class="primary-border">
+          <h4 class="line">Dane personalne</h4>
+          <div class="row">
+            <div class="col">
+              <label for="firstNameTextBox" class="form-label">Imię</label>
+              <DxTextBox v-model="FirstName" id="firstNameTextBox" />
+            </div>
+            <div class="col">
+              <label for="lastNameTextBox" class="form-label">Nazwisko</label>
+              <DxTextBox v-model="LastName" id="lastNameTextBox">
+                <DxValidator>
+                  <DxRequiredRule message="Nazwisko jest wymagane!" />
+                </DxValidator>
+              </DxTextBox>
+            </div>
+            <div class="col">
+              <label for="dateOfBirthDateBox" class="form-label"
+                >Data urodzenia</label
+              >
+              <DxDateBox
+                v-model="DateOfBirth"
+                id="dateOfBirthDateBox"
+                type="date"
+                display-format="dd/MM/yyyy"
+                cancel-button-text="Anuluj"
+                invalid-date-message="Wartość musi być datą lub czasem"
+              />
+            </div>
           </div>
-          <div class="col">
-            <label for="lastNameTextBox" class="form-label">Nazwisko</label>
-            <DxTextBox v-model="LastName" id="lastNameTextBox">
-              <DxValidator>
-                <DxRequiredRule message="Nazwisko jest wymagane!" />
-              </DxValidator>
-            </DxTextBox>
-          </div>
-          <div class="col">
-            <label for="dateOfBirthDateBox" class="form-label"
-              >Data urodzenia</label
+          <div class="row mt-4">
+            <div
+              class="col"
+              v-if="!this.showToEdit || this.getLoggedInUser.userType === 1"
             >
-            <DxDateBox
-              v-model="DateOfBirth"
-              id="dateOfBirthDateBox"
-              type="date"
-              display-format="dd/MM/yyyy"
-              cancel-button-text="Anuluj"
-              invalid-date-message="Wartość musi być datą lub czasem"
-            />
+              <label for="positionSelectBox" class="form-label">Pozycja</label>
+              <DxSelectBox
+                :dataSource="positionsStore"
+                value-expr="Id"
+                display-expr="Name"
+                v-model="Position"
+                id="positionSelectBox"
+              >
+                <DxValidator>
+                  <DxRequiredRule
+                    message="Wybór preferowanej pozycji jest wymagany!"
+                  />
+                </DxValidator>
+              </DxSelectBox>
+            </div>
+            <div class="col">
+              <label for="teamSelectBox" class="form-label">Drużyna</label>
+              <DxSelectBox
+                :dataSource="getTeams"
+                value-expr="id"
+                display-expr="name"
+                v-model="TeamId"
+                id="teamSelectBox"
+                :show-clear-button="true"
+                :read-only="showToEdit"
+              />
+            </div>
+            <div class="col">
+              <label for="citizenshipTextBox" class="form-label"
+                >Narodowość</label
+              >
+              <DxTextBox v-model="Citizenship" id="citizenshipTextBox" />
+            </div>
           </div>
-        </div>
-        <div class="row mt-4">
-          <div class="col" v-if="!this.showToEdit || this.getLoggedInUser.userType === 1">
-            <label for="positionSelectBox" class="form-label">Pozycja</label>
-            <DxSelectBox
-              :dataSource="positionsStore"
-              value-expr="Id"
-              display-expr="Name"
-              v-model="Position"
-              id="positionSelectBox"
-            >
-              <DxValidator>
-                <DxRequiredRule
-                  message="Wybór preferowanej pozycji jest wymagany!"
-                />
-              </DxValidator>
-            </DxSelectBox>
-          </div>
-          <div class="col">
-            <label for="teamSelectBox" class="form-label">Drużyna</label>
-            <DxSelectBox
-              :dataSource="getTeams"
-              value-expr="id"
-              display-expr="name"
-              v-model="TeamId"
-              id="teamSelectBox"
-              :show-clear-button="true"
-              :read-only="showToEdit"
-            />
-          </div>
-          <div class="col">
-            <label for="citizenshipTextBox" class="form-label"
-              >Narodowość</label
-            >
-            <DxTextBox v-model="Citizenship" id="citizenshipTextBox" />
-          </div>
-        </div>
-        <div class="row mt-4">
-          <div class="col">
-            <label for="imageUploader" class="form-label"
-              >Zdjęcie profilowe</label
-            >
-            <DxFileUploader
-              select-button-text="Dodaj zdjęcie"
-              label-text="zaleca się obraz kwadratowy"
-              accept="image/*"
-              upload-mode="useForm"
-              id="imageUploader"
-              readyToUploadMessage="Gotowe do przesłania"
-              @value-changed="imageAdded"
-            />
+          <div class="row mt-4">
+            <div class="col">
+              <label for="imageUploader" class="form-label"
+                >Zdjęcie profilowe</label
+              >
+              <DxFileUploader
+                select-button-text="Dodaj zdjęcie"
+                label-text="zaleca się obraz kwadratowy"
+                accept="image/*"
+                upload-mode="useForm"
+                id="imageUploader"
+                readyToUploadMessage="Gotowe do przesłania"
+                @value-changed="imageAdded"
+              />
+            </div>
           </div>
         </div>
         <div>
-          <h4 class="line">Dane techniczne</h4>
-          <div class="row">
-            <div class="col" v-if="!showToEdit">
-              <label for="loginUsernameTextBox" class="form-label"
-                >Nazwa użytkownika</label
-              >
-              <DxTextBox v-model="LoginUsername" id="loginUsernameTextBox">
-                <DxValidator>
-                  <DxRequiredRule message="Nazwa użytkownika jest wymagana!" />
-                  <DxAsyncRule
-                    :validation-callback="validateUsername"
-                    message="Taki użytkownik istnieje już w systemie!"
+          <div class="secondary-border">
+            <h4 class="line">Dane techniczne</h4>
+            <div class="row">
+              <div class="col" v-if="!showToEdit">
+                <label for="loginUsernameTextBox" class="form-label"
+                  >Nazwa użytkownika</label
+                >
+                <DxTextBox v-model="LoginUsername" id="loginUsernameTextBox">
+                  <DxValidator>
+                    <DxRequiredRule
+                      message="Nazwa użytkownika jest wymagana!"
+                    />
+                    <DxAsyncRule
+                      :validation-callback="validateUsername"
+                      message="Taki użytkownik istnieje już w systemie!"
+                    />
+                  </DxValidator>
+                </DxTextBox>
+              </div>
+              <div class="col">
+                <label for="emailTextBox" class="form-label">E-mail</label>
+                <DxTextBox v-model="Email" id="emailTextBox">
+                  <DxValidator>
+                    <DxEmailRule message="E-mail jest nieprawidłowy." />
+                  </DxValidator>
+                </DxTextBox>
+              </div>
+            </div>
+            <div class="row mt-4" v-if="!showToEdit">
+              <div class="col">
+                <label for="loginPasswordTextBox" class="form-label"
+                  >Hasło</label
+                >
+                <DxTextBox
+                  v-model="LoginPassword"
+                  id="loginPasswordTextBox"
+                  mode="password"
+                >
+                  <DxValidator>
+                    <DxRequiredRule message="Hasło jest wymagane!" />
+                  </DxValidator>
+                </DxTextBox>
+              </div>
+              <div class="col">
+                <label for="loginPasswordConfirmationTextBox" class="form-label"
+                  >Powtórz hasło</label
+                >
+                <DxTextBox
+                  id="loginPasswordConfirmationTextBox"
+                  mode="password"
+                >
+                  <DxValidator>
+                    <DxRequiredRule
+                      message="Powtórzenie hasła jest wymagane!"
+                    />
+                    <DxCompareRule
+                      :comparison-target="passwordComparison"
+                      message="Hasła się nie zgadzają!"
+                    />
+                  </DxValidator>
+                </DxTextBox>
+              </div>
+            </div>
+            <div class="row mt-4" v-if="!this.$route.params.playerToEditId">
+              <div class="px-3">
+                <vue-recaptcha
+                  v-show="true"
+                  siteKey="6LejOUwdAAAAAJYhE8VtA-J0PNrriXDlNyLg9ETw"
+                  size="normal"
+                  theme="dark"
+                  hl="pl"
+                  @verify="recaptchaVerified"
+                  @expire="recaptchaExpired"
+                  @fail="recaptchaFailed"
+                  ref="vueRecaptcha"
+                  :style="{ border: borderStyle }"
+                >
+                </vue-recaptcha>
+                <DxValidator :adapter="recaptchaValidatorConfig">
+                  <DxRequiredRule
+                    message="Zaznacz pole 'Nie jestem robotem'."
                   />
                 </DxValidator>
-              </DxTextBox>
-            </div>
-            <div class="col">
-              <label for="emailTextBox" class="form-label">E-mail</label>
-              <DxTextBox v-model="Email" id="emailTextBox">
-                <DxValidator>
-                  <DxEmailRule message="E-mail jest nieprawidłowy." />
-                </DxValidator>
-              </DxTextBox>
-            </div>
-          </div>
-          <div class="row mt-4" v-if="!showToEdit">
-            <div class="col">
-              <label for="loginPasswordTextBox" class="form-label">Hasło</label>
-              <DxTextBox
-                v-model="LoginPassword"
-                id="loginPasswordTextBox"
-                mode="password"
-              >
-                <DxValidator>
-                  <DxRequiredRule message="Hasło jest wymagane!" />
-                </DxValidator>
-              </DxTextBox>
-            </div>
-            <div class="col">
-              <label for="loginPasswordConfirmationTextBox" class="form-label"
-                >Powtórz hasło</label
-              >
-              <DxTextBox id="loginPasswordConfirmationTextBox" mode="password">
-                <DxValidator>
-                  <DxRequiredRule message="Powtórzenie hasła jest wymagane!" />
-                  <DxCompareRule
-                    :comparison-target="passwordComparison"
-                    message="Hasła się nie zgadzają!"
-                  />
-                </DxValidator>
-              </DxTextBox>
-            </div>
-          </div>
-          <div class="row mt-4" v-if="!this.$route.params.playerToEditId">
-            <div class="px-3">
-              <vue-recaptcha
-                v-show="true"
-                siteKey="6LejOUwdAAAAAJYhE8VtA-J0PNrriXDlNyLg9ETw"
-                size="normal"
-                theme="dark"
-                hl="pl"
-                @verify="recaptchaVerified"
-                @expire="recaptchaExpired"
-                @fail="recaptchaFailed"
-                ref="vueRecaptcha"
-                :style="{ border: borderStyle }"
-              >
-              </vue-recaptcha>
-              <DxValidator :adapter="recaptchaValidatorConfig">
-                <DxRequiredRule message="Zaznacz pole 'Nie jestem robotem'." />
-              </DxValidator>
+              </div>
             </div>
           </div>
           <div class="row mt-4">

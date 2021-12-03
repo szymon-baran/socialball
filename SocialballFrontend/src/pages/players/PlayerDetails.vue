@@ -6,27 +6,37 @@
       alt="Zdjęcie profilowe użytkownika"
       class="avatar"
     />
-    <div class="row">
+    <div class="row" v-if="isInjured()">
       <div class="col">
-        <h4 class="line">Dane osobowe</h4>
-        <div class="row">
-          <div class="col">
-            <ul>
-              <li v-if="player.TeamName">
-                Aktualna drużyna:
-                <router-link
-                  :to="{ name: 'teamDetails', params: { id: player.TeamId } }"
-                  >{{ player.TeamName }}</router-link
-                >
+        <h4 :title="getInjuredDate()">
+          <i class="fas fa-briefcase-medical red-color"></i>
+        </h4>
+      </div>
+    </div>
+    <div class="primary-border">
+      <div class="row">
+        <div class="col">
+          <h4 class="line">Dane osobowe</h4>
+          <div class="row">
+            <div class="col">
+              <ul>
+                <li v-if="player.TeamName">
+                  Aktualna drużyna:
+                  <router-link
+                    :to="{ name: 'teamDetails', params: { id: player.TeamId } }"
+                    >{{ player.TeamName }}</router-link
+                  >
+                </li>
+                <li>Preferowana pozycja: {{ getPosition() }}</li>
+                <li v-if="player.DateOfBirth">Wiek: {{ getAge() }}</li>
+              </ul>
+            </div>
+            <div class="col">
+              <li v-if="player.Citizenship">
+                Narodowość: {{ player.Citizenship }}
               </li>
-              <li>Preferowana pozycja: {{ getPosition() }}</li>
-            </ul>
-          </div>
-          <div class="col">
-            <li v-if="player.Citizenship">
-              Narodowość: {{ player.Citizenship }}
-            </li>
-            <li v-if="player.Email">E-mail kontaktowy: {{ player.Email }}</li>
+              <li v-if="player.Email">E-mail kontaktowy: {{ player.Email }}</li>
+            </div>
           </div>
         </div>
       </div>
@@ -39,7 +49,7 @@
         type="default"
       />
     </div>
-    <div id="stats" class="mt-3" v-if="areStatsVisible">
+    <div class="secondary-border mt-3" v-if="areStatsVisible">
       <div class="row">
         <div class="col">
           <h4 class="line">Strzelone bramki ({{ player.Goals.length }})</h4>
@@ -67,9 +77,7 @@
           </DxDataGrid>
         </div>
         <div class="col">
-          <h4 class="line">
-            Asystowane bramki ({{ player.Assists.length }})
-          </h4>
+          <h4 class="line">Asystowane bramki ({{ player.Assists.length }})</h4>
           <DxDataGrid
             :data-source="player.Assists"
             :remote-operations="false"
@@ -102,8 +110,14 @@
           <DxChart
             :data-source="player.CurrentYearGoalsToChart"
             :legend="{ visible: false }"
-            :value-axis="{ allowDecimals: false, title: { text: 'Liczba goli' } }"
-            :argument-axis="{ allowDecimals: false, title: { text: 'Miesiąc' } }"
+            :value-axis="{
+              allowDecimals: false,
+              title: { text: 'Liczba goli' },
+            }"
+            :argument-axis="{
+              allowDecimals: false,
+              title: { text: 'Miesiąc' },
+            }"
           >
             <DxSeries
               argument-field="month"
@@ -195,6 +209,26 @@ export default {
         buttonInstance.option("stylingMode", "contained");
       }
     },
+    getInjuredDate() {
+      const date = new Date(this.player.IsInjuredUntil);
+      return (
+        "Kontuzjowany do: " +
+        (date.getDate() +
+          "/" +
+          date.getMonth() +
+          "/" +
+          date.getFullYear() +
+          ".")
+      );
+    },
+    isInjured() {
+      return new Date(this.player.IsInjuredUntil) > new Date(new Date());
+    },
+    getAge() {
+      const todayYear = new Date().getFullYear();
+      const dateOfBirthYear = new Date(this.player.DateOfBirth).getFullYear();
+      return todayYear - dateOfBirthYear;
+    },
   },
   mounted() {
     this.setPlayerDetails(this.$route.params.id);
@@ -216,10 +250,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-#stats {
-  background-color: rgba(54, 54, 64, 0.6);
-  padding: 1vh 1vw;
-  border-radius: 10px;
-}
-</style>

@@ -23,7 +23,7 @@
     </div>
     <div v-if="userTeamId">
       <h4>
-        Drużyna:
+        Twoja drużyna:
         <router-link
           :to="{ name: 'teamDetails', params: { id: userTeamId } }"
           >{{ getPlayerDetails.TeamName }}</router-link
@@ -42,7 +42,7 @@
         @click="routerPushToJobAdvertisements"
       />
     </div>
-    <div>
+    <div class="primary-border">
       <h4 class="line">Co chcesz dzisiaj zrobić?</h4>
       <div class="row mb-4 text-center">
         <div class="col-6 col-md-3 mb-3">
@@ -83,7 +83,7 @@
         </div>
       </div>
     </div>
-    <div v-if="getLoggedInUser.userType === 2">
+    <div v-if="getLoggedInUser.userType === 2" class="secondary-border">
       <h4 class="line">Funkcje zarządu drużyny</h4>
       <div class="row text-center">
         <div class="col-6 col-md-3 mb-3">
