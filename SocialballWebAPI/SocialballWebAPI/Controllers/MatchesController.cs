@@ -90,5 +90,11 @@ namespace SocialballWebAPI.Controllers
             return Ok(EnumExtensions.GetValues<PenaltyType>());
         }
 
+        [HttpGet("getMatchTypesToLookup")]
+        public ActionResult GetMatchTypesToLookup()
+        {
+            return Ok(EnumExtensions.GetValues<MatchType>());
+        }
+
     }
 }

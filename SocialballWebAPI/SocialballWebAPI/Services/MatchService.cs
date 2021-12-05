@@ -80,6 +80,7 @@ namespace SocialballWebAPI.Services
                 Stadium = model.Stadium,
                 DateTime = model.DateTime.AddHours(1),
                 IsConfirmed = false,
+                MatchType = model.MatchType,
                 AddedByTeamId = model.AddedByTeamId
             };
 
@@ -95,17 +96,20 @@ namespace SocialballWebAPI.Services
                         {
                             MatchId = match.Id,
                             PlayerId = eventModel.PlayerId,
+                            TeamId = eventModel.EventTeamId,
                             Minute = eventModel.Minute,
                             MatchEventType = eventModel.MatchEventType,
                             AssistPlayerId = eventModel.AssistPlayerId
                         };
                         _context.MatchEventGoals.Add(matchEventGoal);
+                        
                         break;
                     case MatchEventType.Foul:
                         MatchEventFoul matchEventFoul = new MatchEventFoul()
                         {
                             MatchId = match.Id,
                             PlayerId = eventModel.PlayerId,
+                            TeamId = eventModel.EventTeamId,
                             Minute = eventModel.Minute,
                             MatchEventType = eventModel.MatchEventType,
                             PenaltyType = eventModel.PenaltyType
@@ -114,7 +118,9 @@ namespace SocialballWebAPI.Services
                         break;
                 }
             }
+
             _context.SaveChanges();
+
         }
 
         public void SendMatchAnswer(MatchAnswerDto model)
@@ -123,6 +129,29 @@ namespace SocialballWebAPI.Services
 
             if (model.IsAccepted)
             {
+                List<MatchEventGoal> homeTeamGoals = _context.MatchEventGoals.Where(x => x.MatchId == match.Id && x.TeamId == match.HomeTeamId).ToList();
+                List<MatchEventGoal> awayTeamGoals = _context.MatchEventGoals.Where(x => x.MatchId == match.Id && x.TeamId == match.AwayTeamId).ToList();
+                Team homeTeam = _context.Teams.Single(x => x.Id == match.HomeTeamId);
+                Team awayTeam = _context.Teams.Single(x => x.Id == match.AwayTeamId);
+
+                if (homeTeamGoals.Count > awayTeamGoals.Count)
+                {
+                    homeTeam.Points = homeTeam.Points + 3;
+                    _context.Teams.Update(homeTeam);
+                }
+                else if (homeTeamGoals.Count < awayTeamGoals.Count)
+                {
+                    awayTeam.Points = awayTeam.Points + 3;
+                    _context.Teams.Update(awayTeam);
+                }
+                else if (homeTeamGoals.Count == awayTeamGoals.Count)
+                {
+                    homeTeam.Points = homeTeam.Points + 1;
+                    awayTeam.Points = awayTeam.Points + 1;
+                    _context.Teams.Update(homeTeam);
+                    _context.Teams.Update(awayTeam);
+                }
+
                 match.IsConfirmed = model.IsAccepted;
             } 
             else

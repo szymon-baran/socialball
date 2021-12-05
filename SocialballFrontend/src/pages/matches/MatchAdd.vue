@@ -63,14 +63,31 @@
             </div>
             <DxValidator :adapter="teamValidatorConfig">
               <DxRequiredRule
-                message="Możesz dodać wyłącznie mecz, w którym uczestniczy Twoja drużyna."
+                message="Możesz dodać wyłącznie mecz, w którym uczestniczy Twoja drużyna i nie może grać sama ze sobą!"
+              />
+            </DxValidator>
+            <DxValidator :adapter="leagueValidatorConfig">
+              <DxRequiredRule
+                message="W przypadku rozgrywania meczu ligowego, obie drużyny muszą należeć do tej samej ligi."
               />
             </DxValidator>
           </div>
           <div class="row mt-4">
             <div class="col">
-              <label for="stadiumTextBox" class="form-label">Stadion</label>
-              <DxTextBox id="stadiumTextBox" v-model="Stadium" />
+              <label for="matchTypeSelectBox" class="form-label"
+                >Typ meczu</label
+              >
+              <DxSelectBox
+                :dataSource="matchTypes"
+                value-expr="value"
+                display-expr="name"
+                v-model="MatchType"
+                id="matchTypeSelectBox"
+              >
+                <DxValidator>
+                  <DxRequiredRule message="Typ meczu jest wymagany!" />
+                </DxValidator>
+              </DxSelectBox>
             </div>
             <div class="col">
               <label for="dateTimeTextBox" class="form-label"
@@ -84,6 +101,16 @@
                 cancel-button-text="Anuluj"
                 invalid-date-message="Wartość musi być datą lub czasem"
               />
+            </div>
+          </div>
+          <div class="row mt-4">
+            <div class="col">
+              <label for="stadiumTextBox" class="form-label">Stadion</label>
+              <DxTextBox id="stadiumTextBox" v-model="Stadium">
+                <DxValidator>
+                  <DxRequiredRule message="Podaj nazwę stadionu!" />
+                </DxValidator>
+              </DxTextBox>
             </div>
           </div>
           <div
@@ -101,6 +128,7 @@
                 :column-auto-width="true"
                 width="100%"
                 @editor-preparing="onEditorPreparing"
+                ref="matchEventsDataGrid"
               >
                 <DxEditing
                   :allow-updating="true"
@@ -114,6 +142,7 @@
                     display-expr="name"
                     value-expr="value"
                   />
+                  <DxDataGridRequiredRule message="Wybierz typ zdarzenia!" />
                 </DxColumn>
                 <DxColumn data-field="EventTeamId" caption="Drużyna">
                   <DxLookup
@@ -121,13 +150,16 @@
                     display-expr="name"
                     value-expr="id"
                   />
+                  <DxDataGridRequiredRule message="Wybierz drużynę!" />
                 </DxColumn>
                 <DxColumn data-field="PlayerId" caption="Zawodnik">
                   <DxLookup
                     :data-source="players"
                     display-expr="name"
                     value-expr="id"
+                    :show-clear-button="true"
                   />
+                  <DxDataGridRequiredRule message="Wybierz zawodnika!" />
                 </DxColumn>
                 <DxColumn data-field="Minute" caption="Minuta" />
                 <DxColumn data-field="AssistPlayerId" caption="Asystujący">
@@ -181,6 +213,7 @@ import {
   DxColumn,
   DxEditing,
   DxLookup,
+  DxRequiredRule as DxDataGridRequiredRule,
 } from "devextreme-vue/data-grid";
 
 export default {
@@ -190,9 +223,20 @@ export default {
     const teamValidatorConfig = {
       getValue: () => {
         return (
-          this.HomeTeamId === this.userTeamId ||
-          this.AwayTeamId === this.userTeamId
+          (this.HomeTeamId === this.userTeamId ||
+            this.AwayTeamId === this.userTeamId) &&
+          this.HomeTeamId !== this.AwayTeamId
         );
+      },
+      validationRequestsCallbacks: callbacks,
+    };
+    const leagueValidatorConfig = {
+      getValue: () => {
+        if (this.MatchType === 1) {
+          return this.validateLeagueInTeams();
+        } else {
+          return true;
+        }
       },
       validationRequestsCallbacks: callbacks,
     };
@@ -201,6 +245,7 @@ export default {
       players: [],
       penaltyTypes: [],
       teamsSelected: [],
+      matchTypes: [],
       popupVisible: false,
       sendButtonOptions: {
         text: "Dodaj",
@@ -217,6 +262,7 @@ export default {
       groupRefKey: "targetGroup",
       userTeamId: null,
       teamValidatorConfig,
+      leagueValidatorConfig,
     };
   },
   computed: {
@@ -229,6 +275,7 @@ export default {
       "match.AwayTeamId",
       "match.Stadium",
       "match.DateTime",
+      "match.MatchType",
       "match.MatchEvents",
       "match.AddedByTeamId",
     ]),
@@ -243,6 +290,7 @@ export default {
       setAllTeams: "teams/setAllTeams",
       getEventTypesToLookup: "matches/getEventTypesToLookup",
       getPenaltyTypesToLookup: "matches/getPenaltyTypesToLookup",
+      getMatchTypesLookup: "matches/getMatchTypesLookup",
       getPlayersByTeam: "matches/getPlayersByTeam",
     }),
     ...mapMutations({
@@ -261,16 +309,34 @@ export default {
     },
     onEditorPreparing(e) {
       if (e.dataField === "EventTeamId") {
-        e.editorOptions.onValueChanged = (ev) => {
-          this.getPlayersByTeam(ev.value).then((response) => {
-            this.players = response.data;
+        var onValueChanged = e.editorOptions.onValueChanged;
+        const context = this;
+        e.editorOptions.onValueChanged = function(args) {
+          onValueChanged.apply(this, arguments);
+          context.getPlayersByTeam(args.value).then((response) => {
+            context.players = response.data;
           });
         };
       }
     },
     onTeamChange() {
-      this.teamsSelected = this.getTeams.filter(x => x.id == this.HomeTeamId || x.id == this.AwayTeamId);
-    }
+      this.teamsSelected = this.getTeams.filter(
+        (x) => x.id == this.HomeTeamId || x.id == this.AwayTeamId
+      );
+    },
+    validateLeagueInTeams() {
+      let homeTeamLeagueId = this.HomeTeamId
+        ? this.getTeams.find((x) => x.id === this.HomeTeamId).leagueId
+        : null;
+      let awayTeamLeagueId = this.AwayTeamId
+        ? this.getTeams.find((x) => x.id === this.AwayTeamId).leagueId
+        : null;
+      if (homeTeamLeagueId === awayTeamLeagueId) {
+        return true;
+      } else {
+        return false;
+      }
+    },
   },
   components: {
     DxPopup,
@@ -286,6 +352,7 @@ export default {
     DxColumn,
     DxEditing,
     DxLookup,
+    DxDataGridRequiredRule,
   },
   mounted() {
     this.getUserTeamId().then((response) => {
@@ -302,6 +369,11 @@ export default {
       this.penaltyTypes[0].name = "Brak";
       this.penaltyTypes[1].name = "Żółta kartka";
       this.penaltyTypes[2].name = "Czerwona kartka";
+    });
+    this.getMatchTypesLookup().then((response) => {
+      this.matchTypes = response.data;
+      this.matchTypes[0].name = "Mecz towarzyski";
+      this.matchTypes[1].name = "Mecz ligowy";
     });
 
     this.setAllTeams();

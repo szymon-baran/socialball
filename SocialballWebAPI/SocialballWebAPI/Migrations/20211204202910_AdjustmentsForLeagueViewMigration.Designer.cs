@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SocialballWebAPI.Models;
 
 namespace SocialballWebAPI.Migrations
 {
     [DbContext(typeof(SocialballDBContext))]
-    partial class SocialballDBContextModelSnapshot : ModelSnapshot
+    [Migration("20211204202910_AdjustmentsForLeagueViewMigration")]
+    partial class AdjustmentsForLeagueViewMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -157,16 +159,11 @@ namespace SocialballWebAPI.Migrations
                     b.Property<Guid>("PlayerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("TeamId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
                     b.HasIndex("MatchId");
 
                     b.HasIndex("PlayerId");
-
-                    b.HasIndex("TeamId");
 
                     b.ToTable("MatchEvents");
 
@@ -258,7 +255,7 @@ namespace SocialballWebAPI.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(30)");
 
-                    b.Property<int?>("Points")
+                    b.Property<int>("Points")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -531,18 +528,9 @@ namespace SocialballWebAPI.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("SocialballWebAPI.Models.Team", "Team")
-                        .WithMany("TeamMatchEvents")
-                        .HasForeignKey("TeamId")
-                        .HasConstraintName("FK_MatchEvents_Teams")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Match");
 
                     b.Navigation("Player");
-
-                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("SocialballWebAPI.Models.Message", b =>
@@ -723,8 +711,6 @@ namespace SocialballWebAPI.Migrations
                     b.Navigation("MatchAwayTeams");
 
                     b.Navigation("MatchHomeTeams");
-
-                    b.Navigation("TeamMatchEvents");
 
                     b.Navigation("ToTeamPlayerTransferOffers");
 

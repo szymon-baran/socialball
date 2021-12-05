@@ -1,4 +1,5 @@
-﻿using SocialballWebAPI.Models;
+﻿using SocialballWebAPI.Enums;
+using SocialballWebAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace SocialballWebAPI.DTOs
         public string Stadium { get; set; }
         public DateTime DateTime { get; set; }
         public bool IsConfirmed { get; set; }
+        public MatchType MatchType { get; set; }
         public List<MatchEventDto> MatchEvents { get; set; }
     }
 }

@@ -11,6 +11,7 @@ namespace SocialballWebAPI.Abstraction
     public interface ITeamService
     {
         object GetTeams();
+        object GetTeamsByLeague(Guid leagueId);
         List<SelectList> GetTeamsToSelectList();
         List<PositionsInTeam> GetTeamsToChart(Guid teamId);
         TeamDto GetTeamDetails(Guid id);

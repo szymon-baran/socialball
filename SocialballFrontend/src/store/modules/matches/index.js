@@ -19,6 +19,7 @@ export default {
         IsConfirmed: false,
         IsUnconfirmedByYourTeam: false,
         AddedByTeamId: "",
+        MatchType: null,
       },
     };
   },
@@ -37,9 +38,9 @@ export default {
         match.matchEvents.forEach((event) => {
           // Filtrowanie tylko goli
           if (event.matchEventType === 1) {
-            if (event.player.teamId === match.homeTeamId) {
+            if (event.teamId === match.homeTeamId) {
               homeGoals++;
-            } else if (event.player.teamId === match.awayTeamId) {
+            } else if (event.teamId === match.awayTeamId) {
               awayGoals++;
             }
           }
@@ -64,6 +65,7 @@ export default {
       state.match.IsConfirmed = payload.isConfirmed;
       state.match.IsUnconfirmedByYourTeam = payload.isUnconfirmedByYourTeam;
       state.match.AddedByTeamId = payload.addedByTeamId;
+      state.match.MatchType = payload.matchType;
     },
     RESET_MATCH_FORM(state) {
       state.match.Id = "";
@@ -77,6 +79,7 @@ export default {
       state.match.IsConfirmed = false;
       state.match.IsUnconfirmedByYourTeam = false;
       state.match.AddedByTeamId = "";
+      state.match.MatchType = null;
     },
     updateField,
   },
@@ -137,6 +140,20 @@ export default {
       return new Promise((resolve, reject) => {
         axios
           .get("https://localhost:44369/api/matches/getPenaltyTypesToLookup")
+          .then(
+            (response) => {
+              resolve(response);
+            },
+            (error) => {
+              reject(error);
+            }
+          );
+      });
+    },
+    getMatchTypesLookup: () => {
+      return new Promise((resolve, reject) => {
+        axios
+          .get("https://localhost:44369/api/matches/getMatchTypesToLookup")
           .then(
             (response) => {
               resolve(response);

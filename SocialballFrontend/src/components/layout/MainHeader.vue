@@ -53,7 +53,7 @@
             <i class="far fa-user-circle mr-2"></i>
             <span
               class="mr-1 red-color"
-              v-if="isLoggedIn && getLoggedInUser.userType === userTypeEnum.TEAM_MANAGEMENT"
+              v-if="getLoggedInUser.userType === userTypeEnum.TEAM_MANAGEMENT"
               >!</span
             >
             <span>{{ getUsername }}</span>

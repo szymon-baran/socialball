@@ -178,6 +178,11 @@ namespace SocialballWebAPI.Models
                     .HasForeignKey(d => d.PlayerId)
                     .HasConstraintName("FK_MatchGoals_Players1")
                     .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(d => d.Team)
+                    .WithMany(p => p.TeamMatchEvents)
+                    .HasForeignKey(d => d.TeamId)
+                    .HasConstraintName("FK_MatchEvents_Teams");
             });
 
             modelBuilder.Entity<MatchEventGoal>(entity =>

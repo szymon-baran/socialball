@@ -65,7 +65,7 @@
         </div>
         <div class="col-6 col-md-3 mb-3">
           <DxButton
-            text="Baza drużyn"
+            text="Tabele ligowe"
             type="default"
             @click="routerPushToTeams"
             width="300px"

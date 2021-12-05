@@ -9,11 +9,13 @@ namespace SocialballWebAPI.Models
     public class MatchEvent
     {
         public Guid Id { get; set; }
+        public Guid TeamId { get; set; }
         public Guid PlayerId { get; set; }
         public Guid MatchId { get; set; }
         public int Minute { get; set; }
         public MatchEventType MatchEventType { get; set; }
 
+        public virtual Team Team { get; set; }
         public virtual Player Player { get; set; }
         public virtual Match Match { get; set; }
     }

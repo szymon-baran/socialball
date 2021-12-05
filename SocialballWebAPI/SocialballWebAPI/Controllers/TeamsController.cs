@@ -29,13 +29,19 @@ namespace SocialballWebAPI.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Team>> GetTeams()
         {
-            return Ok(TeamService.GetTeams()); 
+            return Ok(TeamService.GetTeams());
+        }
+
+        [HttpGet("getTeamsByLeague")]
+        public ActionResult<IEnumerable<Team>> GetTeamsByLeague(Guid leagueId)
+        {
+            return Ok(TeamService.GetTeamsByLeague(leagueId));
         }
 
         [HttpGet("selectList")]
         public ActionResult GetTeamsToSelectList()
         {
-            return Ok(TeamService.GetTeamsToSelectList()); 
+            return Ok(TeamService.GetTeamsToSelectList());
         }
 
         [HttpGet("getPositionsInsideOfTeam")]

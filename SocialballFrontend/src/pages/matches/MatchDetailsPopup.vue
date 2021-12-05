@@ -59,6 +59,11 @@
         </div>
         <div class="row">
           <div class="col">
+            {{ matchTypes[MatchType].name }}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
             herb1
           </div>
           <div class="col">
@@ -109,7 +114,7 @@
 </template>
 <script>
 import { DxPopup, DxToolbarItem } from "devextreme-vue/popup";
-import { mapActions } from "vuex";
+import { mapActions, mapMutations } from "vuex";
 import { createHelpers } from "vuex-map-fields";
 const { mapFields } = createHelpers({
   getterType: "matches/getField",
@@ -135,6 +140,7 @@ export default {
   },
   data() {
     return {
+      matchTypes: [],
       popupVisible: true,
       closeButtonOptions: {
         text: "Zamknij",
@@ -170,6 +176,7 @@ export default {
       "match.AwayTeamId",
       "match.AwayTeam",
       "match.Stadium",
+      "match.MatchType",
       "match.DateTime",
       "match.MatchEvents",
     ]),
@@ -181,11 +188,18 @@ export default {
   methods: {
     ...mapActions({
       setMatchDetails: "matches/setMatchDetails",
+      getMatchTypesLookup: "matches/getMatchTypesLookup",
       sendMatchAnswer: "matches/sendMatchAnswer",
       getUserTeamId: "authentication/getUserTeamId",
     }),
+    ...mapMutations({
+      RESET_MATCH_FORM: "matches/RESET_MATCH_FORM",
+    }),
     async handleSubmit(isAccepted) {
-      await this.sendMatchAnswer({ isAccepted: isAccepted, teamId: this.userTeamId });
+      await this.sendMatchAnswer({
+        isAccepted: isAccepted,
+        teamId: this.userTeamId,
+      });
       useToast().success("Odpowiedź na mecz została wysłana pomyślnie!");
       this.popupVisible = false;
       this.$emit("closed");
@@ -196,12 +210,20 @@ export default {
     DxToolbarItem,
   },
   mounted() {
+    this.getMatchTypesLookup().then((response) => {
+      this.matchTypes = response.data;
+      this.matchTypes[0].name = "Mecz towarzyski";
+      this.matchTypes[1].name = "Mecz ligowy";
+    });
     this.getUserTeamId().then((response) => {
       this.userTeamId = response.data;
     });
     this.popupVisible = true;
     this.setMatchDetails(this.matchId);
   },
+  beforeUnmount() {
+    this.RESET_MATCH_FORM();
+  }
 };
 </script>
 <style scoped>

@@ -54,6 +54,15 @@ export default {
         commit("SET_TEAMS", response.data);
       });
     },
+    setTeamsByLeague({ commit }, leagueId) {
+      axios
+        .get("https://localhost:44369/api/teams/getTeamsByLeague", {
+          params: { leagueId: leagueId },
+        })
+        .then((response) => {
+          commit("SET_TEAMS", response.data);
+        });
+    },
     setTeamDetails: async ({ commit }, teamId) => {
       await axios
         .get("https://localhost:44369/api/teams/details", {
@@ -88,16 +97,14 @@ export default {
     },
     setLeaguesToLookup: () => {
       return new Promise((resolve, reject) =>
-        axios
-          .get("https://localhost:44369/api/teams/getLeaguesToLookup")
-          .then(
-            (response) => {
-              resolve(response);
-            },
-            (error) => {
-              reject(error);
-            }
-          )
+        axios.get("https://localhost:44369/api/teams/getLeaguesToLookup").then(
+          (response) => {
+            resolve(response);
+          },
+          (error) => {
+            reject(error);
+          }
+        )
       );
     },
   },

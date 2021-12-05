@@ -1,24 +1,53 @@
 <template>
   <div class="big-data-grid">
     <h3>Lista wszystkich drużyn</h3>
-    <DxDataGrid
-      :data-source="getTeams"
-      :remote-operations="false"
-      :row-alternation-enabled="true"
-      :show-borders="true"
-      :hover-state-enabled="true"
-      @row-click="onRowClick"
-      :column-auto-width="true"
-      width="100%"
-    >
-      <DxFilterRow :visible="true" />
-      <DxLoadPanel :enabled="true" />
-      <DxColumn data-field="name" caption="Nazwa drużyny" />
-      <DxColumn data-field="leagueId" caption="Nazwa ligi">
-        <DxLookup :data-source="leagues" value-expr="id" display-expr="name" />
-      </DxColumn>
-      <DxColumn data-field="league.country" caption="Kraj" />
-    </DxDataGrid>
+    <div class="row">
+      <div class="col-3">
+        <DxSelectBox
+          :dataSource="leagues"
+          value-expr="id"
+          display-expr="name"
+          v-model="ChosenLeagueId"
+          id="leagueSelectBox"
+          placeholder="Wybierz ligę"
+          @value-changed="onLeagueChanged"
+        />
+      </div>
+    </div>
+    <div class="row mt-4">
+      <div class="col">
+        <DxDataGrid
+          :data-source="getTeams"
+          :remote-operations="false"
+          :row-alternation-enabled="true"
+          :show-borders="true"
+          :hover-state-enabled="true"
+          @row-click="onRowClick"
+          :column-auto-width="true"
+          width="100%"
+          no-data-text="Najpierw wybierz ligę"
+        >
+          <DxFilterRow :visible="true" />
+          <DxLoadPanel :enabled="true" />
+          <DxSorting mode="none" />
+          <DxColumn data-field="name" caption="Nazwa drużyny" />
+          <!-- <DxColumn data-field="leagueId" caption="Nazwa ligi">
+            <DxLookup
+              :data-source="leagues"
+              value-expr="id"
+              display-expr="name"
+            />
+          </DxColumn> -->
+          <DxColumn data-field="league.country" caption="Kraj" />
+          <DxColumn
+            data-field="points"
+            caption="Liczba punktów"
+            :sort-index="0"
+            sort-order="desc"
+          />
+        </DxDataGrid>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -26,19 +55,21 @@
 import {
   DxDataGrid,
   DxLoadPanel,
+  DxSorting,
   DxColumn,
   DxFilterRow,
-  DxLookup,
+  // DxLookup,
 } from "devextreme-vue/data-grid";
-
+import DxSelectBox from "devextreme-vue/select-box";
 import { mapGetters, mapActions, mapMutations } from "vuex";
 
 export default {
   name: "TeamsList",
   data() {
     return {
-      leagues: []
-    }
+      leagues: [],
+      ChosenLeagueId: null,
+    };
   },
   computed: {
     ...mapGetters({
@@ -49,6 +80,7 @@ export default {
     ...mapActions({
       setAllTeams: "teams/setAllTeams",
       setLeaguesToLookup: "teams/setLeaguesToLookup",
+      setTeamsByLeague: "teams/setTeamsByLeague",
     }),
     ...mapMutations({
       RESET_TEAMS: "teams/RESET_TEAMS",
@@ -56,11 +88,15 @@ export default {
 
     onRowClick(e) {
       this.$router.push({
-        name: 'teamDetails',
+        name: "teamDetails",
         params: {
           id: e.data.id,
         },
       });
+    },
+
+    onLeagueChanged(e) {
+      this.setTeamsByLeague(e.value);
     },
   },
   mounted() {
@@ -68,17 +104,20 @@ export default {
       this.leagues = response.data;
     });
 
-    this.setAllTeams();
+    // this.setAllTeams();
   },
   components: {
     DxDataGrid,
     DxLoadPanel,
+    DxSorting,
     DxColumn,
     DxFilterRow,
-    DxLookup,
+    // DxLookup,
+    DxSelectBox,
   },
   beforeUnmount() {
     this.RESET_TEAMS();
+    this.ChosenLeagueId = null;
   },
 };
 </script>
