@@ -39,6 +39,13 @@ namespace SocialballWebAPI.Controllers
             }
         }
 
+        [Authorize]
+        [HttpGet("getInjuredPlayers")]
+        public ActionResult<IEnumerable<Player>> GetInjuredPlayers(Guid teamId)
+        {
+            return Ok(PlayerService.GetInjuredPlayers(teamId));
+        }
+
         [HttpGet("details")]
         public ActionResult<GetPlayerDto> GetPlayer(Guid id)
         {
@@ -63,6 +70,14 @@ namespace SocialballWebAPI.Controllers
         public ActionResult EditPlayer([FromBody] EditPlayerDto playerModel)
         {
             PlayerService.EditUserData(playerModel);
+
+            return Ok();
+        }
+
+        [HttpPost("addEditPlayerInjury")]
+        public ActionResult AddEditPlayerInjury([FromBody] PlayerInjuryDto model)
+        {
+            PlayerService.AddEditPlayerInjury(model);
 
             return Ok();
         }

@@ -3,7 +3,7 @@
     class="big-data-grid"
     v-if="
       getLoggedInUser.userType === userTypeEnum.TEAM_MANAGEMENT ||
-        (userTeamId == null || userTeamId == '')
+        userTeamId == null || userTeamId == ''
     "
   >
     <h3>Ogłoszenia poszukiwania drużyny</h3>

@@ -14,7 +14,7 @@
             :class="{ 'router-link-active': checkForTeamsPath }"
             to="/teams"
             draggable="false"
-            >Drużyny</router-link
+            >Tabele ligowe</router-link
           >
         </li>
         <li v-if="!isLoggedIn">
@@ -30,7 +30,7 @@
         </li>
         <li v-if="isLoggedIn">
           <router-link to="/messages" draggable="false"
-            >Wiadomości</router-link
+            ><i class="fas fa-envelope"></i> <span class="ml-1">Wiadomości</span></router-link
           >
         </li>
         <li v-if="isLoggedIn && !userTeamId">
@@ -42,7 +42,7 @@
           <router-link
             :to="{ name: 'teamDetails', params: { id: userTeamId } }"
             draggable="false"
-            >Moja drużyna</router-link
+            ><i class="fas fa-users"></i> <span class="ml-1">Moja drużyna</span></router-link
           >
         </li>
         <!-- </ul>
@@ -50,7 +50,7 @@
         <ul class="nav-menu" v-bind:class="[isMobileMenuOpened ? 'active' : '']"> -->
         <li class="font-weight-bold" v-if="isLoggedIn">
           <router-link to="/profile" draggable="false">
-            <i class="far fa-user-circle mr-2"></i>
+            <i class="fas fa-user-circle mr-2"></i>
             <span
               class="mr-1 red-color"
               v-if="getLoggedInUser.userType === userTypeEnum.TEAM_MANAGEMENT"

@@ -50,6 +50,11 @@ namespace SocialballWebAPI.Services
             }).ToList();
         }
 
+        public object GetInjuredPlayers(Guid teamId)
+        {
+            return _context.Players.Where(x => x.UserType == UserType.Zawodnik && x.TeamId == teamId && x.IsInjuredUntil.HasValue && x.IsInjuredUntil > DateTime.Now).ToList();
+        }
+
         public GetPlayerDto GetPlayerDetails(Guid id)
         {
             Player player = _context.Players
@@ -91,7 +96,7 @@ namespace SocialballWebAPI.Services
                 MatchId = x.MatchId,
                 MatchBetween = x.Match.HomeTeam.Name + " - " + x.Match.AwayTeam.Name,
                 DateTime = x.Match.DateTime,
-                GoalAssistPlayerName = ((MatchEventGoal)x).AssistPlayer.FirstName + " " + ((MatchEventGoal)x).AssistPlayer.LastName
+                GoalAssistPlayerName = ((MatchEventGoal)x).AssistPlayer != null ? (((MatchEventGoal)x).AssistPlayer.FirstName + " " + ((MatchEventGoal)x).AssistPlayer.LastName) : null
             }).OrderByDescending(x => x.DateTime).ToList();
             model.Assists = player.MatchGoalsAssisted.Where(x => x.Match.IsConfirmed).Select(x => new GoalInPlayerDetailsDto
             {
@@ -330,6 +335,14 @@ namespace SocialballWebAPI.Services
             }
             _context.SaveChanges();
 
+        }
+
+        public void AddEditPlayerInjury(PlayerInjuryDto model)
+        {
+            Player player = _context.Players.Single(x => x.Id == model.Id);
+            player.IsInjuredUntil = model.IsInjuredUntil.AddHours(1);
+            _context.Players.Update(player);
+            _context.SaveChanges();
         }
 
         public bool CheckUsernameUniqueness(string username)

@@ -34,6 +34,13 @@ export default {
     getLoggedInUser(state) {
       return state.user;
     },
+    getLoggedInUserType(state) {
+      if (state.user) {
+        return state.user.userType;
+      } else {
+        return null;
+      }
+    },
     isLoggedIn(state) {
       return state.status.loggedIn;
     },

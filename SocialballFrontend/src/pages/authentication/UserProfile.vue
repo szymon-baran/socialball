@@ -43,7 +43,7 @@
       />
     </div>
     <div class="primary-border">
-      <h4 class="line">Co chcesz dzisiaj zrobić?</h4>
+      <h4 class="line">Co chcesz zrobić?</h4>
       <div class="row mb-4 text-center">
         <div class="col-6 col-md-3 mb-3">
           <DxButton
@@ -88,8 +88,9 @@
       <div class="row text-center">
         <div class="col-6 col-md-3 mb-3">
           <DxButton
-            text="Edycja drużyny"
+            text="Kontuzje drużyny"
             type="danger"
+            @click="routerPushToInjuriesList"
             width="300px"
             height="150px"
           />
@@ -163,6 +164,9 @@ export default {
     },
     routerPushToMatches() {
       this.$router.push({ path: `/matches` });
+    },
+    routerPushToInjuriesList() {
+      this.$router.push({ path: `/injuries-list` });
     },
     routerPushToJobAdvertisements() {
       this.$router.push({ path: `/job-advertisements` });

@@ -98,6 +98,16 @@ export default {
           commit("SET_PLAYERS", response.data);
         });
     },
+    setInjuredPlayers({ commit }, teamId) {
+      axios
+        .get("https://localhost:44369/api/players/getInjuredPlayers", {
+          params: { teamId: teamId },
+          headers: authHeader(),
+        })
+        .then((response) => {
+          commit("SET_PLAYERS", response.data);
+        });
+    },
     addPlayer: async ({ state }) => {
       await axios.post("https://localhost:44369/api/players", state.player);
     },
@@ -110,9 +120,22 @@ export default {
         Citizenship: state.player.Citizenship,
         Email: state.player.Email,
         DateOfBirth: state.player.DateOfBirth,
-      }
-      wrapper.Image = Array.isArray(state.player.Image) ? state.player.Image : null;
+      };
+      wrapper.Image = Array.isArray(state.player.Image)
+        ? state.player.Image
+        : null;
       await axios.post("https://localhost:44369/api/players/edit", wrapper);
+    },
+    addEditPlayerInjury: async ({ state, dispatch }, teamId) => {
+      const wrapper = {
+        Id: state.player.Id,
+        IsInjuredUntil: state.player.IsInjuredUntil,
+      };
+      await axios.post(
+        "https://localhost:44369/api/players/addEditPlayerInjury",
+        wrapper
+      );
+      dispatch("setInjuredPlayers", teamId);
     },
     setPlayerDetails: async ({ commit }, playerId) => {
       await axios
@@ -152,16 +175,15 @@ export default {
     },
     validateUsername: ({ state }) => {
       return new Promise((resolve, reject) => {
-        axios.get(
-          "https://localhost:44369/api/players/isUsernameUnique",
-          {
+        axios
+          .get("https://localhost:44369/api/players/isUsernameUnique", {
             params: {
               username: state.player.LoginUsername,
             },
-          }
-        ).then((result) => {
-          result.data === true ? resolve() : reject();
-        });
+          })
+          .then((result) => {
+            result.data === true ? resolve() : reject();
+          });
       });
     },
   },

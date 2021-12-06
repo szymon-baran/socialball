@@ -8,6 +8,7 @@ import UserProfile from "./pages/authentication/UserProfile.vue";
 import PlayerDetails from "./pages/players/PlayerDetails.vue";
 import RegisterEditPlayer from "./pages/players/RegisterEditPlayer.vue";
 import PlayersList from "./pages/players/PlayersList.vue";
+import InjuriesList from "./pages/players/InjuriesList.vue";
 
 //Teams
 import TeamDetails from "./pages/teams/TeamDetails.vue";
@@ -32,21 +33,17 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: "/", component: HomePage, meta: { guest: true } },
-    // { path: '/', redirect: '/home' },
-    { path: "/profile", component: UserProfile, meta: { guest: false } }, // profil zalogowanego uzytkownika
+    { path: "/profile", component: UserProfile, meta: { guest: false } },
     { path: "/players", component: PlayersList },
     {
       path: "/players/:id",
       component: PlayerDetails,
       name: "playerDetails",
-      // children: [
-      //   { path: "contact", component: ContactPlayer }, // /players/:id/contact
-      // ],
     },
     { path: "/register", component: RegisterEditPlayer, meta: { guest: true } },
     {
       path: "/profile-edit",
-      name: 'editProfile',
+      name: "editProfile",
       component: RegisterEditPlayer,
       params: true,
       meta: { guest: false },
@@ -57,14 +54,18 @@ const router = createRouter({
       component: TeamDetails,
       params: true,
       name: "teamDetails",
-      // children: [{ path: "contact", component: ContactTeam }],
     },
     { path: "/matches", component: MatchesList },
-    { path: "/unconfirmed-matches", component: UnconfirmedMatchesList },
+    { path: "/unconfirmed-matches", component: UnconfirmedMatchesList, meta: { guest: false, player: false } },
     { path: "/messages", component: MessagesList, meta: { guest: false } },
     {
       path: "/job-advertisements",
       component: JobAdvertisements,
+      meta: { guest: false },
+    },
+    {
+      path: "/injuries-list",
+      component: InjuriesList,
       meta: { guest: false },
     },
     { path: "/:pageNotFound(.*)", component: PageNotFound },
@@ -74,8 +75,15 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const isAuthenticated = store.getters["authentication/isLoggedIn"];
+  const getUserType = store.getters["authentication/getLoggedInUserType"];
   if (to.meta.guest != null && !to.meta.guest) {
     if (!isAuthenticated) {
+      return next({ path: "/no-permission" });
+    }
+  }
+
+  if (to.meta.guest != null && !to.meta.guest && to.meta.player != null && !to.meta.player) {
+    if (getUserType != 2) {
       return next({ path: "/no-permission" });
     }
   }
