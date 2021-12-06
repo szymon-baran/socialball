@@ -1,6 +1,6 @@
 <template>
   <div class="big-data-grid">
-    <h3>Lista wszystkich drużyn</h3>
+    <h3>Tabele ligowe</h3>
     <div class="row">
       <div class="col-3">
         <DxSelectBox
@@ -96,7 +96,9 @@ export default {
     },
 
     onLeagueChanged(e) {
-      this.setTeamsByLeague(e.value);
+      if (this.ChosenLeagueId != null) {
+        this.setTeamsByLeague(e.value);
+      }
     },
   },
   mounted() {

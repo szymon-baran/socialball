@@ -10,6 +10,7 @@ export default {
         Name: "",
         LeagueId: "",
         LeagueName: "",
+        Image: "",
         InjuredPlayers: [],
       },
       positionsData: [],
@@ -35,6 +36,7 @@ export default {
       state.team.Name = payload.name;
       state.team.LeagueId = payload.leagueId;
       state.team.LeagueName = payload.leagueName;
+      state.team.Image = payload.image;
       state.team.InjuredPlayers = payload.injuredPlayers;
     },
     RESET_TEAM_DETAILS(state) {
@@ -42,6 +44,7 @@ export default {
       state.team.Name = "";
       state.team.LeagueId = "";
       state.team.LeagueName = "";
+      state.team.Image = "";
       state.team.InjuredPlayers = [];
     },
     SET_POSITIONS_DATA(state, payload) {

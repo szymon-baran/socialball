@@ -115,12 +115,13 @@ a:hover {
   border-radius: 50%;
   width: 150px;
   height: 150px;
-  border: 8px solid #009385;
+  border: 7px solid #009385;
+  padding: 6px;
 }
 
 .avatar:hover {
   transition: all .2s linear;
-  border: 10px solid #009385;
+  padding: 2px;
   cursor: pointer;
 }
 

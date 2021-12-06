@@ -8,6 +8,7 @@ using SocialballWebAPI.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace SocialballWebAPI.Services
@@ -50,7 +51,7 @@ namespace SocialballWebAPI.Services
             }).ToList();
         }
 
-        public Match GetMatchDetails(Guid id)
+        public MatchDetailsDto GetMatchDetails(Guid id)
         {
             Match match = _context.Matches
                     .Include(x => x.MatchEvents)
@@ -68,7 +69,33 @@ namespace SocialballWebAPI.Services
                 throw new KeyNotFoundException();
             }
 
-            return match;
+            MatchDetailsDto model = _mapper.Map<MatchDetailsDto>(match);
+
+            model.HomeTeam.Image = "https://socialball-avatars.s3.eu-central-1.amazonaws.com/" + model.HomeTeam.Id;
+            model.AwayTeam.Image = "https://socialball-avatars.s3.eu-central-1.amazonaws.com/" + model.AwayTeam.Id;
+
+            WebRequest webRequestHomeTeam = WebRequest.Create(model.HomeTeam.Image);
+            WebResponse webResponseHomeTeam;
+            try
+            {
+                webResponseHomeTeam = webRequestHomeTeam.GetResponse();
+            }
+            catch //If exception thrown then couldn't get response from address
+            {
+                model.HomeTeam.Image = "https://socialball-avatars.s3.eu-central-1.amazonaws.com/defaultTeam";
+            }
+            WebRequest webRequestAwayTeam = WebRequest.Create(model.AwayTeam.Image);
+            WebResponse webResponseAwayTeam;
+            try
+            {
+                webResponseAwayTeam = webRequestAwayTeam.GetResponse();
+            }
+            catch //If exception thrown then couldn't get response from address
+            {
+                model.AwayTeam.Image = "https://socialball-avatars.s3.eu-central-1.amazonaws.com/defaultTeam";
+            }
+
+            return model;
         }
 
         public void AddMatch(MatchDto model)

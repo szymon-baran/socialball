@@ -57,7 +57,7 @@ namespace SocialballWebAPI.Controllers
         }
 
         [HttpGet("details")]
-        public ActionResult<Match> GetMatch(Guid id)
+        public ActionResult<MatchDetailsDto> GetMatch(Guid id)
         {
             return Ok(MatchService.GetMatchDetails(id));
         }

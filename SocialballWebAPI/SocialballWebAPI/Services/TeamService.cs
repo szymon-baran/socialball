@@ -8,6 +8,7 @@ using SocialballWebAPI.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace SocialballWebAPI.Services
@@ -71,6 +72,19 @@ namespace SocialballWebAPI.Services
             if (team.League != null)
             {
                 model.LeagueName = team.League.Name;
+            }
+
+            model.Image = "https://socialball-avatars.s3.eu-central-1.amazonaws.com/" + team.Id;
+
+            WebRequest webRequest = WebRequest.Create(model.Image);
+            WebResponse webResponse;
+            try
+            {
+                webResponse = webRequest.GetResponse();
+            }
+            catch //If exception thrown then couldn't get response from address
+            {
+                model.Image = "https://socialball-avatars.s3.eu-central-1.amazonaws.com/defaultTeam";
             }
 
             return model;

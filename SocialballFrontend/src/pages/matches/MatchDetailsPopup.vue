@@ -37,13 +37,19 @@
         <div class="line">
           <div class="row">
             <h3 class="col">
-              {{ HomeTeam.name }}
+              <router-link
+                :to="{ name: 'teamDetails', params: { id: HomeTeam.id } }"
+                >{{ HomeTeam.name }}</router-link
+              >
             </h3>
             <h3 class="col">
               {{ matchResult }}
             </h3>
             <h3 class="col">
-              {{ AwayTeam.name }}
+              <router-link
+                :to="{ name: 'teamDetails', params: { id: AwayTeam.id } }"
+                >{{ AwayTeam.name }}</router-link
+              >
             </h3>
           </div>
         </div>
@@ -64,10 +70,22 @@
         </div>
         <div class="row">
           <div class="col">
-            herb1
+            <router-link
+              :to="{ name: 'teamDetails', params: { id: HomeTeam.id } }"
+              ><img
+                :src="HomeTeam.image"
+                alt="Herb drużyny domowej"
+                class="avatar"
+            /></router-link>
           </div>
           <div class="col">
-            herb2
+            <router-link
+              :to="{ name: 'teamDetails', params: { id: AwayTeam.id } }"
+              ><img
+                :src="AwayTeam.image"
+                alt="Herb drużyny wyjazdowej"
+                class="avatar"
+            /></router-link>
           </div>
         </div>
         <div class="row">
@@ -223,7 +241,7 @@ export default {
   },
   beforeUnmount() {
     this.RESET_MATCH_FORM();
-  }
+  },
 };
 </script>
 <style scoped>
@@ -240,5 +258,9 @@ h4 {
 .ico {
   font-size: 120%;
   margin: 0px 2px;
+}
+.avatar {
+  width: 50%;
+  height: auto;
 }
 </style>

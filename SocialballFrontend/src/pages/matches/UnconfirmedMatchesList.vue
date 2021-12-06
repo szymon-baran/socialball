@@ -6,9 +6,9 @@
     <div class="row mb-2">
       <div class="col">
         <h3>Lista niepotwierdzonych meczy</h3>
-        <h4 class="mt-2">
+        <p class="mt-2">
           Potwierdzone mecze znajdziesz na stronie szczegółów swojej drużyny.
-        </h4>
+        </p>
       </div>
       <div class="col text-right">
         <DxButton
