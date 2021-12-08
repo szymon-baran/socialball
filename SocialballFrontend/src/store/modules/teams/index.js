@@ -98,6 +98,20 @@ export default {
           )
       );
     },
+    setTeamsToLookup: () => {
+      return new Promise((resolve, reject) =>
+        axios
+          .get("https://localhost:44369/api/teams")
+          .then(
+            (response) => {
+              resolve(response);
+            },
+            (error) => {
+              reject(error);
+            }
+          )
+      );
+    },
     setLeaguesToLookup: () => {
       return new Promise((resolve, reject) =>
         axios.get("https://localhost:44369/api/teams/getLeaguesToLookup").then(

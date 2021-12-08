@@ -6,6 +6,7 @@ import matchesModule from "./modules/matches/index";
 import authenticationModule from "./modules/authentication/index";
 import messagesModule from "./modules/messages/index";
 import jobAdvertisementsModule from "./modules/jobAdvertisements/index";
+import playerTransferOffersModule from "./modules/playerTransferOffers/index";
 
 const store = createStore({
   modules: {
@@ -15,6 +16,7 @@ const store = createStore({
     authentication: authenticationModule,
     messages: messagesModule,
     jobAdvertisements: jobAdvertisementsModule,
+    playerTransferOffers: playerTransferOffersModule,
   },
 });
 

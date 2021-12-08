@@ -24,6 +24,9 @@ import MessagesList from "./pages/messages/MessagesList.vue";
 //Job advertisements
 import JobAdvertisements from "./pages/jobAdvertisements/JobAdvertisements.vue";
 
+//Transfer offers
+import PlayerTransferOffers from "./pages/playerTransferOffers/PlayerTransferOffers.vue";
+
 //Others
 import HomePage from "./pages/HomePage.vue";
 import PageNotFound from "./pages/PageNotFound.vue";
@@ -67,6 +70,11 @@ const router = createRouter({
       path: "/injuries-list",
       component: InjuriesList,
       meta: { guest: false },
+    },
+    {
+      path: "/transfer-offers",
+      component: PlayerTransferOffers,
+      meta: { guest: false, player: false },
     },
     { path: "/:pageNotFound(.*)", component: PageNotFound },
     { path: "/no-permission", component: NoPermissionPage },

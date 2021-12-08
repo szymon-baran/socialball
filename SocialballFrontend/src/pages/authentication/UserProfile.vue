@@ -1,6 +1,6 @@
 <template>
   <div class="big-data-grid">
-    <div v-if="getPlayerDetails.Id" class="text-center mb-4">
+    <div v-if="getPlayerDetails.Id" class="text-center mb-3">
       <h3>
         Witaj, {{ getPlayerDetails.FirstName }} {{ getPlayerDetails.LastName }}!
       </h3>
@@ -21,7 +21,7 @@
         v-else
       />
     </div>
-    <div v-if="userTeamId">
+    <div v-if="userTeamId" class="text-center">
       <h4>
         Twoja drużyna:
         <router-link
@@ -30,10 +30,10 @@
         >
       </h4>
     </div>
-    <div v-else>
+    <div v-else class="text-center">
       <p>
-        Aktualnie nie posiadasz drużyny. Nasza strona udostępnia rozwiązanie
-        umożliwiające zmianę tej sytuacji! Kliknij przycisk poniżej.
+        Aktualnie nie posiadasz drużyny. <br />Nasza strona udostępnia
+        rozwiązanie umożliwiające zmianę tej sytuacji! Kliknij przycisk poniżej.
       </p>
       <DxButton
         text="Poszukiwanie drużyny"
@@ -117,6 +117,7 @@
           <DxButton
             text="Transfery drużyny"
             type="danger"
+            @click="routerPushToTransferOffers"
             width="300px"
             height="150px"
           />
@@ -154,7 +155,10 @@ export default {
       RESET_PLAYER_FORM: "players/RESET_PLAYER_FORM",
     }),
     routerPushToEditProfile() {
-      this.$router.push({ name: 'editProfile', params: { playerToEditId: this.getPlayerDetails.Id } });
+      this.$router.push({
+        name: "editProfile",
+        params: { playerToEditId: this.getPlayerDetails.Id },
+      });
     },
     routerPushToPlayers() {
       this.$router.push({ path: `/players` });
@@ -173,6 +177,9 @@ export default {
     },
     routerPushToUnconfirmedMatches() {
       this.$router.push({ path: `/unconfirmed-matches` });
+    },
+    routerPushToTransferOffers() {
+      this.$router.push({ path: `/transfer-offers` });
     },
   },
   mounted() {

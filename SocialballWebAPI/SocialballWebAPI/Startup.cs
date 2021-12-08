@@ -56,6 +56,7 @@ namespace SocialballWebAPI
             services.AddScoped<ITeamService, TeamService>();
             services.AddScoped<IMatchService, MatchService>();
             services.AddScoped<IJobAdvertisementService, JobAdvertisementService>();
+            services.AddScoped<IPlayerTransferOfferService, PlayerTransferOfferService>();
 
             services.AddControllers().AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddDbContext<SocialballDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SocialballDB")));

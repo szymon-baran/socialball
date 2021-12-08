@@ -106,5 +106,6 @@ namespace SocialballWebAPI.Controllers
         {
             return Ok(PlayerService.GetUserTeamId(userId));
         }
+
     }
 }
