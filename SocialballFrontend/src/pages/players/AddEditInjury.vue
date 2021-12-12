@@ -6,7 +6,7 @@
       :close-on-outside-click="false"
       :show-close-button="false"
       :show-title="true"
-      :width="400"
+      :width="600"
       :height="300"
       container=".dx-viewport"
       :title="getTitle()"
@@ -68,6 +68,12 @@
             </div>
           </div>
         </DxValidationGroup>
+        <DxButton
+          text="Wyrzuć zawodnika z drużyny"
+          @click="handleKickPlayer()"
+          type="danger"
+          class="mb-4"
+        />
       </form>
     </DxPopup>
   </div>
@@ -79,6 +85,7 @@ import DxValidationSummary from "devextreme-vue/validation-summary";
 import { DxPopup, DxToolbarItem } from "devextreme-vue/popup";
 import DxSelectBox from "devextreme-vue/select-box";
 import DxDateBox from "devextreme-vue/date-box";
+import DxButton from "devextreme-vue/button";
 
 import { mapActions, mapMutations, mapGetters } from "vuex";
 import { createHelpers } from "vuex-map-fields";
@@ -88,6 +95,7 @@ const { mapFields } = createHelpers({
 });
 
 import { useToast } from "vue-toastification";
+import { custom } from "devextreme/ui/dialog";
 
 export default {
   name: "AddEditInjury",
@@ -127,7 +135,12 @@ export default {
     };
   },
   computed: {
-    ...mapFields(["player.Id", "player.IsInjuredUntil"]),
+    ...mapFields([
+      "player.Id",
+      "player.FirstName",
+      "player.LastName",
+      "player.IsInjuredUntil",
+    ]),
     ...mapGetters({
       isLoggedIn: "authentication/isLoggedIn",
     }),
@@ -140,6 +153,7 @@ export default {
       setPlayerDetails: "players/setPlayerDetails",
       getPlayersByTeam: "matches/getPlayersByTeam",
       addEditPlayerInjury: "players/addEditPlayerInjury",
+      kickPlayerOutOfTeam: "players/kickPlayerOutOfTeam",
       getUserTeamId: "authentication/getUserTeamId",
     }),
     ...mapMutations({
@@ -147,6 +161,39 @@ export default {
     }),
     getTitle() {
       return (this.showToEdit ? "Edytuj" : "Dodaj") + " kontuzję zawodnika";
+    },
+    handleKickPlayer() {
+      let dialog = custom({
+        title: "Potwierdzenie",
+        messageHtml:
+          "Czy na pewno chcesz wyrzucić zawodnika " +
+          this.FirstName +
+          " " +
+          this.LastName +
+          " ze swojej drużyny?",
+        buttons: [
+          {
+            text: "Tak",
+            onClick: () => {
+              return true;
+            },
+          },
+          {
+            text: "Nie",
+            onClick: () => {
+              return false;
+            },
+          },
+        ],
+      });
+      dialog.show().then((dialogResult) => {
+        if (dialogResult === true) {
+          this.kickPlayerOutOfTeam();
+          this.popupVisible = false;
+          this.$emit("closed");
+          useToast().success("Zawodnik został usunięty z drużyny!");
+        }
+      });
     },
     handleSubmit() {
       let validationResult = this.validationGroup.validate();
@@ -190,6 +237,7 @@ export default {
     DxToolbarItem,
     DxSelectBox,
     DxDateBox,
+    DxButton,
   },
   beforeUnmount() {
     this.RESET_PLAYER_FORM();

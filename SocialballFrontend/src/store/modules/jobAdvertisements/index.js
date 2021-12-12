@@ -14,9 +14,7 @@ export default {
         Location: "",
         Content: "",
         TeamId: "",
-        LowestEarningsPerMonth: null,
-        HighestEarningsPerMonth: null,
-        Earnings: "",
+        Earnings: null,
         TrainingSessionsPerWeek: null,
         Position: null,
         TeamName: "",
@@ -69,9 +67,7 @@ export default {
       state.jobAdvertisement.Location = payload.location;
       state.jobAdvertisement.Content = payload.content;
       state.jobAdvertisement.TeamId = payload.teamId;
-      state.jobAdvertisement.LowestEarningsPerMonth = payload.lowestEarningsPerMonth 
-      state.jobAdvertisement.HighestEarningsPerMonth = payload.highestEarningsPerMonth;
-      state.jobAdvertisement.Earnings = payload.lowestEarningsPerMonth + " - " + payload.highestEarningsPerMonth;
+      state.jobAdvertisement.Earnings = payload.earnings
       state.jobAdvertisement.TrainingSessionsPerWeek = payload.trainingSessionsPerWeek;
       state.jobAdvertisement.Position = payload.position;
       state.jobAdvertisement.TeamName = payload.teamName;
@@ -83,9 +79,7 @@ export default {
       state.jobAdvertisement.Location = "";
       state.jobAdvertisement.Content = "";
       state.jobAdvertisement.TeamId = "";
-      state.jobAdvertisement.LowestEarningsPerMonth = null;
-      state.jobAdvertisement.HighestEarningsPerMonth = null;
-      state.jobAdvertisement.Earnings = "";
+      state.jobAdvertisement.Earnings = null;
       state.jobAdvertisement.TrainingSessionsPerWeek = null;
       state.jobAdvertisement.Position = null;
       state.jobAdvertisement.TeamName = "";

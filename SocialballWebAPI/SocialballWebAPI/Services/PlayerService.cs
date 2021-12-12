@@ -46,13 +46,10 @@ namespace SocialballWebAPI.Services
                 x.Position,
                 x.TeamId,
                 x.Citizenship,
-                IsInjured = x.IsInjuredUntil > DateTime.Now ? true : false
+                x.Earnings,
+                IsInjured = x.IsInjuredUntil > DateTime.Now ? true : false,
+                x.IsInjuredUntil
             }).ToList();
-        }
-
-        public object GetInjuredPlayers(Guid teamId)
-        {
-            return _context.Players.Where(x => x.UserType == UserType.Zawodnik && x.TeamId == teamId && x.IsInjuredUntil.HasValue && x.IsInjuredUntil > DateTime.Now).ToList();
         }
 
         public GetPlayerDto GetPlayerDetails(Guid id)
@@ -314,6 +311,7 @@ namespace SocialballWebAPI.Services
             userData.LastName = model.LastName;
             userData.DateOfBirth = model.DateOfBirth;
             userData.Citizenship = model.Citizenship;
+            userData.Earnings = model.Earnings;
             userData.User.Email = model.Email;
 
             if (model.Image != null && model.Image.Length > 0)
@@ -341,6 +339,14 @@ namespace SocialballWebAPI.Services
         {
             Player player = _context.Players.Single(x => x.Id == model.Id);
             player.IsInjuredUntil = model.IsInjuredUntil.AddHours(1);
+            _context.Players.Update(player);
+            _context.SaveChanges();
+        }
+
+        public void KickPlayerOutOfTeam(Guid id)
+        {
+            Player player = _context.Players.Single(x => x.Id == id);
+            player.TeamId = null;
             _context.Players.Update(player);
             _context.SaveChanges();
         }

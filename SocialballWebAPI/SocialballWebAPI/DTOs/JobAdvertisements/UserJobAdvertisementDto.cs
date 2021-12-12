@@ -10,6 +10,7 @@ namespace SocialballWebAPI.DTOs
         public Guid Id { get; set; }
         public string Location { get; set; }
         public string Content { get; set; }
+        public int? Earnings { get; set; }
         public Guid UserId { get; set; }
         public bool IsActive { get; set; }
     }

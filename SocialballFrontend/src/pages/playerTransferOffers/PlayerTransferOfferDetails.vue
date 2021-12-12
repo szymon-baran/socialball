@@ -38,7 +38,8 @@
         {{ playerTransferOffer.PlayerName }}!
       </h4>
       <div class="mt-4">
-        <p>Kwota transferu: {{ playerTransferOffer.TransferFee }}</p>
+        <p>Kwota transferu: {{ playerTransferOffer.TransferFee }} PLN</p>
+        <p>Przyszłe zarobki zawodnika: {{ playerTransferOffer.PlayerEarnings }} PLN/miesiąc</p>
         <p>{{ playerTransferOffer.Content }}</p>
       </div>
       <div

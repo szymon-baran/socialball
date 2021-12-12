@@ -13,6 +13,7 @@ namespace SocialballWebAPI.DTOs
         public string LastName { get; set; }
         public PositionType? Position { get; set; }
         public string Citizenship { get; set; }
+        public int? Earnings { get; set; }
         public string Email { get; set; }
         public byte[] Image { get; set; }
         public DateTime DateOfBirth { get; set; }

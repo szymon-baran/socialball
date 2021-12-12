@@ -13,6 +13,7 @@ namespace SocialballWebAPI.Models
         public Guid ToTeamId { get; set; }
         public string Content { get; set; }
         public int TransferFee { get; set; }
+        public int? PlayerEarnings { get; set; }
         public bool IsAcceptedByPlayer { get; set; }
         public bool IsAcceptedByOtherTeam { get; set; }
 

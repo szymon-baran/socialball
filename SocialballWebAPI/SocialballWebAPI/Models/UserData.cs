@@ -14,6 +14,7 @@ namespace SocialballWebAPI.Models
         public string LastName { get; set; }
         public Guid? TeamId { get; set; }
         public string Citizenship { get; set; }
+        public int? Earnings { get; set; }
         public Guid? UserId { get; set; }
         public DateTime DateOfBirth { get; set; }
         public virtual Team Team { get; set; }

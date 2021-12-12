@@ -36,7 +36,7 @@
         </div>
         <ul class="mt-4">
           <li>Lokalizacja: {{ jobAdvertisement.Location }}</li>
-          <li>Zarobki pomiędzy: {{ jobAdvertisement.Earnings }}</li>
+          <li>Zarobki preferowane: {{ jobAdvertisement.Earnings }} PLN/miesiąc</li>
           <li>
             Liczba sesji treningowych w tygodniu:
             {{ jobAdvertisement.TrainingSessionsPerWeek }}

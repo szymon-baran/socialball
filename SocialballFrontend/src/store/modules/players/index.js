@@ -15,6 +15,7 @@ export default {
         IsInjuredUntil: null,
         Email: "",
         Position: null,
+        Earnings: null,
         TeamId: "",
         Citizenship: "",
         LoginUsername: "",
@@ -53,6 +54,7 @@ export default {
       state.player.IsInjuredUntil = payload.isInjuredUntil;
       state.player.Email = payload.email;
       state.player.Position = payload.position;
+      state.player.Earnings = payload.earnings;
       state.player.TeamId = payload.teamId;
       state.player.Citizenship = payload.citizenship;
       state.player.Team = payload.team;
@@ -71,6 +73,7 @@ export default {
       state.player.IsInjuredUntil = null;
       state.player.Email = "";
       state.player.Position = null;
+      state.player.Earnings = null;
       state.player.TeamId = "";
       state.player.Citizenship = "";
       state.player.LoginUsername = "";
@@ -110,16 +113,6 @@ export default {
         )
       );
     },
-    setInjuredPlayers({ commit }, teamId) {
-      axios
-        .get("https://localhost:44369/api/players/getInjuredPlayers", {
-          params: { teamId: teamId },
-          headers: authHeader(),
-        })
-        .then((response) => {
-          commit("SET_PLAYERS", response.data);
-        });
-    },
     addPlayer: async ({ state }) => {
       await axios.post("https://localhost:44369/api/players", state.player);
     },
@@ -147,7 +140,7 @@ export default {
         "https://localhost:44369/api/players/addEditPlayerInjury",
         wrapper
       );
-      dispatch("setInjuredPlayers", teamId);
+      dispatch("setPlayers", teamId);
     },
     setPlayerDetails: async ({ commit }, playerId) => {
       await axios
@@ -197,6 +190,15 @@ export default {
             result.data === true ? resolve() : reject();
           });
       });
+    },
+    kickPlayerOutOfTeam: async ({ dispatch, state }) => {
+      await axios
+        .post("https://localhost:44369/api/players/kickPlayerOutOfTeam", {
+          Id: state.player.Id,
+        })
+        .then(() => {
+          dispatch("setPlayers", state.player.TeamId);
+        });
     },
   },
 };

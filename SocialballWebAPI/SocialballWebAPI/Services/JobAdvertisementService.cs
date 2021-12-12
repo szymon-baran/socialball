@@ -31,7 +31,7 @@ namespace SocialballWebAPI.Services
             {
                 x.Id,
                 x.TeamId,
-                Earnings = x.LowestEarningsPerMonth + " - " + x.HighestEarningsPerMonth,
+                x.Earnings,
                 x.TrainingSessionsPerWeek,
                 x.Location,
                 x.JobAdvertisementType,
@@ -113,8 +113,7 @@ namespace SocialballWebAPI.Services
                     FromTeamJobAdvertisement fromTeam = _context.FromTeamJobAdvertisements.Include(x => x.Team).Single(x => x.Id == id);
                     model.TeamId = fromTeam.TeamId;
                     model.TeamName = fromTeam.Team.Name;
-                    model.LowestEarningsPerMonth = fromTeam.LowestEarningsPerMonth;
-                    model.HighestEarningsPerMonth = fromTeam.HighestEarningsPerMonth;
+                    model.Earnings = fromTeam.Earnings;
                     model.TrainingSessionsPerWeek = fromTeam.TrainingSessionsPerWeek;
                     model.Position = fromTeam.Position;
                     break;
@@ -166,6 +165,7 @@ namespace SocialballWebAPI.Services
             user.JobAdvertisementType = JobAdvertisementType.FromUser;
             user.Location = model.Location;
             user.Content = model.Content;
+            user.Earnings = model.Earnings;
             user.UserId = model.UserId;
             user.IsActive = model.IsActive;
 
@@ -189,8 +189,7 @@ namespace SocialballWebAPI.Services
                 TeamId = model.TeamId,
                 Location = model.Location,
                 Content = model.Content,
-                LowestEarningsPerMonth = model.LowestEarningsPerMonth,
-                HighestEarningsPerMonth = model.HighestEarningsPerMonth,
+                Earnings = model.Earnings,
                 TrainingSessionsPerWeek = model.TrainingSessionsPerWeek,
                 Position = model.Position,
                 IsActive = model.IsActive
@@ -205,8 +204,7 @@ namespace SocialballWebAPI.Services
             jobAdvertisement.TeamId = model.TeamId;
             jobAdvertisement.Location = model.Location;
             jobAdvertisement.Content = model.Content;
-            jobAdvertisement.LowestEarningsPerMonth = model.LowestEarningsPerMonth;
-            jobAdvertisement.HighestEarningsPerMonth = model.HighestEarningsPerMonth;
+            jobAdvertisement.Earnings = model.Earnings;
             jobAdvertisement.TrainingSessionsPerWeek = model.TrainingSessionsPerWeek;
             jobAdvertisement.Position = model.Position;
             jobAdvertisement.IsActive = model.IsActive;
@@ -252,7 +250,7 @@ namespace SocialballWebAPI.Services
 
         public void AddResponseToJobAdvertisementAnswer(JobAdvertisementAnswerDto model)
         {
-            JobAdvertisementAnswer answer = _context.JobAdvertisementAnswers.Single(x => x.Id == model.Id);
+            JobAdvertisementAnswer answer = _context.JobAdvertisementAnswers.Include(x => x.JobAdvertisement).Single(x => x.Id == model.Id);
             answer.IsResponded = true;
             answer.IsResponsePositive = model.IsResponsePositive;
             answer.ResponseContent = model.ResponseContent;
@@ -262,6 +260,7 @@ namespace SocialballWebAPI.Services
                 if (userData.TeamId == null || userData.TeamId == Guid.Empty)
                 {
                     userData.TeamId = model.TeamId;
+                    userData.Earnings = answer.JobAdvertisement.Earnings;
                 }
                 _context.UserDatas.Update(userData);
                 List<FromUserJobAdvertisement> userAdvertisements = _context.FromUserJobAdvertisements.Where(x => x.UserId == userData.UserId).ToList();

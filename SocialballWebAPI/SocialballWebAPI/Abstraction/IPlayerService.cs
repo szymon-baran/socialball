@@ -12,7 +12,6 @@ namespace SocialballWebAPI.Abstraction
     {
         object GetPlayers();
         object GetPlayersByTeamId(Guid teamId);
-        object GetInjuredPlayers(Guid teamId);
         GetPlayerDto GetPlayerDetails(Guid id);
         GetUserDataDto GetUserDataDetails(Guid id);
         GetPlayerDto GetPlayerDetailsByUserId(Guid userId);
@@ -22,6 +21,7 @@ namespace SocialballWebAPI.Abstraction
         void AddPlayer(RegisterPlayerDto playerModel);
         void EditUserData(EditPlayerDto model);
         void AddEditPlayerInjury(PlayerInjuryDto model);
+        void KickPlayerOutOfTeam(Guid id);
         bool CheckUsernameUniqueness(string username);
     }
 }

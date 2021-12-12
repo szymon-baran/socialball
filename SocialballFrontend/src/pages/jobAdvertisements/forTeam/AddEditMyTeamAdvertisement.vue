@@ -57,30 +57,10 @@
           </div>
           <div class="row mt-3">
             <div class="col">
-              <label for="lowestEarningsPerMonthNumberBox" class="form-label"
-                >Minimalna stawka (PLN/miesiąc)</label
+              <label for="earningsPerMonthNumberBox" class="form-label"
+                >Proponowane zarobki [PLN/miesiąc]</label
               >
-              <DxNumberBox
-                v-model="LowestEarningsPerMonth"
-                id="lowestEarningsPerMonthNumberBox"
-              >
-                <DxValidator>
-                  <DxRequiredRule message="Należy określić stawki finansowe!" />
-                </DxValidator>
-              </DxNumberBox>
-            </div>
-            <div class="col">
-              <label for="highestEarningsPerMonthNumberBox" class="form-label"
-                >Maksymalna stawka (PLN/miesiąc)</label
-              >
-              <DxNumberBox
-                v-model="HighestEarningsPerMonth"
-                id="highestEarningsPerMonthNumberBox"
-              >
-                <DxValidator>
-                  <DxRequiredRule message="Należy określić stawki finansowe!" />
-                </DxValidator>
-              </DxNumberBox>
+              <DxNumberBox v-model="Earnings" id="earningsPerMonthNumberBox" />
             </div>
           </div>
           <div class="row mt-3">
@@ -194,8 +174,7 @@ export default {
       "jobAdvertisement.Location",
       "jobAdvertisement.Content",
       "jobAdvertisement.TeamId",
-      "jobAdvertisement.LowestEarningsPerMonth",
-      "jobAdvertisement.HighestEarningsPerMonth",
+      "jobAdvertisement.Earnings",
       "jobAdvertisement.TrainingSessionsPerWeek",
       "jobAdvertisement.Position",
       "jobAdvertisement.IsActive",
@@ -270,6 +249,6 @@ export default {
   },
   beforeUnmount() {
     this.RESET_JOB_ADVERTISEMENT_FORM();
-  }
+  },
 };
 </script>

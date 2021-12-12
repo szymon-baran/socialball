@@ -15,7 +15,7 @@
       <DxColumn data-field="fromTeamId" caption="Oferta od">
         <DxLookup :data-source="teams" value-expr="id" display-expr="name" />
       </DxColumn>
-      <DxColumn data-field="transferFee" caption="Kwota transferu [PLN]" />
+      <DxColumn data-field="playerEarnings" caption="Zarobki [PLN/miesiąc]" />
       <DxColumn data-field="isAcceptedByOtherTeam" caption="Czy zaakceptowane przez Twoją drużynę?" />
     </DxDataGrid>
   </div>

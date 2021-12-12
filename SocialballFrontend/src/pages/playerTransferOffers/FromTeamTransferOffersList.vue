@@ -20,6 +20,7 @@
         />
       </DxColumn>
       <DxColumn data-field="transferFee" caption="Kwota transferu [PLN]" />
+      <DxColumn data-field="playerEarnings" caption="Zarobki [PLN/miesiąc]" />
       <DxColumn data-field="isAcceptedByOtherTeam" caption="Zaakceptowane przez drużynę" />
       <DxColumn data-field="isAcceptedByPlayer" caption="Zaakceptowane przez zawodnika" />
     </DxDataGrid>

@@ -6,8 +6,8 @@
       :close-on-outside-click="false"
       :show-close-button="false"
       :show-title="true"
-      :width="500"
-      :height="520"
+      :width="520"
+      :height="600"
       container=".dx-viewport"
       title="Składanie oferty transferowej"
       :shading="false"
@@ -77,6 +77,8 @@
                 </DxValidator>
               </DxSelectBox>
             </div>
+          </div>
+          <div class="row mt-4">
             <div class="col">
               <label for="transferFeeNumberBox" class="form-label"
                 >Kwota transferu [PLN]</label
@@ -86,6 +88,12 @@
                   <DxRequiredRule message="Podaj kwotę transferu!" />
                 </DxValidator>
               </DxNumberBox>
+            </div>
+            <div class="col">
+              <label for="playerEarningsNumberBox" class="form-label"
+                >Zarobki zawodnika [PLN/miesiąc]</label
+              >
+              <DxNumberBox v-model="PlayerEarnings" id="playerEarningsNumberBox" />
             </div>
           </div>
           <div class="row mt-4">
@@ -165,6 +173,7 @@ export default {
       "playerTransferOffer.ToTeamId",
       "playerTransferOffer.Content",
       "playerTransferOffer.TransferFee",
+      "playerTransferOffer.PlayerEarnings",
     ]),
     validationGroup: function() {
       return this.$refs[this.groupRefKey].instance;
@@ -213,7 +222,9 @@ export default {
       this.FromTeamId = response.data;
       this.setTeamsToLookup().then((response) => {
         this.teams = response.data;
-        this.filteredTeams = response.data.filter(x => x.id !== this.FromTeamId);
+        this.filteredTeams = response.data.filter(
+          (x) => x.id !== this.FromTeamId
+        );
       });
     });
   },

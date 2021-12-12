@@ -67,7 +67,7 @@ const router = createRouter({
       meta: { guest: false },
     },
     {
-      path: "/injuries-list",
+      path: "/team-management",
       component: InjuriesList,
       meta: { guest: false },
     },

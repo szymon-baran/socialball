@@ -29,6 +29,7 @@
           >{{ getPlayerDetails.TeamName }}</router-link
         >
       </h4>
+      <p v-if="getPlayerDetails.Earnings">Twoje aktualne zarobki miesięczne: {{ getPlayerDetails.Earnings }} PLN.</p>
     </div>
     <div v-else class="text-center">
       <p>
@@ -88,7 +89,7 @@
       <div class="row text-center">
         <div class="col-6 col-md-3 mb-3">
           <DxButton
-            text="Kontuzje drużyny"
+            text="Zarządzanie drużyną"
             type="danger"
             @click="routerPushToInjuriesList"
             width="300px"
@@ -170,7 +171,7 @@ export default {
       this.$router.push({ path: `/matches` });
     },
     routerPushToInjuriesList() {
-      this.$router.push({ path: `/injuries-list` });
+      this.$router.push({ path: `/team-management` });
     },
     routerPushToJobAdvertisements() {
       this.$router.push({ path: `/job-advertisements` });

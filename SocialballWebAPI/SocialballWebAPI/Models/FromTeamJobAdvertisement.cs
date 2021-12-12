@@ -9,8 +9,6 @@ namespace SocialballWebAPI.Models
     public class FromTeamJobAdvertisement : JobAdvertisement
     {
         public Guid TeamId { get; set; }
-        public int LowestEarningsPerMonth { get; set; }
-        public int HighestEarningsPerMonth { get; set; }
         public int TrainingSessionsPerWeek { get; set; }
         public PositionType Position { get; set; }
         public Team Team { get; set; }

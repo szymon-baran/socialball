@@ -10,6 +10,12 @@
             >
             <DxTextBox v-model="Location" id="locationTextBox" />
           </div>
+          <div class="col">
+            <label for="earningsPerMonthNumberBox" class="form-label"
+              >Preferowane zarobki [PLN/miesiąc]</label
+            >
+            <DxNumberBox v-model="Earnings" id="earningsPerMonthNumberBox" />
+          </div>
         </div>
         <div class="row mt-3">
           <div class="col">
@@ -56,6 +62,7 @@ import { DxCheckBox } from "devextreme-vue/check-box";
 import { DxValidator, DxRequiredRule } from "devextreme-vue/validator";
 import DxValidationGroup from "devextreme-vue/validation-group";
 import DxValidationSummary from "devextreme-vue/validation-summary";
+import { DxNumberBox } from "devextreme-vue/number-box";
 
 import { mapActions, mapMutations, mapGetters } from "vuex";
 import { createHelpers } from "vuex-map-fields";
@@ -77,6 +84,7 @@ export default {
     DxValidationGroup,
     DxValidationSummary,
     DxCheckBox,
+    DxNumberBox,
   },
   data() {
     return {
@@ -87,6 +95,7 @@ export default {
     ...mapFields([
       "jobAdvertisement.Location",
       "jobAdvertisement.Content",
+      "jobAdvertisement.Earnings",
       "jobAdvertisement.UserId",
       "jobAdvertisement.IsActive",
     ]),
@@ -105,7 +114,8 @@ export default {
         "jobAdvertisements/setUserJobAdvertisementDetails",
     }),
     ...mapMutations({
-      RESET_JOB_ADVERTISEMENT_FORM: "jobAdvertisements/RESET_JOB_ADVERTISEMENT_FORM",
+      RESET_JOB_ADVERTISEMENT_FORM:
+        "jobAdvertisements/RESET_JOB_ADVERTISEMENT_FORM",
     }),
     handleSubmit() {
       let validationResult = this.validationGroup.validate();
@@ -122,6 +132,6 @@ export default {
   },
   beforeUnmount() {
     this.RESET_JOB_ADVERTISEMENT_FORM();
-  }
+  },
 };
 </script>

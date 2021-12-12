@@ -16,6 +16,7 @@ namespace SocialballWebAPI.DTOs
         public Guid? TeamId { get; set; }
         public Guid? UserId { get; set; }
         public string Citizenship { get; set; }
+        public int? Earnings { get; set; }
         public string Email { get; set; }
         public string TeamName { get; set; }
         public string Image { get; set; }

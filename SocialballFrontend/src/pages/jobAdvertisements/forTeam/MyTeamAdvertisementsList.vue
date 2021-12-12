@@ -32,6 +32,7 @@
         />
       </DxColumn>
       <DxColumn data-field="location" caption="Lokalizacja" />
+      <DxColumn data-field="earnings" caption="Proponowane zarobki [PLN/miesiąc]" />
       <DxColumn
         data-field="isActive"
         caption="Czy aktywne?"

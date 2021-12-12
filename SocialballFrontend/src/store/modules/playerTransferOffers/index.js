@@ -14,6 +14,7 @@ export default {
         ToTeamId: "",
         Content: "",
         TransferFee: null,
+        PlayerEarnings: null,
         IsAcceptedByPlayer: false,
         IsAcceptedByOtherTeam: false,
         PlayerName: "",
@@ -43,6 +44,7 @@ export default {
       state.playerTransferOffer.ToTeamId = payload.toTeamId;
       state.playerTransferOffer.Content = payload.content;
       state.playerTransferOffer.TransferFee = payload.transferFee;
+      state.playerTransferOffer.PlayerEarnings = payload.playerEarnings;
       state.playerTransferOffer.IsAcceptedByPlayer = payload.isAcceptedByPlayer;
       state.playerTransferOffer.IsAcceptedByOtherTeam =
         payload.isAcceptedByOtherTeam;
@@ -57,6 +59,7 @@ export default {
       state.playerTransferOffer.ToTeamId = "";
       state.playerTransferOffer.Content = "";
       state.playerTransferOffer.TransferFee = null;
+      state.playerTransferOffer.PlayerEarnings = null;
       state.playerTransferOffer.IsAcceptedByPlayer = false;
       state.playerTransferOffer.IsAcceptedByOtherTeam = false;
       state.playerTransferOffer.PlayerName = "";

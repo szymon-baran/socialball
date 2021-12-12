@@ -16,8 +16,7 @@ namespace SocialballWebAPI.DTOs
 
         public Guid? TeamId { get; set; }
         public string TeamName { get; set; }
-        public int LowestEarningsPerMonth { get; set; }
-        public int HighestEarningsPerMonth { get; set; }
+        public int? Earnings { get; set; }
         public int TrainingSessionsPerWeek { get; set; }
         public PositionType Position { get; set; }
 

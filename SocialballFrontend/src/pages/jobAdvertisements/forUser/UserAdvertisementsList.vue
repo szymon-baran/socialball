@@ -16,7 +16,7 @@
       <DxColumn data-field="teamId" caption="Drużyna">
         <DxLookup :data-source="teams" value-expr="id" display-expr="name" />
       </DxColumn>
-      <DxColumn data-field="earnings" caption="Zarobki" />
+      <DxColumn data-field="earnings" caption="Zarobki [PLN/miesiąc]" />
       <DxColumn
         data-field="trainingSessionsPerWeek"
         caption="Liczba sesji treningowych"

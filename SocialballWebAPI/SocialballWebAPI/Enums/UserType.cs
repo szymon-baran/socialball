@@ -9,6 +9,7 @@ namespace SocialballWebAPI.Enums
     {
         Zawodnik = 1,
         Sztab = 2,
+        Admin = 10,
         System = 999
     }
 }

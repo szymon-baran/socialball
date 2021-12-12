@@ -2,15 +2,15 @@
   <div class="big-data-grid">
     <div class="row">
       <div class="col">
-        <h3>Aktualne kontuzje drużyny</h3>
+        <h3>Zarządzanie drużyną</h3>
       </div>
-      <div class="col text-right">
+      <!-- <div class="col text-right">
         <DxButton
           text="Dodaj nową kontuzję w drużynie"
           @click="showAddPopup"
           type="default"
         />
-      </div>
+      </div> -->
     </div>
     <DxDataGrid
       :data-source="getPlayers"
@@ -51,12 +51,12 @@
     </DxDataGrid>
   </div>
 
-  <!-- Add popup -->
+  <!-- Add popup
   <AddEditInjury
     :showToEdit="false"
     v-if="addPopupOptions.isVisible"
     @closed="onAddPopupClose"
-  />
+  /> -->
 
   <!-- Edit popup -->
   <AddEditInjury
@@ -75,7 +75,6 @@ import {
   DxFilterRow,
   DxLookup,
 } from "devextreme-vue/data-grid";
-import DxButton from "devextreme-vue/button";
 
 import { mapGetters, mapActions, mapMutations } from "vuex";
 import AddEditInjury from "./AddEditInjury";
@@ -85,9 +84,9 @@ export default {
   data() {
     return {
       positions: [],
-      addPopupOptions: {
-        isVisible: false,
-      },
+      // addPopupOptions: {
+      //   isVisible: false,
+      // },
       editPopupOptions: {
         isVisible: false,
         userId: "",
@@ -103,7 +102,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      setInjuredPlayers: "players/setInjuredPlayers",
+      setPlayers: "players/setPlayers",
       setAllTeams: "teams/setAllTeams",
       setPositionsToLookup: "teams/setPositionsToLookup",
       getUserTeamId: "authentication/getUserTeamId",
@@ -136,7 +135,7 @@ export default {
     if (this.isLoggedIn) {
       this.getUserTeamId().then((response) => {
         this.userTeamId = response.data;
-        this.setInjuredPlayers(response.data);
+        this.setPlayers(response.data);
       });
     }
     this.setAllTeams();
@@ -147,7 +146,6 @@ export default {
     DxColumn,
     DxFilterRow,
     DxLookup,
-    DxButton,
     AddEditInjury,
   },
   beforeUnmount() {

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SocialballWebAPI.Models;
 
 namespace SocialballWebAPI.Migrations
 {
     [DbContext(typeof(SocialballDBContext))]
-    partial class SocialballDBContextModelSnapshot : ModelSnapshot
+    [Migration("20211212160354_AddedUsersEarningsMigration")]
+    partial class AddedUsersEarningsMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,9 +31,6 @@ namespace SocialballWebAPI.Migrations
 
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("Earnings")
-                        .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -382,6 +381,15 @@ namespace SocialballWebAPI.Migrations
             modelBuilder.Entity("SocialballWebAPI.Models.FromTeamJobAdvertisement", b =>
                 {
                     b.HasBaseType("SocialballWebAPI.Models.JobAdvertisement");
+
+                    b.Property<int>("Earnings")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HighestEarningsPerMonth")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LowestEarningsPerMonth")
+                        .HasColumnType("int");
 
                     b.Property<int>("Position")
                         .HasColumnType("int");

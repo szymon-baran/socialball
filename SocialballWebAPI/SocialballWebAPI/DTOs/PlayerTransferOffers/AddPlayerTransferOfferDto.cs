@@ -12,5 +12,6 @@ namespace SocialballWebAPI.DTOs
         public Guid ToTeamId { get; set; }
         public string Content { get; set; }
         public int TransferFee { get; set; }
+        public int? PlayerEarnings { get; set; }
     }
 }

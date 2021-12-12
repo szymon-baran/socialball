@@ -39,6 +39,7 @@ namespace SocialballWebAPI.Services
                 ToTeamId = x.ToTeamId,
                 //Content = x.Content,
                 TransferFee = x.TransferFee,
+                PlayerEarnings = x.PlayerEarnings,
                 IsAcceptedByPlayer = x.IsAcceptedByPlayer,
                 IsAcceptedByOtherTeam = x.IsAcceptedByOtherTeam,
                 //PlayerName = x.Player.FirstName + " " + x.Player.LastName,
@@ -56,6 +57,7 @@ namespace SocialballWebAPI.Services
                 ToTeamId = x.ToTeamId,
                 //Content = x.Content,
                 TransferFee = x.TransferFee,
+                PlayerEarnings = x.PlayerEarnings,
                 IsAcceptedByPlayer = x.IsAcceptedByPlayer,
                 IsAcceptedByOtherTeam = x.IsAcceptedByOtherTeam,
                 PlayerName = x.Player.FirstName + " " + x.Player.LastName,
@@ -75,6 +77,7 @@ namespace SocialballWebAPI.Services
                 ToTeamId = x.ToTeamId,
                 //Content = x.Content,
                 TransferFee = x.TransferFee,
+                PlayerEarnings = x.PlayerEarnings,
                 IsAcceptedByPlayer = x.IsAcceptedByPlayer,
                 IsAcceptedByOtherTeam = x.IsAcceptedByOtherTeam,
                 //PlayerName = x.Player.FirstName + " " + x.Player.LastName,
@@ -113,6 +116,7 @@ namespace SocialballWebAPI.Services
         {
             Player player = _context.Players.Single(x => x.Id == playerTransferOffer.PlayerId);
             player.TeamId = playerTransferOffer.FromTeamId;
+            player.Earnings = playerTransferOffer.PlayerEarnings;
             _context.Players.Update(player);
             _context.PlayerTransferOffers.Remove(playerTransferOffer);
             _context.SaveChanges();
