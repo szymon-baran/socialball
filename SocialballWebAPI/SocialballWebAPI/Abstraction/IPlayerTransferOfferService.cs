@@ -12,7 +12,11 @@ namespace SocialballWebAPI.Abstraction
     {
         List<PlayerTransferOfferDto> GetTeamTransferOffers(Guid teamId);
         List<PlayerTransferOfferDto> GetFromTeamTransferOffers(Guid teamId);
-        List<PlayerTransferOffer> GetPlayerTransferOffers(Guid userId);
+        List<PlayerTransferOfferDto> GetPlayerTransferOffers(Guid userId);
         void AddPlayerTransferOffer(AddPlayerTransferOfferDto model);
+        PlayerTransferOfferDto GetPlayerTransferOfferDetails(Guid id);
+        void RejectOffer(Guid id);
+        void AcceptOfferAsTeam(Guid id);
+        void AcceptOfferAsPlayer(Guid id);
     }
 }

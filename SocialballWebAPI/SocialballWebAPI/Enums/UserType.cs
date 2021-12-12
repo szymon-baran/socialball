@@ -8,6 +8,7 @@ namespace SocialballWebAPI.Enums
     public enum UserType
     {
         Zawodnik = 1,
-        Sztab = 2
+        Sztab = 2,
+        System = 999
     }
 }

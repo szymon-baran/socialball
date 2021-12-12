@@ -10,13 +10,14 @@
           @click="showAddMessagePopup(messageTypeEnum.TEAM)"
           type="default"
           styling-mode="outlined"
-          class="mr-2"
+          class="mr-2 mt-2"
           v-if="getLoggedInUser.userType === userTypeEnum.TEAM_MANAGEMENT"
         />
         <DxButton
           text="Wyślij wiadomość prywatną"
           @click="showAddMessagePopup(messageTypeEnum.PRIVATE)"
           type="default"
+          class="mt-2"
         />
       </div>
     </div>
@@ -35,6 +36,11 @@
       <DxItem title="Wysłane wiadomości">
         <div>
           <SentMessagesList />
+        </div>
+      </DxItem>
+      <DxItem title="Otrzymane oferty transferowe">
+        <div>
+          <ToPlayerTransferOffersList />
         </div>
       </DxItem>
     </DxTabPanel>
@@ -58,6 +64,7 @@
 import DxTabPanel, { DxItem } from "devextreme-vue/tab-panel";
 import ReceivedMessagesList from "./ReceivedMessagesList";
 import SentMessagesList from "./SentMessagesList";
+import ToPlayerTransferOffersList from "../playerTransferOffers/ToPlayerTransferOffersList";
 import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
 import { userTypeEnum } from "../../enums/userTypeEnum";
 import DxButton from "devextreme-vue/button";
@@ -126,6 +133,7 @@ export default {
     DxButton,
     ReceivedMessagesList,
     SentMessagesList,
+    ToPlayerTransferOffersList,
     MessageAdd,
   },
   mounted() {

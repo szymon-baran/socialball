@@ -185,6 +185,7 @@
                 :text="getSubmitText()"
                 type="default"
                 @click="handleSubmit"
+                ref="submitButton"
               />
             </div>
           </div>
@@ -296,6 +297,7 @@ export default {
     },
     handleSubmit() {
       let validationResult = this.validationGroup.validate();
+      const buttonInstance = this.$refs["submitButton"].instance;
       if (
         !this.showToEdit &&
         validationResult.isValid &&
@@ -304,14 +306,22 @@ export default {
         validationResult.status === "pending" &&
           validationResult.complete.then((res) => {
             if (res.isValid) {
+              buttonInstance.option("icon", "fas fa-circle-notch fa-spin");
+              buttonInstance.option("text", "Dodaję zawodnika...");
               this.addPlayer().then(() => {
+                buttonInstance.option("icon", "");
+                buttonInstance.option("text", this.getSubmitText());
                 useToast().success("Zawodnik dodany pomyślnie!");
                 this.$router.push({ path: "/" });
               });
             }
           });
       } else if (this.showToEdit && validationResult.isValid) {
+        buttonInstance.option("icon", "fas fa-circle-notch fa-spin");
+        buttonInstance.option("text", "Edytuję profil");
         this.editPlayer().then(() => {
+          buttonInstance.option("icon", "");
+          buttonInstance.option("text", this.getSubmitText());
           useToast().success("Edycja zakończona pomyślnie!");
           this.$router.push({ path: "/profile" });
         });

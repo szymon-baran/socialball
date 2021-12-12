@@ -8,6 +8,7 @@
       :hover-state-enabled="true"
       :column-auto-width="true"
       width="100%"
+      @row-click="showDetailsPopup"
     >
       <DxFilterRow :visible="true" />
       <DxLoadPanel :enabled="true" />
@@ -24,11 +25,11 @@
       <DxColumn data-field="transferFee" caption="Kwota transferu [PLN]" />
     </DxDataGrid>
   </div>
-  <!-- <JobAdvertisementAnswerResponse
-    :jobAdvertisementAnswerId="detailsPopupOptions.jobAdvertisementAnswerId"
+  <PlayerTransferOfferDetails
     v-if="detailsPopupOptions.isVisible"
+    :showAsTeam="true"
     @closed="onDetailsPopupClose"
-  /> -->
+  />
 </template>
 <script>
 import {
@@ -39,6 +40,7 @@ import {
   DxLookup,
 } from "devextreme-vue/data-grid";
 import { mapGetters, mapActions } from "vuex";
+import PlayerTransferOfferDetails from "./PlayerTransferOfferDetails";
 
 export default {
   name: "ToTeamTransferOffersList",
@@ -54,7 +56,6 @@ export default {
       teams: [],
       detailsPopupOptions: {
         isVisible: false,
-        jobAdvertisementAnswerId: "",
       },
     };
   },
@@ -68,16 +69,15 @@ export default {
     ...mapActions({
       getPlayersByTeam: "matches/getPlayersByTeam",
       setTeamsToLookup: "teams/setTeamsToLookup",
+      setPlayerTransferOfferDetails: "playerTransferOffers/setPlayerTransferOfferDetails",
     }),
-    // showJobAdvertisementAnswerDetails(e) {
-    //   this.detailsPopupOptions.isVisible = true;
-    //   this.detailsPopupOptions.jobAdvertisementAnswerId = e.data.id;
-    // },
-    // onDetailsPopupClose() {
-    //   this.detailsPopupOptions.isVisible = false;
-    //   this.detailsPopupOptions.jobAdvertisementAnswerId = "";
-    //   this.setJobAdvertisementsAnswers(this.getLoggedInUser.id);
-    // },
+    showDetailsPopup(e) {
+      this.detailsPopupOptions.isVisible = true;
+      this.setPlayerTransferOfferDetails(e.data.id);
+    },
+    onDetailsPopupClose() {
+      this.detailsPopupOptions.isVisible = false;
+    },
   },
   mounted() {
     this.getPlayersByTeam(this.userTeamId).then((response) => {
@@ -93,6 +93,7 @@ export default {
     DxColumn,
     DxFilterRow,
     DxLookup,
+    PlayerTransferOfferDetails,
   },
 };
 </script>

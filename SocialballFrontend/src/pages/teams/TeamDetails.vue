@@ -4,7 +4,7 @@
     <img :src="team.Image" alt="Herb drużyny" class="avatar" />
     <h4 v-if="team.LeagueName">Liga: {{ team.LeagueName }}</h4>
     <h4 v-else>Brak przypisanej ligi</h4>
-    <h4 class="line mt-3">Lista zawodników</h4>
+    <h4 class="line mt-3">Kadra zawodników</h4>
     <PlayersList :isProfileView="true" :teamId="this.$route.params.id" />
     <div class="row">
       <div class="col mt-2">

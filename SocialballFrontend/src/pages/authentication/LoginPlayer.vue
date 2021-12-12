@@ -43,6 +43,7 @@
                 text="Zaloguj się"
                 type="default"
                 @click="handleSubmit"
+                ref="submitButton"
               />
             </div>
           </div>
@@ -92,13 +93,17 @@ export default {
     async handleSubmit() {
       let validationResult = this.validationGroup.validate();
       if (validationResult.isValid) {
+        const buttonInstance = this.$refs["submitButton"].instance;
+        buttonInstance.option("icon", "fas fa-circle-notch fa-spin");
+        buttonInstance.option("text", "Loguję");
         let result = await this.login();
+        buttonInstance.option("icon", "");
+        buttonInstance.option("text", "Zaloguj się");
         if (result.ClassName === "System.Exception") {
           useToast().error("Logowanie nieudane!");
         } else if (result.token) {
           this.hideLoginPopover();
           this.$router.push({ path: "/profile" });
-          // this.$router.go();
           useToast().success("Zalogowano pomyślnie!");
         }
       }

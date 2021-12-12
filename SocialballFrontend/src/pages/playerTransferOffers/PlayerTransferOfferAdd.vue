@@ -32,7 +32,7 @@
                 >Transfer z:</label
               >
               <DxSelectBox
-                :dataSource="teams"
+                :dataSource="filteredTeams"
                 value-expr="id"
                 display-expr="name"
                 v-model="ToTeamId"
@@ -134,6 +134,7 @@ export default {
   data() {
     return {
       teams: [],
+      filteredTeams: [],
       players: [],
       popupVisible: false,
       sendButtonOptionsAccept: {
@@ -207,12 +208,13 @@ export default {
     DxNumberBox,
   },
   mounted() {
-    this.setTeamsToLookup().then((response) => {
-      this.teams = response.data;
-    });
     this.popupVisible = true;
     this.getUserTeamId().then((response) => {
       this.FromTeamId = response.data;
+      this.setTeamsToLookup().then((response) => {
+        this.teams = response.data;
+        this.filteredTeams = response.data.filter(x => x.id !== this.FromTeamId);
+      });
     });
   },
   beforeUnmount() {

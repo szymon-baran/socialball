@@ -91,6 +91,18 @@ export default {
           commit("SET_PLAYER_TRANSFER_OFFERS", response.data);
         });
     },
+    setPlayerTransferOffers({ commit }, userId) {
+      axios
+        .get(
+          "https://localhost:44369/api/playerTransferOffers/getPlayerTransferOffers",
+          {
+            params: { userId: userId },
+          }
+        )
+        .then((response) => {
+          commit("SET_PLAYER_TRANSFER_OFFERS", response.data);
+        });
+    },
     addPlayerTransferOffer: async ({ state, dispatch }) => {
       await axios
         .post(
@@ -105,6 +117,50 @@ export default {
             "setToTeamTransferOffers",
             state.playerTransferOffer.FromTeamId
           );
+        });
+    },
+    setPlayerTransferOfferDetails: async ({ commit }, id) => {
+      await axios
+        .get(
+          "https://localhost:44369/api/playerTransferOffers/getPlayerTransferOfferDetails",
+          {
+            params: { id: id },
+          }
+        )
+        .then(function(response) {
+          commit("SET_PLAYER_TRANSFER_OFFER_DETAILS", response.data);
+        });
+    },
+    rejectOffer: async ({ state, dispatch, commit }) => {
+      const toTeamId = state.playerTransferOffer.ToTeamId;
+      await axios
+        .post("https://localhost:44369/api/playerTransferOffers/rejectOffer", {
+          Id: state.playerTransferOffer.Id,
+        })
+        .then(() => {
+          commit("RESET_PLAYER_TRANSFER_OFFER_FORM");
+          dispatch("setToTeamTransferOffers", toTeamId);
+        });
+    },
+    acceptOfferAsTeam: async ({ state, dispatch, commit }) => {
+      const toTeamId = state.playerTransferOffer.ToTeamId;
+      await axios
+        .post("https://localhost:44369/api/playerTransferOffers/acceptOfferAsTeam", {
+          Id: state.playerTransferOffer.Id,
+        })
+        .then(() => {
+          commit("RESET_PLAYER_TRANSFER_OFFER_FORM");
+          dispatch("setToTeamTransferOffers", toTeamId);
+        });
+    },
+    acceptOfferAsPlayer: async ({ state, dispatch, commit }, userId) => {
+      await axios
+        .post("https://localhost:44369/api/playerTransferOffers/acceptOfferAsPlayer", {
+          Id: state.playerTransferOffer.Id,
+        })
+        .then(() => {
+          commit("RESET_PLAYER_TRANSFER_OFFER_FORM");
+          dispatch("setPlayerTransferOffers", userId);
         });
     },
   },
