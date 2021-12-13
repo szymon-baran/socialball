@@ -31,17 +31,19 @@ import PlayerTransferOffers from "./pages/playerTransferOffers/PlayerTransferOff
 import HomePage from "./pages/HomePage.vue";
 import PageNotFound from "./pages/PageNotFound.vue";
 import NoPermissionPage from "./pages/NoPermissionPage.vue";
+import AdminDashboard from "./pages/admin/AdminDashboard.vue";
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: "/", component: HomePage, meta: { guest: true } },
     { path: "/profile", component: UserProfile, meta: { guest: false } },
-    { path: "/players", component: PlayersList },
+    { path: "/players", component: PlayersList, meta: { admin: true } },
     {
       path: "/players/:id",
       component: PlayerDetails,
       name: "playerDetails",
+      meta: { admin: true }
     },
     { path: "/register", component: RegisterEditPlayer, meta: { guest: true } },
     {
@@ -51,15 +53,20 @@ const router = createRouter({
       params: true,
       meta: { guest: false },
     },
-    { path: "/teams", component: TeamsList },
+    { path: "/teams", component: TeamsList, meta: { admin: true } },
     {
       path: "/teams/:id",
       component: TeamDetails,
       params: true,
       name: "teamDetails",
+      meta: { admin: true }
     },
-    { path: "/matches", component: MatchesList },
-    { path: "/unconfirmed-matches", component: UnconfirmedMatchesList, meta: { guest: false, player: false } },
+    { path: "/matches", component: MatchesList, meta: { admin: true } },
+    {
+      path: "/unconfirmed-matches",
+      component: UnconfirmedMatchesList,
+      meta: { guest: false, player: false },
+    },
     { path: "/messages", component: MessagesList, meta: { guest: false } },
     {
       path: "/job-advertisements",
@@ -78,6 +85,7 @@ const router = createRouter({
     },
     { path: "/:pageNotFound(.*)", component: PageNotFound },
     { path: "/no-permission", component: NoPermissionPage },
+    { path: "/admin", component: AdminDashboard, meta: { admin: true } },
   ],
 });
 
@@ -90,7 +98,12 @@ router.beforeEach((to, from, next) => {
     }
   }
 
-  if (to.meta.guest != null && !to.meta.guest && to.meta.player != null && !to.meta.player) {
+  if (
+    to.meta.guest != null &&
+    !to.meta.guest &&
+    to.meta.player != null &&
+    !to.meta.player
+  ) {
     if (getUserType != 2) {
       return next({ path: "/no-permission" });
     }
@@ -100,6 +113,10 @@ router.beforeEach((to, from, next) => {
     if (isAuthenticated) {
       return next({ path: "/profile" });
     }
+  }
+
+  if (getUserType == 10 && (to.meta.admin == null || to.meta.admin == false)) {
+    return next({ path: "/admin" });
   }
   return next();
 });

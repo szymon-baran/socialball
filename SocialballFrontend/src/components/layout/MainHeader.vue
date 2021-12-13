@@ -28,12 +28,12 @@
         <li v-if="!isLoggedIn">
           <router-link to="/matches" draggable="false">Mecze</router-link>
         </li>
-        <li v-if="isLoggedIn">
+        <li v-if="isLoggedIn && getLoggedInUser.userType != 10">
           <router-link to="/messages" draggable="false"
             ><i class="fas fa-envelope"></i> <span class="ml-1">Wiadomości</span></router-link
           >
         </li>
-        <li v-if="isLoggedIn && !userTeamId">
+        <li v-if="isLoggedIn && !userTeamId && getLoggedInUser.userType != 10">
           <router-link to="/job-advertisements" draggable="false"
             >Poszukiwanie drużyny</router-link
           >
@@ -53,8 +53,8 @@
             <i class="fas fa-user-circle mr-2"></i>
             <span
               class="mr-1 red-color"
-              v-if="getLoggedInUser.userType === userTypeEnum.TEAM_MANAGEMENT"
-              >!</span
+              v-if="getLoggedInUser.userType == 10"
+            >[admin]</span
             >
             <span>{{ getUsername }}</span>
           </router-link>

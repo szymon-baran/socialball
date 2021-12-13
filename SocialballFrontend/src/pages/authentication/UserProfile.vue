@@ -91,6 +91,7 @@
           <DxButton
             text="Zarządzanie drużyną"
             type="danger"
+            styling-mode="outlined"
             @click="routerPushToInjuriesList"
             width="300px"
             height="150px"
@@ -100,6 +101,7 @@
           <DxButton
             text="Ogłoszenia zawodników"
             type="danger"
+            styling-mode="outlined"
             @click="routerPushToJobAdvertisements"
             width="300px"
             height="150px"
@@ -109,6 +111,7 @@
           <DxButton
             text="Niepotwierdzone mecze"
             type="danger"
+            styling-mode="outlined"
             @click="routerPushToUnconfirmedMatches"
             width="300px"
             height="150px"
@@ -118,6 +121,7 @@
           <DxButton
             text="Transfery drużyny"
             type="danger"
+            styling-mode="outlined"
             @click="routerPushToTransferOffers"
             width="300px"
             height="150px"

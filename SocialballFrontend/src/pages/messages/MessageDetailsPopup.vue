@@ -29,16 +29,28 @@
       <div>
         <span v-html="message.message.content"></span>
       </div>
+      <div class="mt-4" v-if="!isSentMessage && message.message.fromUser.userData.userType != 999">
+        <DxButton text="Odpowiedz" @click="showAddMessagePopup()" />
+      </div>
     </DxPopup>
   </div>
+  <MessageAdd
+    v-if="addMessagePopupOptions.isVisible"
+    :messageType="0"
+    :userIdFromProfile="message.message.fromUserId"
+    @close="onAddMessagePopupClose"
+  />
 </template>
 <script>
 import { DxPopup, DxToolbarItem } from "devextreme-vue/popup";
 import { mapActions, mapMutations } from "vuex";
 import { custom } from "devextreme/ui/dialog";
+import DxButton from "devextreme-vue/button";
+import MessageAdd from "./MessageAdd";
 
 export default {
   name: "MessageDetails",
+  emits: ["closed"],
   props: {
     message: {
       type: Object,
@@ -67,11 +79,16 @@ export default {
           this.$emit("closed");
         },
       },
+      addMessagePopupOptions: {
+        isVisible: false,
+      },
     };
   },
   components: {
     DxPopup,
     DxToolbarItem,
+    DxButton,
+    MessageAdd,
   },
   methods: {
     ...mapActions({
@@ -110,6 +127,14 @@ export default {
           this.$emit("closed");
         }
       });
+    },
+    showAddMessagePopup() {
+      this.addMessagePopupOptions.isVisible = true;
+    },
+    onAddMessagePopupClose() {
+      this.addMessagePopupOptions.isVisible = false;
+      this.popupVisible = false;
+      this.$emit("closed");
     },
   },
   mounted() {

@@ -24,6 +24,8 @@ namespace SocialballWebAPI.Models
         public virtual DbSet<UserData> UserDatas { get; set; }
         public virtual DbSet<Player> Players { get; set; }
         public virtual DbSet<TeamManager> TeamManagers { get; set; }
+        public virtual DbSet<AdminUser> AdminUsers { get; set; }
+        public virtual DbSet<SystemUser> SystemUsers { get; set; }
         public virtual DbSet<Team> Teams { get; set; }
         public virtual DbSet<League> Leagues { get; set; }
         public virtual DbSet<MatchEvent> MatchEvents { get; set; }
@@ -81,7 +83,9 @@ namespace SocialballWebAPI.Models
                 entity.HasDiscriminator(b => b.UserType)
                     .HasValue<UserData>(0)
                     .HasValue<Player>(UserType.Zawodnik)
-                    .HasValue<TeamManager>(UserType.Sztab);
+                    .HasValue<TeamManager>(UserType.Sztab)
+                    .HasValue<AdminUser>(UserType.Admin)
+                    .HasValue<SystemUser>(UserType.System);
 
                 entity.Property(e => e.Citizenship)
                     .HasMaxLength(20)
@@ -109,6 +113,16 @@ namespace SocialballWebAPI.Models
             });
 
             modelBuilder.Entity<TeamManager>(entity =>
+            {
+                entity.ToTable("UserDatas");
+            });
+
+            modelBuilder.Entity<AdminUser>(entity =>
+            {
+                entity.ToTable("UserDatas");
+            });
+
+            modelBuilder.Entity<SystemUser>(entity =>
             {
                 entity.ToTable("UserDatas");
             });

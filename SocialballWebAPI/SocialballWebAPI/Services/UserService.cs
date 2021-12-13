@@ -12,6 +12,7 @@ using SocialballWebAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using SocialballWebAPI.Abstraction;
 using SocialballWebAPI.DTOs;
+using SocialballWebAPI.Enums;
 
 namespace SocialballWebAPI.Services
 {
@@ -32,6 +33,8 @@ namespace SocialballWebAPI.Services
 
             // return null if user not found
             if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.Password)) return null;
+
+            if (user.UserData.UserType == UserType.System) return null;
 
             // authentication successful so generate jwt token
             var token = generateJwtToken(user);
@@ -82,7 +85,7 @@ namespace SocialballWebAPI.Services
 
         public List<SelectList> GetUsersToLookup()
         {
-            List<SelectList> users = _context.Users.Select(x => new SelectList
+            List<SelectList> users = _context.Users.Include(x => x.UserData).Where(x => x.UserData.UserType == UserType.Zawodnik).Select(x => new SelectList
             {
                 Id = x.Id,
                 Name = x.UserData.FirstName + " " + x.UserData.LastName

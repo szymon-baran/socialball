@@ -32,7 +32,8 @@ namespace SocialballWebAPI.Services
 
         public List<PlayerTransferOfferDto> GetTeamTransferOffers(Guid teamId)
         {
-            return _context.PlayerTransferOffers.Where(x => x.ToTeamId == teamId).Include(x => x.Player).Include(x => x.FromTeam).Include(x => x.ToTeam).Select(x => new PlayerTransferOfferDto {
+            return _context.PlayerTransferOffers.Where(x => x.ToTeamId == teamId).Include(x => x.Player).Include(x => x.FromTeam).Include(x => x.ToTeam).Select(x => new PlayerTransferOfferDto
+            {
                 Id = x.Id,
                 PlayerId = x.PlayerId,
                 FromTeamId = x.FromTeamId,
@@ -50,7 +51,8 @@ namespace SocialballWebAPI.Services
 
         public List<PlayerTransferOfferDto> GetFromTeamTransferOffers(Guid teamId)
         {
-            return _context.PlayerTransferOffers.Where(x => x.FromTeamId == teamId).Include(x => x.Player).Include(x => x.FromTeam).Include(x => x.ToTeam).Select(x => new PlayerTransferOfferDto {
+            return _context.PlayerTransferOffers.Where(x => x.FromTeamId == teamId).Include(x => x.Player).Include(x => x.FromTeam).Include(x => x.ToTeam).Select(x => new PlayerTransferOfferDto
+            {
                 Id = x.Id,
                 PlayerId = x.PlayerId,
                 FromTeamId = x.FromTeamId,
@@ -107,9 +109,38 @@ namespace SocialballWebAPI.Services
 
         public void RejectOffer(Guid id)
         {
-            PlayerTransferOffer playerTransferOffer = _context.PlayerTransferOffers.Single(x => x.Id == id);
+            PlayerTransferOffer playerTransferOffer = _context.PlayerTransferOffers.Include(x => x.Player).Single(x => x.Id == id);
+
+            Message systemMessage = new Message
+            {
+                FromUserId = _context.UserDatas.First(x => x.UserType == UserType.System).UserId,
+                Subject = "Oferta transferowa odrzucona",
+                Content = $"Oferta transferowa Twojej drużyny za zawodnika {playerTransferOffer.Player.FirstName ?? ""} {playerTransferOffer.Player.LastName} została odrzucona.<br/>Ta wiadomość została wygenerowana automatycznie, prosimy na nią nie odpowiadać.",
+                SentOn = DateTime.Now,
+                MessageType = MessageType.Prywatna
+            };
+            _context.Messages.Add(systemMessage);
+            _context.SaveChanges();
+
+            List<UserData> teamManagers = _context.UserDatas.Include(x => x.User).ThenInclude(x => x.UserData).Where(x => x.TeamId == playerTransferOffer.FromTeamId && x.User.UserData.UserType == UserType.Sztab).ToList();
+            foreach (var person in teamManagers)
+            {
+                if (!person.UserId.HasValue)
+                {
+                    continue;
+                }
+
+                UserMessage userMessage = new UserMessage()
+                {
+                    MessageId = systemMessage.Id,
+                    ToUserId = person.UserId.Value
+                };
+
+                _context.UserMessages.Add(userMessage);
+            }
             _context.PlayerTransferOffers.Remove(playerTransferOffer);
             _context.SaveChanges();
+
         }
 
         private void FinalizeTransfer(PlayerTransferOffer playerTransferOffer)

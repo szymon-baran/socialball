@@ -217,8 +217,7 @@ export default {
           "/" +
           date.getMonth() +
           "/" +
-          date.getFullYear() +
-          ".")
+          date.getFullYear())
       );
     },
     isInjured() {

@@ -78,7 +78,6 @@ export default {
   },
   methods: {
     ...mapActions({
-      setAllTeams: "teams/setAllTeams",
       setLeaguesToLookup: "teams/setLeaguesToLookup",
       setTeamsByLeague: "teams/setTeamsByLeague",
     }),
@@ -102,11 +101,11 @@ export default {
     },
   },
   mounted() {
+    this.RESET_TEAMS();
+    this.ChosenLeagueId = null;
     this.setLeaguesToLookup().then((response) => {
       this.leagues = response.data;
     });
-
-    // this.setAllTeams();
   },
   components: {
     DxDataGrid,

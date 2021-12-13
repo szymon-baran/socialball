@@ -41,7 +41,7 @@ namespace SocialballWebAPI.Services
 
         public List<League> GetLeaguesToLookup()
         {
-            return _context.Leagues.ToList();
+            return _context.Leagues.OrderBy(x => x.Ranking).ToList();
         }
 
         public List<PositionsInTeam> GetTeamsToChart(Guid teamId)

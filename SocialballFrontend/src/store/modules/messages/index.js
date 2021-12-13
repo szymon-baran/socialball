@@ -29,13 +29,15 @@ export default {
     getField,
   },
   mutations: {
-    SET_MESSAGES(state, payload) {
+    SET_MESSAGES(state, { payload, areSentMessages }) {
       state.messages = payload;
-      state.messages.some((object) => {
-        if (object.isRead === false) {
-          state.unreadMessagesCount++;
-        }
-      })
+      if (!areSentMessages) {
+        state.messages.some((object) => {
+          if (object.isRead === false) {
+            state.unreadMessagesCount++;
+          }
+        });
+      }
     },
     RESET_MESSAGES(state) {
       state.messages = [];
@@ -71,7 +73,10 @@ export default {
           headers: authHeader(),
         })
         .then((response) => {
-          commit("SET_MESSAGES", response.data);
+          commit("SET_MESSAGES", {
+            payload: response.data,
+            areSentMessages: false,
+          });
         });
     },
     setSentMessages({ commit }, userId) {
@@ -81,7 +86,10 @@ export default {
           headers: authHeader(),
         })
         .then((response) => {
-          commit("SET_MESSAGES", response.data);
+          commit("SET_MESSAGES", {
+            payload: response.data,
+            areSentMessages: true,
+          });
         });
     },
     sendMessage: async ({ state, dispatch }) => {

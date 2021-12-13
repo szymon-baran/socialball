@@ -13,7 +13,8 @@
       <DxFilterRow :visible="true" />
       <DxLoadPanel :enabled="true" />
       <DxSorting mode="none" />
-      <DxColumn data-field="subject" caption="Tytuł wiadomości" />
+      <DxColumn data-field="message.subject" caption="Tytuł wiadomości" />
+      <DxColumn data-field="toUser.userData.lastName" caption="Odbiorca" />
       <DxColumn
         data-field="sentOn"
         caption="Data wysłania wiadomości"
@@ -23,7 +24,7 @@
         :sort-index="1"
         sort-order="desc"
       />
-      <DxColumn data-field="messageType" caption="Typ wiadomości">
+      <DxColumn data-field="message.messageType" caption="Typ wiadomości">
         <DxLookup
           :data-source="messageTypes"
           value-expr="value"
@@ -74,9 +75,7 @@ export default {
     }),
     showMessageDetails(e) {
       this.detailsPopupOptions.isVisible = true;
-      this.detailsPopupOptions.selectedMessage = {
-        message: e.data,
-      };
+      this.detailsPopupOptions.selectedMessage = e.data;
     },
     onDetailsPopupClose() {
       this.detailsPopupOptions.isVisible = false;

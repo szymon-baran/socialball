@@ -24,12 +24,12 @@ namespace SocialballWebAPI.Services
 
         public object GetUserMessages(Guid userId)
         {
-            return _context.UserMessages.Include(x => x.Message).Where(x => x.IsActive && x.ToUserId == userId).ToList();
+            return _context.UserMessages.Include(x => x.Message).ThenInclude(x => x.FromUser).ThenInclude(x => x.UserData).Where(x => x.IsActive && x.ToUserId == userId).ToList();
         }
 
         public object GetUserSentMessages(Guid userId)
         {
-            return _context.Messages.Where(x => x.FromUserId == userId).ToList();
+            return _context.UserMessages.Include(x => x.ToUser).ThenInclude(x => x.UserData).Include(x => x.Message).Where(x => x.Message.FromUserId == userId).ToList();
         }
 
         public Message GetMessageDetails(Guid id)

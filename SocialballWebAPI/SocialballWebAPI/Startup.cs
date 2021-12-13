@@ -92,7 +92,7 @@ namespace SocialballWebAPI
                 endpoints.MapControllers();
             });
 
-            dbContext.Database.Migrate();
+            //dbContext.Database.Migrate();
         }
     }
 }
