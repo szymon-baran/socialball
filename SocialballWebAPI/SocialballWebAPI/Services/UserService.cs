@@ -85,7 +85,7 @@ namespace SocialballWebAPI.Services
 
         public List<SelectList> GetUsersToLookup()
         {
-            List<SelectList> users = _context.Users.Include(x => x.UserData).Where(x => x.UserData.UserType == UserType.Zawodnik).Select(x => new SelectList
+            List<SelectList> users = _context.Users.Include(x => x.UserData).Where(x => x.UserData.UserType == UserType.Player).Select(x => new SelectList
             {
                 Id = x.Id,
                 Name = x.UserData.FirstName + " " + x.UserData.LastName

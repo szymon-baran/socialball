@@ -29,15 +29,20 @@
       <div>
         <span v-html="message.message.content"></span>
       </div>
-      <div class="mt-4" v-if="!isSentMessage && message.message.fromUser.userData.userType != 999">
+      <div
+        class="mt-4"
+        v-if="
+          !isSentMessage && message.message.fromUser.userData.userType != 999
+        "
+      >
         <DxButton text="Odpowiedz" @click="showAddMessagePopup()" />
       </div>
     </DxPopup>
   </div>
   <MessageAdd
     v-if="addMessagePopupOptions.isVisible"
-    :messageType="0"
-    :userIdFromProfile="message.message.fromUserId"
+    :messageType="addMessagePopupOptions.messageType"
+    :userIdFromProfile="addMessagePopupOptions.recipient"
     @close="onAddMessagePopupClose"
   />
 </template>
@@ -81,6 +86,8 @@ export default {
       },
       addMessagePopupOptions: {
         isVisible: false,
+        messageType: null,
+        recipient: "",
       },
     };
   },
@@ -130,9 +137,17 @@ export default {
     },
     showAddMessagePopup() {
       this.addMessagePopupOptions.isVisible = true;
+      this.addMessagePopupOptions.messageType = this.message.message.messageType;
+      if (this.message.message.messageType === 2) {
+        this.addMessagePopupOptions.recipient = this.message.message.fromUser.userData.teamId;
+      } else {
+        this.addMessagePopupOptions.recipient = this.message.message.fromUserId;
+      }
     },
     onAddMessagePopupClose() {
       this.addMessagePopupOptions.isVisible = false;
+      this.addMessagePopupOptions.messageType = null;
+      this.addMessagePopupOptions.recipient = "";
       this.popupVisible = false;
       this.$emit("closed");
     },

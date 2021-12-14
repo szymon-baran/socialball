@@ -16,7 +16,7 @@
       <DxColumn data-field="message.subject" caption="Tytuł wiadomości" />
       <DxColumn data-field="toUser.userData.lastName" caption="Odbiorca" />
       <DxColumn
-        data-field="sentOn"
+        data-field="message.sentOn"
         caption="Data wysłania wiadomości"
         data-type="datetime"
         format="dd/MM/yyyy HH:mm"

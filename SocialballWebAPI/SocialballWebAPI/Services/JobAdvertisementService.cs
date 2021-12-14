@@ -63,7 +63,7 @@ namespace SocialballWebAPI.Services
         public object GetJobAdvertisementsAnswers(Guid userId)
         {
             UserData userData = _context.UserDatas.Single(x => x.UserId == userId);
-            if (userData.UserType == UserType.Sztab)
+            if (userData.UserType == UserType.Management)
             {
                 return _context.JobAdvertisementUserAnswers.Where(x => x.JobAdvertisement is FromTeamJobAdvertisement ? ((FromTeamJobAdvertisement)x.JobAdvertisement).TeamId == userData.TeamId : false).Select(x => new
                 {

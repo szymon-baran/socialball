@@ -7,7 +7,7 @@
       :show-close-button="false"
       :show-title="true"
       :width="650"
-      :height="650"
+      :height="580"
       container=".dx-viewport"
       :title="getTitle()"
       :shading="false"
@@ -38,6 +38,19 @@
                 :read-only="isUserSelectorReadOnly"
               />
             </div>
+            <div class="col" v-if="messageType === messageTypeEnum.OTHER_TEAM">
+              <label for="toTeamIdSelectBox" class="form-label"
+                >Odbiorca (zarząd)</label
+              >
+              <DxSelectBox
+                :dataSource="teams"
+                value-expr="id"
+                display-expr="name"
+                v-model="ToTeamId"
+                id="toTeamIdSelectBox"
+                :read-only="isUserSelectorReadOnly"
+              />
+            </div>
             <div class="col">
               <label for="titleTextBox" class="form-label"
                 >Tytuł wiadomości</label
@@ -50,7 +63,7 @@
               <label for="contentEditor" class="form-label"
                 >Treść wiadomości</label
               >
-              <DxHtmlEditor height="400" id="contentEditor" v-model="Content">
+              <DxHtmlEditor height="350" id="contentEditor" v-model="Content">
                 <DxToolbar>
                   <DxItem :accepted-values="sizeValues" name="size" />
                   <DxItem :accepted-values="fontValues" name="font" />
@@ -112,6 +125,7 @@ export default {
     return {
       messageTypeEnum,
       users: [],
+      teams: [],
       popupVisible: false,
       isUserSelectorReadOnly: false,
       sizeValues: ["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"],
@@ -164,6 +178,7 @@ export default {
       sendMessage: "messages/sendMessage",
       getUsersToLookup: "messages/getUsersToLookup",
       getUserDataByUserId: "players/getUserDataByUserId",
+      getTeamsToLookup: "jobAdvertisements/getTeamsToLookup",
     }),
     ...mapMutations({
       RESET_TEAM_MESSAGE_FORM: "messages/RESET_TEAM_MESSAGE_FORM",
@@ -183,6 +198,8 @@ export default {
           return "Wyślij wiadomość prywatną";
         case messageTypeEnum.TEAM:
           return "Wyślij wiadomość do swojej drużyny";
+        case messageTypeEnum.OTHER_TEAM:
+          return "Wyślij wiadomość do zarządu innej drużyny";
         default:
           return "";
       }
@@ -211,10 +228,18 @@ export default {
       this.getUserDataByUserId(this.FromUserId).then(() => {
         this.ToTeamId = this.getPlayerDetails.TeamId;
       });
+    } else if (this.messageType === messageTypeEnum.OTHER_TEAM) {
+      this.getTeamsToLookup().then((response) => {
+        this.teams = response.data;
+      });
     }
     if (this.userIdFromProfile) {
       this.isUserSelectorReadOnly = true;
-      this.ToUserId = this.userIdFromProfile;
+      if (this.messageType === messageTypeEnum.PRIVATE) {
+        this.ToUserId = this.userIdFromProfile;
+      } else if (this.messageType === messageTypeEnum.OTHER_TEAM) {
+        this.ToTeamId = this.userIdFromProfile;
+      }
     }
   },
   beforeUnmount() {

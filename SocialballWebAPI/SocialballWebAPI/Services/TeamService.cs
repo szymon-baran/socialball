@@ -48,7 +48,7 @@ namespace SocialballWebAPI.Services
         {
             List<PositionsInTeam> positionsInTeams = new List<PositionsInTeam>();
 
-            for (PositionType p = 0; p <= PositionType.Napastnik; p++)
+            for (PositionType p = 0; p <= PositionType.Striker; p++)
             {
                 positionsInTeams.Add(new PositionsInTeam
                 {

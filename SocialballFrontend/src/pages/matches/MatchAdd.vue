@@ -361,19 +361,12 @@ export default {
     });
     this.getEventTypesToLookup().then((response) => {
       this.eventTypes = response.data;
-      this.eventTypes[0].name = "Gol";
-      this.eventTypes[1].name = "Faul";
     });
     this.getPenaltyTypesToLookup().then((response) => {
       this.penaltyTypes = response.data;
-      this.penaltyTypes[0].name = "Brak";
-      this.penaltyTypes[1].name = "Żółta kartka";
-      this.penaltyTypes[2].name = "Czerwona kartka";
     });
     this.getMatchTypesLookup().then((response) => {
       this.matchTypes = response.data;
-      this.matchTypes[0].name = "Mecz towarzyski";
-      this.matchTypes[1].name = "Mecz ligowy";
     });
 
     this.setAllTeams();

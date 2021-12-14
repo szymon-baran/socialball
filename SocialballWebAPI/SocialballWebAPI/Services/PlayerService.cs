@@ -34,12 +34,12 @@ namespace SocialballWebAPI.Services
 
         public object GetPlayers()
         {
-            return _context.Players.Where(x => x.UserType == UserType.Zawodnik).ToList();
+            return _context.Players.Where(x => x.UserType == UserType.Player).ToList();
         }
 
         public object GetPlayersByTeamId(Guid teamId)
         {
-            return _context.Players.Where(x => x.UserType == UserType.Zawodnik && x.TeamId == teamId).Select(x => new {
+            return _context.Players.Where(x => x.UserType == UserType.Player && x.TeamId == teamId).Select(x => new {
                 x.Id,
                 x.FirstName,
                 x.LastName,
@@ -280,7 +280,7 @@ namespace SocialballWebAPI.Services
                 Citizenship = playerModel.Citizenship,
                 DateOfBirth = playerModel.DateOfBirth.AddHours(12),
                 UserId = userId,
-                UserType = UserType.Zawodnik,
+                UserType = UserType.Player,
             };
 
             _context.Players.Add(player);
@@ -322,7 +322,7 @@ namespace SocialballWebAPI.Services
                 UploadImage(stream, fileName);
             }
 
-            if (userData.UserType == UserType.Zawodnik)
+            if (userData.UserType == UserType.Player)
             {
                 ((Player)userData).Position = (int?)model.Position;
                 _context.Players.Update((Player)userData);

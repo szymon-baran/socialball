@@ -82,8 +82,8 @@ namespace SocialballWebAPI.Models
 
                 entity.HasDiscriminator(b => b.UserType)
                     .HasValue<UserData>(0)
-                    .HasValue<Player>(UserType.Zawodnik)
-                    .HasValue<TeamManager>(UserType.Sztab)
+                    .HasValue<Player>(UserType.Player)
+                    .HasValue<TeamManager>(UserType.Management)
                     .HasValue<AdminUser>(UserType.Admin)
                     .HasValue<SystemUser>(UserType.System);
 

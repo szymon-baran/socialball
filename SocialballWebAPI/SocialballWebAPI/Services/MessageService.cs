@@ -51,7 +51,7 @@ namespace SocialballWebAPI.Services
             _context.Messages.Add(message);
             _context.SaveChanges();
 
-            if (model.MessageType == MessageType.Prywatna && model.ToUserId.HasValue)
+            if (model.MessageType == MessageType.Private && model.ToUserId.HasValue)
             {
                 UserMessage userMessage = new UserMessage()
                 {
@@ -61,10 +61,29 @@ namespace SocialballWebAPI.Services
 
                 _context.UserMessages.Add(userMessage);
             }
-            else if (model.MessageType == MessageType.Druzynowa && model.ToTeamId.HasValue)
+            else if (model.MessageType == MessageType.InsideTeam && model.ToTeamId.HasValue)
             {
                 List<UserData> peopleInTeam = _context.UserDatas.Where(x => x.TeamId == model.ToTeamId.Value).ToList();
                 foreach (var person in peopleInTeam)
+                {
+                    if (!person.UserId.HasValue)
+                    {
+                        continue;
+                    }
+
+                    UserMessage userMessage = new UserMessage()
+                    {
+                        MessageId = message.Id,
+                        ToUserId = person.UserId.Value
+                    };
+
+                    _context.UserMessages.Add(userMessage);
+                }
+            }
+            else if (model.MessageType == MessageType.ToOtherTeam && model.ToTeamId.HasValue)
+            {
+                List<UserData> teamManagersInTeam = _context.UserDatas.Where(x => x.TeamId == model.ToTeamId.Value && x.UserType == UserType.Management).ToList();
+                foreach (var person in teamManagersInTeam)
                 {
                     if (!person.UserId.HasValue)
                     {

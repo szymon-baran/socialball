@@ -230,8 +230,6 @@ export default {
   mounted() {
     this.getMatchTypesLookup().then((response) => {
       this.matchTypes = response.data;
-      this.matchTypes[0].name = "Mecz towarzyski";
-      this.matchTypes[1].name = "Mecz ligowy";
     });
     this.getUserTeamId().then((response) => {
       this.userTeamId = response.data;

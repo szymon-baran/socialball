@@ -117,12 +117,12 @@ namespace SocialballWebAPI.Services
                 Subject = "Oferta transferowa odrzucona",
                 Content = $"Oferta transferowa Twojej drużyny za zawodnika {playerTransferOffer.Player.FirstName ?? ""} {playerTransferOffer.Player.LastName} została odrzucona.<br/>Ta wiadomość została wygenerowana automatycznie, prosimy na nią nie odpowiadać.",
                 SentOn = DateTime.Now,
-                MessageType = MessageType.Prywatna
+                MessageType = MessageType.Private
             };
             _context.Messages.Add(systemMessage);
             _context.SaveChanges();
 
-            List<UserData> teamManagers = _context.UserDatas.Include(x => x.User).ThenInclude(x => x.UserData).Where(x => x.TeamId == playerTransferOffer.FromTeamId && x.User.UserData.UserType == UserType.Sztab).ToList();
+            List<UserData> teamManagers = _context.UserDatas.Include(x => x.User).ThenInclude(x => x.UserData).Where(x => x.TeamId == playerTransferOffer.FromTeamId && x.User.UserData.UserType == UserType.Management).ToList();
             foreach (var person in teamManagers)
             {
                 if (!person.UserId.HasValue)

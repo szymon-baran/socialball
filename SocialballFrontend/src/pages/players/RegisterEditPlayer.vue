@@ -53,7 +53,7 @@
                 </DxValidator>
               </DxSelectBox>
             </div>
-            <div class="col">
+            <!-- <div class="col">
               <label for="teamSelectBox" class="form-label">Drużyna</label>
               <DxSelectBox
                 :dataSource="getTeams"
@@ -64,7 +64,7 @@
                 :show-clear-button="true"
                 :read-only="showToEdit"
               />
-            </div>
+            </div> -->
             <div class="col">
               <label for="citizenshipTextBox" class="form-label"
                 >Narodowość</label

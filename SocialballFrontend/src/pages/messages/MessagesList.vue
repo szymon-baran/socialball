@@ -5,12 +5,13 @@
         <h3>Wiadomości</h3>
       </div>
       <div class="col text-right">
-        <DxButton
-          text="Wyślij wiadomość do swojej drużyny"
-          @click="showAddMessagePopup(messageTypeEnum.TEAM)"
-          type="default"
-          styling-mode="outlined"
-          class="mr-2 mt-2"
+        <DxDropDownButton
+          :items="messageTypes"
+          :drop-down-options="{ width: 230 }"
+          text="Wyślij"
+          @item-click="showAddMessagePopupFromDropdown"
+          value-expr="value"
+          display-expr="text"
           v-if="getLoggedInUser.userType === userTypeEnum.TEAM_MANAGEMENT"
         />
         <DxButton
@@ -18,6 +19,7 @@
           @click="showAddMessagePopup(messageTypeEnum.PRIVATE)"
           type="default"
           class="mt-2"
+          v-else
         />
       </div>
     </div>
@@ -67,9 +69,10 @@ import SentMessagesList from "./SentMessagesList";
 import ToPlayerTransferOffersList from "../playerTransferOffers/ToPlayerTransferOffersList";
 import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
 import { userTypeEnum } from "../../enums/userTypeEnum";
-import DxButton from "devextreme-vue/button";
 import { messageTypeEnum } from "../../enums/messageTypeEnum";
 import MessageAdd from "./MessageAdd.vue";
+import DxDropDownButton from "devextreme-vue/drop-down-button";
+import DxButton from "devextreme-vue/button";
 
 export default {
   name: "MessagesList",
@@ -83,6 +86,20 @@ export default {
         isVisible: false,
         messageType: null,
       },
+      messageTypes: [
+        {
+          text: "Prywatną wiadomość",
+          value: 0,
+        },
+        {
+          text: "Wiadomość do swojej drużyny",
+          value: 1,
+        },
+        {
+          text: "Wiadomość do innej drużyny",
+          value: 2,
+        },
+      ],
     };
   },
   computed: {
@@ -110,6 +127,10 @@ export default {
       this.addMessagePopupOptions.messageType = messageType;
       this.addMessagePopupOptions.isVisible = true;
     },
+    showAddMessagePopupFromDropdown(e) {
+      this.addMessagePopupOptions.messageType = e.itemData.value;
+      this.addMessagePopupOptions.isVisible = true;
+    },
     onAddMessagePopupClose() {
       this.addMessagePopupOptions.messageType = null;
       this.addMessagePopupOptions.isVisible = false;
@@ -130,11 +151,12 @@ export default {
   components: {
     DxTabPanel,
     DxItem,
-    DxButton,
     ReceivedMessagesList,
     SentMessagesList,
     ToPlayerTransferOffersList,
     MessageAdd,
+    DxDropDownButton,
+    DxButton,
   },
   mounted() {
     this.setMessages(this.getLoggedInUser.id);

@@ -38,8 +38,14 @@
       </div>
     </div>
     <div class="mt-5">
-      <DxButton text="Kontakt" @click="routerPushToContact" />
+      <DxButton text="Kontakt" @click="showAddMessagePopup" />
     </div>
+    <MessageAdd
+      v-if="addMessagePopupOptions.isVisible"
+      :messageType="2"
+      :userIdFromProfile="team.Id"
+      @close="onAddMessagePopupClose"
+    />
   </div>
 </template>
 
@@ -56,12 +62,16 @@ import DxPieChart, {
   DxSize,
 } from "devextreme-vue/pie-chart";
 import MatchesList from "../matches/MatchesList.vue";
+import MessageAdd from "../messages/MessageAdd.vue";
 
 export default {
   name: "TeamDetails",
   data() {
     return {
       positions: [],
+      addMessagePopupOptions: {
+        isVisible: false,
+      },
     };
   },
   computed: {
@@ -93,6 +103,12 @@ export default {
     customizeLegend(e) {
       return this.positions[e.pointIndex].name;
     },
+    showAddMessagePopup() {
+      this.addMessagePopupOptions.isVisible = true;
+    },
+    onAddMessagePopupClose() {
+      this.addMessagePopupOptions.isVisible = false;
+    },
   },
   mounted() {
     this.setTeamDetails(this.$route.params.id);
@@ -114,6 +130,7 @@ export default {
     DxConnector,
     DxSize,
     MatchesList,
+    MessageAdd,
   },
   beforeUnmount() {
     this.RESET_TEAM_DETAILS();

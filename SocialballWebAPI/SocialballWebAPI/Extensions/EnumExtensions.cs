@@ -1,7 +1,9 @@
 ﻿using SocialballWebAPI.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace SocialballWebAPI.Extensions
@@ -15,7 +17,7 @@ namespace SocialballWebAPI.Extensions
             {
                 values.Add(new EnumValue()
                 {
-                    Name = Enum.GetName(typeof(T), itemType),
+                    Name = itemType.GetType().GetMember(itemType.ToString()).First().GetCustomAttribute<DisplayAttribute>() != null ? itemType.GetType().GetMember(itemType.ToString()).First().GetCustomAttribute<DisplayAttribute>().Name : Enum.GetName(typeof(T), itemType),
                     Value = (int)itemType
                 });
             }

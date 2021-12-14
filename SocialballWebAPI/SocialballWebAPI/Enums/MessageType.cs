@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -7,7 +8,11 @@ namespace SocialballWebAPI.Enums
 {
     public enum MessageType
     {
-        Prywatna = 0,
-        Druzynowa = 1
+        [Display(Name = "Prywatna")]
+        Private = 0,
+        [Display(Name = "Do swojej drużyny")]
+        InsideTeam = 1,
+        [Display(Name = "Do zarządu innej drużyny")]
+        ToOtherTeam = 2
     }
 }
