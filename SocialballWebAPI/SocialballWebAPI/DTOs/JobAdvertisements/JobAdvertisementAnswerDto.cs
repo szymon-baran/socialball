@@ -9,7 +9,7 @@ namespace SocialballWebAPI.DTOs
     public class JobAdvertisementAnswerDto
     {
         public Guid? Id { get; set; }
-        public Guid JobAdvertisementId { get; set; }
+        public Guid? JobAdvertisementId { get; set; }
         public JobAdvertisementType JobAdvertisementAnswerType { get; set; }
         public bool IsResponded { get; set; }
         public bool IsResponsePositive { get; set; }

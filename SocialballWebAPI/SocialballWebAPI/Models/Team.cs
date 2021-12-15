@@ -13,7 +13,7 @@ namespace SocialballWebAPI.Models
             MatchHomeTeams = new HashSet<Match>();
             UserDatas = new HashSet<UserData>();
             FromTeamJobAdvertisements = new HashSet<FromTeamJobAdvertisement>();
-            JobAdvertisementTeamAnswers = new HashSet<JobAdvertisementTeamAnswer>();
+            JobAdvertisementAnswers = new HashSet<JobAdvertisementAnswer>();
             FromTeamPlayerTransferOffers = new HashSet<PlayerTransferOffer>();
             ToTeamPlayerTransferOffers = new HashSet<PlayerTransferOffer>();
             TeamMatchEvents = new HashSet<MatchEvent>();
@@ -29,7 +29,7 @@ namespace SocialballWebAPI.Models
         public virtual ICollection<Match> MatchHomeTeams { get; set; }
         public virtual ICollection<UserData> UserDatas { get; set; }
         public virtual ICollection<FromTeamJobAdvertisement> FromTeamJobAdvertisements { get; set; }
-        public virtual ICollection<JobAdvertisementTeamAnswer> JobAdvertisementTeamAnswers { get; set; }
+        public virtual ICollection<JobAdvertisementAnswer> JobAdvertisementAnswers { get; set; }
         public virtual ICollection<PlayerTransferOffer> FromTeamPlayerTransferOffers { get; set; }
         public virtual ICollection<PlayerTransferOffer> ToTeamPlayerTransferOffers { get; set; }
         public virtual ICollection<MatchEvent> TeamMatchEvents { get; set; }

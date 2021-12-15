@@ -276,7 +276,6 @@ namespace SocialballWebAPI.Services
                 FirstName = playerModel.FirstName,
                 LastName = playerModel.LastName,
                 Position = playerModel.Position,
-                TeamId = playerModel.TeamId,
                 Citizenship = playerModel.Citizenship,
                 DateOfBirth = playerModel.DateOfBirth.AddHours(12),
                 UserId = userId,
@@ -284,6 +283,19 @@ namespace SocialballWebAPI.Services
             };
 
             _context.Players.Add(player);
+            if (playerModel.TeamId.HasValue)
+            {
+                JobAdvertisementUserAnswer jobAdvertisementUserAnswer = new JobAdvertisementUserAnswer()
+                {
+                    JobAdvertisementAnswerType = JobAdvertisementType.FromUser,
+                    IsResponsePositive = false,
+                    Content = $"Użytkownik {player.FirstName} {player.LastName} zaznaczył przy rejestracji przynależność do Twojej drużyny. Jego wybór wymaga potwierdzenia ze strony zarządu klubu.",
+                    TeamId = playerModel.TeamId,
+                    UserId = userId,
+                    IsResponded = false,
+                };
+                _context.JobAdvertisementUserAnswers.Add(jobAdvertisementUserAnswer);
+            }
             _context.SaveChanges();
 
             if (playerModel.Image != null && playerModel.Image.Length > 0)

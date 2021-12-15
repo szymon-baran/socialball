@@ -65,7 +65,7 @@ namespace SocialballWebAPI.Services
             UserData userData = _context.UserDatas.Single(x => x.UserId == userId);
             if (userData.UserType == UserType.Management)
             {
-                return _context.JobAdvertisementUserAnswers.Where(x => x.JobAdvertisement is FromTeamJobAdvertisement ? ((FromTeamJobAdvertisement)x.JobAdvertisement).TeamId == userData.TeamId : false).Select(x => new
+                return _context.JobAdvertisementUserAnswers.Where(x => x.TeamId == userData.TeamId || (x.JobAdvertisement is FromTeamJobAdvertisement ? ((FromTeamJobAdvertisement)x.JobAdvertisement).TeamId == userData.TeamId : false)).Select(x => new
                 {
                     x.Id,
                     x.JobAdvertisementId,
@@ -260,7 +260,7 @@ namespace SocialballWebAPI.Services
                 if (userData.TeamId == null || userData.TeamId == Guid.Empty)
                 {
                     userData.TeamId = model.TeamId;
-                    userData.Earnings = answer.JobAdvertisement.Earnings;
+                    userData.Earnings = answer.JobAdvertisement?.Earnings;
                 }
                 _context.UserDatas.Update(userData);
                 List<FromUserJobAdvertisement> userAdvertisements = _context.FromUserJobAdvertisements.Where(x => x.UserId == userData.UserId).ToList();

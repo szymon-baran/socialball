@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SocialballWebAPI.Models;
 
 namespace SocialballWebAPI.Migrations
 {
     [DbContext(typeof(SocialballDBContext))]
-    partial class SocialballDBContextModelSnapshot : ModelSnapshot
+    [Migration("20211215182748_TeamJoinRequestsMigration")]
+    partial class TeamJoinRequestsMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -74,14 +76,9 @@ namespace SocialballWebAPI.Migrations
                     b.Property<string>("ResponseContent")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("TeamId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
                     b.HasIndex("JobAdvertisementId");
-
-                    b.HasIndex("TeamId");
 
                     b.ToTable("JobAdvertisementAnswers");
 
@@ -422,6 +419,11 @@ namespace SocialballWebAPI.Migrations
                 {
                     b.HasBaseType("SocialballWebAPI.Models.JobAdvertisementAnswer");
 
+                    b.Property<Guid>("TeamId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasIndex("TeamId");
+
                     b.ToTable("JobAdvertisementAnswers");
 
                     b.HasDiscriminator().HasValue(1);
@@ -515,15 +517,7 @@ namespace SocialballWebAPI.Migrations
                         .WithMany("JobAdvertisementAnswers")
                         .HasForeignKey("JobAdvertisementId");
 
-                    b.HasOne("SocialballWebAPI.Models.Team", "Team")
-                        .WithMany("JobAdvertisementAnswers")
-                        .HasForeignKey("TeamId")
-                        .HasConstraintName("FK_JobAdvertisementAnswers_Teams")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.Navigation("JobAdvertisement");
-
-                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("SocialballWebAPI.Models.Match", b =>
@@ -684,6 +678,18 @@ namespace SocialballWebAPI.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SocialballWebAPI.Models.JobAdvertisementTeamAnswer", b =>
+                {
+                    b.HasOne("SocialballWebAPI.Models.Team", "Team")
+                        .WithMany("JobAdvertisementTeamAnswers")
+                        .HasForeignKey("TeamId")
+                        .HasConstraintName("FK_JobAdvertisementTeamAnswers_Teams")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Team");
+                });
+
             modelBuilder.Entity("SocialballWebAPI.Models.JobAdvertisementUserAnswer", b =>
                 {
                     b.HasOne("SocialballWebAPI.Models.User", "User")
@@ -733,7 +739,7 @@ namespace SocialballWebAPI.Migrations
 
                     b.Navigation("FromTeamPlayerTransferOffers");
 
-                    b.Navigation("JobAdvertisementAnswers");
+                    b.Navigation("JobAdvertisementTeamAnswers");
 
                     b.Navigation("MatchAwayTeams");
 

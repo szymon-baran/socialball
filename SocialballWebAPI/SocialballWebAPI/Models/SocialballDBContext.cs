@@ -300,17 +300,18 @@ namespace SocialballWebAPI.Models
                     .HasValue<JobAdvertisementAnswer>(0)
                     .HasValue<JobAdvertisementTeamAnswer>(JobAdvertisementType.FromTeam)
                     .HasValue<JobAdvertisementUserAnswer>(JobAdvertisementType.FromUser);
+
+                entity.HasOne(d => d.Team)
+                    .WithMany(p => p.JobAdvertisementAnswers)
+                    .HasForeignKey(d => d.TeamId)
+                    .HasConstraintName("FK_JobAdvertisementAnswers_Teams")
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<JobAdvertisementTeamAnswer>(entity =>
             {
                 entity.ToTable("JobAdvertisementAnswers");
 
-                entity.HasOne(d => d.Team)
-                    .WithMany(p => p.JobAdvertisementTeamAnswers)
-                    .HasForeignKey(d => d.TeamId)
-                    .HasConstraintName("FK_JobAdvertisementTeamAnswers_Teams")
-                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<JobAdvertisementUserAnswer>(entity =>

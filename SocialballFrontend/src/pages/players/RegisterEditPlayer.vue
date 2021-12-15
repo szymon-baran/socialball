@@ -30,7 +30,15 @@
                 display-format="dd/MM/yyyy"
                 cancel-button-text="Anuluj"
                 invalid-date-message="Wartość musi być datą lub czasem"
-              />
+              >
+                <DxValidator>
+                  <DxRequiredRule message="Data urodzenia jest wymagana!" />
+                  <DxRangeRule
+                    :max="maxDate"
+                    message="Musisz mieć minimum 16 lat!"
+                  />
+                </DxValidator>
+              </DxDateBox>
             </div>
           </div>
           <div class="row mt-4">
@@ -53,7 +61,7 @@
                 </DxValidator>
               </DxSelectBox>
             </div>
-            <!-- <div class="col">
+            <div class="col">
               <label for="teamSelectBox" class="form-label">Drużyna</label>
               <DxSelectBox
                 :dataSource="getTeams"
@@ -64,7 +72,7 @@
                 :show-clear-button="true"
                 :read-only="showToEdit"
               />
-            </div> -->
+            </div>
             <div class="col">
               <label for="citizenshipTextBox" class="form-label"
                 >Narodowość</label
@@ -179,6 +187,7 @@
           <div class="row mt-4">
             <div class="col">
               <DxValidationSummary />
+              <p v-if="TeamId">Twój wybór drużyny będzie musiał być zaakceptowany przez członka jej zarządu!</p>
             </div>
             <div class="col text-right">
               <DxButton
@@ -204,6 +213,7 @@ import {
   DxEmailRule,
   DxCompareRule,
   DxAsyncRule,
+  DxRangeRule,
 } from "devextreme-vue/validator";
 import DxValidationGroup from "devextreme-vue/validation-group";
 import DxValidationSummary from "devextreme-vue/validation-summary";
@@ -240,6 +250,7 @@ export default {
       },
       validationRequestsCallbacks: callbacks,
     };
+    const currentDate = new Date();
     return {
       showToEdit: false,
       player: {},
@@ -249,6 +260,9 @@ export default {
       recaptchaValidatorConfig,
       borderStyle: "none",
       userTypeEnum,
+      maxDate: new Date(
+        currentDate.setFullYear(currentDate.getFullYear() - 16)
+      ),
     };
   },
   computed: {
@@ -390,6 +404,7 @@ export default {
     DxValidationGroup,
     DxValidationSummary,
     DxAsyncRule,
+    DxRangeRule,
     vueRecaptcha,
     DxDateBox,
     DxFileUploader,

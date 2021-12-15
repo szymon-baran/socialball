@@ -7,7 +7,5 @@ namespace SocialballWebAPI.Models
 {
     public class JobAdvertisementTeamAnswer : JobAdvertisementAnswer
     {
-        public Guid TeamId { get; set; }
-        public Team Team { get; set; }
     }
 }
