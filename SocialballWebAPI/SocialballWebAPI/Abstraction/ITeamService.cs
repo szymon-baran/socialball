@@ -1,4 +1,5 @@
 ﻿using SocialballWebAPI.DTOs;
+using SocialballWebAPI.DTOs.Teams;
 using SocialballWebAPI.Models;
 using SocialballWebAPI.ViewModels;
 using System;
@@ -11,6 +12,7 @@ namespace SocialballWebAPI.Abstraction
     public interface ITeamService
     {
         object GetTeams();
+        void AddTeam(AddTeamDto model);
         object GetTeamsByLeague(Guid leagueId);
         List<SelectList> GetTeamsToSelectList();
         List<PositionsInTeam> GetTeamsToChart(Guid teamId);

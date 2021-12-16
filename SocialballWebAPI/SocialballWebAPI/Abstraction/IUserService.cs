@@ -1,4 +1,5 @@
 ﻿using SocialballWebAPI.DTOs;
+using SocialballWebAPI.DTOs.Teams;
 using SocialballWebAPI.Models;
 using SocialballWebAPI.ViewModels;
 using System;
@@ -14,6 +15,7 @@ namespace SocialballWebAPI.Abstraction
         IEnumerable<User> GetAll();
         User GetById(Guid id);
         Guid AddUserAccountForNewPlayer(RegisterPlayerDto playerModel);
+        Guid AddUserAccountForNewTeamManager(AddTeamDto model);
         List<SelectList> GetUsersToLookup();
     }
 }

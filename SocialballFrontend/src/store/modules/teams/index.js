@@ -15,11 +15,16 @@ export default {
         InjuredPlayers: [],
         LoginUsername: "",
         Email: "",
+        IsActive: false,
         LoginPassword: "",
+        FirstName: "",
+        LastName: "",
+        DateOfBirth: null,
       },
       positionsData: [],
     };
   },
+
   getters: {
     getTeams(state) {
       return state.teams;
@@ -43,6 +48,7 @@ export default {
       state.team.LeagueName = payload.leagueName;
       state.team.Image = payload.image;
       state.team.InjuredPlayers = payload.injuredPlayers;
+      state.team.IsActive = payload.isActive;
     },
     RESET_TEAM_DETAILS(state) {
       state.team.Id = "";
@@ -53,7 +59,11 @@ export default {
       state.team.InjuredPlayers = [];
       state.team.LoginUsername = "";
       state.team.Email = "";
+      state.team.IsActive = false;
       state.team.LoginPassword = "";
+      state.team.FirstName = "";
+      state.team.LastName = "";
+      state.team.DateOfBirth = null;
     },
     SET_POSITIONS_DATA(state, payload) {
       state.positionsData = payload;

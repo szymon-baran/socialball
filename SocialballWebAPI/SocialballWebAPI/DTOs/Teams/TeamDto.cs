@@ -12,5 +12,6 @@ namespace SocialballWebAPI.DTOs
         public Guid? LeagueId { get; set; }
         public string LeagueName { get; set; }
         public string Image { get; set; }
+        public bool IsActive { get; set; }
     }
 }

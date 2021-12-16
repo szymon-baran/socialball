@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SocialballWebAPI.Abstraction;
 using SocialballWebAPI.DTOs;
+using SocialballWebAPI.DTOs.Teams;
 using SocialballWebAPI.Enums;
 using SocialballWebAPI.Extensions;
 using SocialballWebAPI.Models;
@@ -30,6 +31,14 @@ namespace SocialballWebAPI.Controllers
         public ActionResult<IEnumerable<Team>> GetTeams()
         {
             return Ok(TeamService.GetTeams());
+        }
+
+        [HttpPost]
+        public ActionResult AddTeam([FromBody] AddTeamDto model)
+        {
+            TeamService.AddTeam(model);
+
+            return Ok();
         }
 
         [HttpGet("getTeamsByLeague")]

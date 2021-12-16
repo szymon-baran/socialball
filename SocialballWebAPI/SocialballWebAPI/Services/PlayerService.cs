@@ -266,7 +266,6 @@ namespace SocialballWebAPI.Services
             await fileTransferUtility.UploadAsync(uploadRequest);
         }
 
-
         public void AddPlayer(RegisterPlayerDto playerModel)
         {
             Guid userId = UserService.AddUserAccountForNewPlayer(playerModel);
@@ -305,15 +304,6 @@ namespace SocialballWebAPI.Services
 
                 UploadImage(stream, fileName);
             }
-
-            // TODO:
-            //if (playerModel.AddJobAdvertisement == true) 
-            //{ 
-            //    FromUserJobAdvertisement jobAdvertisement = new FromUserJobAdvertisement()
-            //    {
-            //        JobAdvertisementType = JobAdvertisementType.FromUser,
-            //    };                
-            //}
         }
 
         public void EditUserData(EditPlayerDto model)

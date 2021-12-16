@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using SocialballWebAPI.Abstraction;
 using SocialballWebAPI.DTOs;
 using SocialballWebAPI.Enums;
+using SocialballWebAPI.DTOs.Teams;
 
 namespace SocialballWebAPI.Services
 {
@@ -59,6 +60,20 @@ namespace SocialballWebAPI.Services
                 Username = playerModel.LoginUsername,
                 Password = BCrypt.Net.BCrypt.HashPassword(playerModel.LoginPassword),
                 Email = playerModel.Email
+            };
+            _context.Users.Add(user);
+            _context.SaveChanges();
+
+            return user.Id;
+        }
+
+        public Guid AddUserAccountForNewTeamManager(AddTeamDto model)
+        {
+            User user = new User()
+            {
+                Username = model.LoginUsername,
+                Password = BCrypt.Net.BCrypt.HashPassword(model.LoginPassword),
+                Email = model.Email
             };
             _context.Users.Add(user);
             _context.SaveChanges();

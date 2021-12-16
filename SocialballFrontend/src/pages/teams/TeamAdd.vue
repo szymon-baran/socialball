@@ -52,6 +52,41 @@
           <h4 class="line">Dane do logowania zarządu</h4>
           <div class="row">
             <div class="col">
+              <label for="firstNameTextBox" class="form-label">Imię</label>
+              <DxTextBox v-model="FirstName" id="firstNameTextBox" />
+            </div>
+            <div class="col">
+              <label for="lastNameTextBox" class="form-label">Nazwisko</label>
+              <DxTextBox v-model="LastName" id="nameTextBox">
+                <DxValidator>
+                  <DxRequiredRule message="Podaj nazwisko członka zarządu!" />
+                </DxValidator>
+              </DxTextBox>
+            </div>
+            <div class="col">
+              <label for="dateOfBirthDateBox" class="form-label"
+                >Data urodzenia</label
+              >
+              <DxDateBox
+                v-model="DateOfBirth"
+                id="dateOfBirthDateBox"
+                type="date"
+                display-format="dd/MM/yyyy"
+                cancel-button-text="Anuluj"
+                invalid-date-message="Wartość musi być datą lub czasem"
+              >
+                <DxValidator>
+                  <DxRequiredRule message="Data urodzenia jest wymagana!" />
+                  <DxRangeRule
+                    :max="maxDate"
+                    message="Musisz mieć minimum 18 lat!"
+                  />
+                </DxValidator>
+              </DxDateBox>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col">
               <label for="loginUsernameTextBox" class="form-label"
                 >Nazwa użytkownika</label
               >
@@ -74,7 +109,7 @@
               </DxTextBox>
             </div>
           </div>
-          <div class="row mt-4">
+          <div class="row mt-3">
             <div class="col">
               <label for="loginPasswordTextBox" class="form-label">Hasło</label>
               <DxTextBox
@@ -102,7 +137,7 @@
               </DxTextBox>
             </div>
           </div>
-          <div class="row mt-4">
+          <div class="row mt-3">
             <div class="px-3">
               <vue-recaptcha
                 v-show="true"
@@ -124,9 +159,9 @@
           </div>
         </div>
         <div class="row mt-4">
-          <div class="col">
+          <!-- <div class="col">
             <DxValidationSummary />
-          </div>
+          </div> -->
           <div class="col text-right">
             <DxButton
               text="Wyślij wniosek"
@@ -150,9 +185,11 @@ import {
   DxAsyncRule,
   DxEmailRule,
   DxCompareRule,
+  DxRangeRule,
 } from "devextreme-vue/validator";
 import DxValidationGroup from "devextreme-vue/validation-group";
-import DxValidationSummary from "devextreme-vue/validation-summary";
+// import DxValidationSummary from "devextreme-vue/validation-summary";
+import DxDateBox from "devextreme-vue/date-box";
 
 import { mapActions, mapMutations } from "vuex";
 import { createHelpers } from "vuex-map-fields";
@@ -178,6 +215,7 @@ export default {
       },
       validationRequestsCallbacks: callbacks,
     };
+    const currentDate = new Date();
     return {
       leagues: {},
       groupRefKey: "targetGroup",
@@ -185,6 +223,9 @@ export default {
       recaptchaValidatorConfig,
       borderStyle: "none",
       userTypeEnum,
+      maxDate: new Date(
+        currentDate.setFullYear(currentDate.getFullYear() - 18)
+      ),
     };
   },
   computed: {
@@ -195,6 +236,9 @@ export default {
       "team.LoginUsername",
       "team.Email",
       "team.LoginPassword",
+      "team.FirstName",
+      "team.LastName",
+      "team.DateOfBirth",
     ]),
     validationGroup: function() {
       return this.$refs[this.groupRefKey].instance;
@@ -223,7 +267,7 @@ export default {
               buttonInstance.option("text", "Dodaję wniosek...");
               this.addTeam().then(() => {
                 buttonInstance.option("icon", "");
-                buttonInstance.option("text", this.getSubmitText());
+                buttonInstance.option("text", "Wyślij wniosek");
                 useToast().success(
                   "Wniosek o dodanie drużyny został wysłany pomyślnie!"
                 );
@@ -274,10 +318,12 @@ export default {
     DxAsyncRule,
     DxEmailRule,
     DxCompareRule,
+    DxRangeRule,
     DxValidationGroup,
-    DxValidationSummary,
+    // DxValidationSummary,
     vueRecaptcha,
     DxFileUploader,
+    DxDateBox,
   },
   beforeUnmount() {
     this.RESET_TEAM_DETAILS();

@@ -1,5 +1,5 @@
 <template>
-  <div class="big-data-grid">
+  <div class="big-data-grid" v-if="team.IsActive">
     <h3>{{ team.Name }}</h3>
     <img :src="team.Image" alt="Herb drużyny" class="avatar" />
     <h4 v-if="team.LeagueName">Liga: {{ team.LeagueName }}</h4>
@@ -46,6 +46,10 @@
       :userIdFromProfile="team.Id"
       @close="onAddMessagePopupClose"
     />
+  </div>
+  <div class="big-data-grid text-center" v-else>
+    <h3>Wniosek o rejestrację drużyny {{ team.Name }} nie został jeszcze zatwierdzony!</h3>
+    <p>Proszę poczekać na decyzję administracji serwisu.</p>
   </div>
 </template>
 
