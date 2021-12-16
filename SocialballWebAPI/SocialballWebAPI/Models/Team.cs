@@ -23,6 +23,7 @@ namespace SocialballWebAPI.Models
         public string Name { get; set; }
         public Guid? LeagueId { get; set; }
         public int? Points { get; set; }
+        public bool IsActive { get; set; }
 
         public virtual League League { get; set; }
         public virtual ICollection<Match> MatchAwayTeams { get; set; }

@@ -13,6 +13,7 @@ import InjuriesList from "./pages/players/InjuriesList.vue";
 //Teams
 import TeamDetails from "./pages/teams/TeamDetails.vue";
 import TeamsList from "./pages/teams/TeamsList.vue";
+import TeamAdd from "./pages/teams/TeamAdd.vue";
 
 //Matches
 import MatchesList from "./pages/matches/MatchesList.vue";
@@ -61,6 +62,7 @@ const router = createRouter({
       name: "teamDetails",
       meta: { admin: true }
     },
+    { path: "/add-team", component: TeamAdd, meta: { guest: true } },
     { path: "/matches", component: MatchesList, meta: { admin: true } },
     {
       path: "/unconfirmed-matches",

@@ -187,7 +187,9 @@
           <div class="row mt-4">
             <div class="col">
               <DxValidationSummary />
-              <p v-if="TeamId">Twój wybór drużyny będzie musiał być zaakceptowany przez członka jej zarządu!</p>
+            </div>
+            <div class="col">
+              <p class="text-center" v-if="TeamId">Wybór drużyny będzie wymagał akceptacji przez członka jej zarządu!</p>
             </div>
             <div class="col text-right">
               <DxButton

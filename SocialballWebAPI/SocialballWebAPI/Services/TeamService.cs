@@ -26,17 +26,17 @@ namespace SocialballWebAPI.Services
 
         public object GetTeams()
         {
-            return _context.Teams.Include(x => x.League).ToList();
+            return _context.Teams.Include(x => x.League).Where(x => x.IsActive).ToList();
         }
 
         public object GetTeamsByLeague(Guid leagueId)
         {
-            return _context.Teams.Include(x => x.League).Where(x => x.LeagueId == leagueId).ToList();
+            return _context.Teams.Include(x => x.League).Where(x => x.IsActive && x.LeagueId == leagueId).ToList();
         }
 
         public List<SelectList> GetTeamsToSelectList()
         {
-            return _context.Teams.Select(x => new SelectList { Id = x.Id, Name = x.Name }).ToList();
+            return _context.Teams.Where(x => x.IsActive).Select(x => new SelectList { Id = x.Id, Name = x.Name }).ToList();
         }
 
         public List<League> GetLeaguesToLookup()

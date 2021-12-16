@@ -50,112 +50,128 @@ namespace SocialballWebAPI.Models
                     Id = Guid.NewGuid(),
                     Name = "FC Kielce",
                     LeagueId = dbContext.Leagues.Single(x => x.Country == "Polska" && x.Ranking == 4).Id,
-                    Points = 36
+                    Points = 36,
+                    IsActive = true
                 },
                 new Team()
                 {
                     Id = Guid.NewGuid(),
                     Name = "MKS Jędrzejów",
                     LeagueId = dbContext.Leagues.Single(x => x.Country == "Polska" && x.Ranking == 4).Id,
-                    Points = 17
+                    Points = 17,
+                    IsActive = true
                 },
                 new Team()
                 {
                     Id = Guid.NewGuid(),
                     Name = "Zachód Busko-Zdrój",
                     LeagueId = dbContext.Leagues.Single(x => x.Country == "Polska" && x.Ranking == 4).Id,
-                    Points = 21
+                    Points = 21,
+                    IsActive = true
                 },
                 new Team()
                 {
                     Id = Guid.NewGuid(),
                     Name = "Polonia Staszów",
                     LeagueId = dbContext.Leagues.Single(x => x.Country == "Polska" && x.Ranking == 4).Id,
-                    Points = 5
+                    Points = 5,
+                    IsActive = true
                 },
                 new Team()
                 {
                     Id = Guid.NewGuid(),
                     Name = "Stal Pińczów",
                     LeagueId = dbContext.Leagues.Single(x => x.Country == "Polska" && x.Ranking == 4).Id,
-                    Points = 8
+                    Points = 8,
+                    IsActive = true
                 },
                 new Team()
                 {
                     Id = Guid.NewGuid(),
                     Name = "MKS Ostrowiec Świętokrzyski",
                     LeagueId = dbContext.Leagues.Single(x => x.Country == "Polska" && x.Ranking == 4).Id,
-                    Points = 30
+                    Points = 30,
+                    IsActive = true
                 },
                 new Team()
                 {
                     Id = Guid.NewGuid(),
                     Name = "KS Skarżysko-Kamienna",
                     LeagueId = dbContext.Leagues.Single(x => x.Country == "Polska" && x.Ranking == 5).Id,
-                    Points = 12
+                    Points = 12,
+                    IsActive = true
                 },
                 new Team()
                 {
                     Id = Guid.NewGuid(),
                     Name = "Silnica Kielce",
                     LeagueId = dbContext.Leagues.Single(x => x.Country == "Polska" && x.Ranking == 5).Id,
-                    Points = 29
+                    Points = 29,
+                    IsActive = true
                 },
                 new Team()
                 {
                     Id = Guid.NewGuid(),
                     Name = "Lech Daleszyce",
                     LeagueId = dbContext.Leagues.Single(x => x.Country == "Polska" && x.Ranking == 5).Id,
-                    Points = 27
+                    Points = 27,
+                    IsActive = true
                 },
                 new Team()
                 {
                     Id = Guid.NewGuid(),
                     Name = "PKS Borków",
                     LeagueId = dbContext.Leagues.Single(x => x.Country == "Polska" && x.Ranking == 5).Id,
-                    Points = 8
+                    Points = 8,
+                    IsActive = true
                 },
                 new Team()
                 {
                     Id = Guid.NewGuid(),
                     Name = "Czarni Strawczyn",
                     LeagueId = dbContext.Leagues.Single(x => x.Country == "Polska" && x.Ranking == 5).Id,
-                    Points = 11
+                    Points = 11,
+                    IsActive = true
                 },
                 new Team()
                 {
                     Id = Guid.NewGuid(),
                     Name = "Słabi Kielce",
                     LeagueId = dbContext.Leagues.Single(x => x.Country == "Polska" && x.Ranking == 6).Id,
-                    Points = 0
+                    Points = 0,
+                    IsActive = true
                 },
                 new Team()
                 {
                     Id = Guid.NewGuid(),
                     Name = "Sparta Końskie",
                     LeagueId = dbContext.Leagues.Single(x => x.Country == "Polska" && x.Ranking == 6).Id,
-                    Points = 15
+                    Points = 15,
+                    IsActive = true
                 },
                 new Team()
                 {
                     Id = Guid.NewGuid(),
                     Name = "Wojownicy Morawica",
                     LeagueId = dbContext.Leagues.Single(x => x.Country == "Polska" && x.Ranking == 6).Id,
-                    Points = 22
+                    Points = 22,
+                    IsActive = true
                 },
                 new Team()
                 {
                     Id = Guid.NewGuid(),
                     Name = "Planeta Starachowice",
                     LeagueId = dbContext.Leagues.Single(x => x.Country == "Polska" && x.Ranking == 6).Id,
-                    Points = 6
+                    Points = 6,
+                    IsActive = true
                 },
                 new Team()
                 {
                     Id = Guid.NewGuid(),
                     Name = "MKS Chęciny",
                     LeagueId = dbContext.Leagues.Single(x => x.Country == "Polska" && x.Ranking == 6).Id,
-                    Points = 11
+                    Points = 11,
+                    IsActive = true
                 }
                 );
                 await dbContext.SaveChangesAsync();

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getField, updateField } from "vuex-map-fields";
 
 export default {
   namespaced: true,
@@ -12,6 +13,9 @@ export default {
         LeagueName: "",
         Image: "",
         InjuredPlayers: [],
+        LoginUsername: "",
+        Email: "",
+        LoginPassword: "",
       },
       positionsData: [],
     };
@@ -23,6 +27,7 @@ export default {
     getPositionsData(state) {
       return state.positionsData;
     },
+    getField,
   },
   mutations: {
     SET_TEAMS(state, payload) {
@@ -46,16 +51,23 @@ export default {
       state.team.LeagueName = "";
       state.team.Image = "";
       state.team.InjuredPlayers = [];
+      state.team.LoginUsername = "";
+      state.team.Email = "";
+      state.team.LoginPassword = "";
     },
     SET_POSITIONS_DATA(state, payload) {
       state.positionsData = payload;
     },
+    updateField,
   },
   actions: {
     setAllTeams({ commit }) {
       axios.get("https://localhost:44369/api/teams").then((response) => {
         commit("SET_TEAMS", response.data);
       });
+    },
+    addTeam: async ({ state }) => {
+      await axios.post("https://localhost:44369/api/teams", state.team);
     },
     setTeamsByLeague({ commit }, leagueId) {
       axios
@@ -100,16 +112,14 @@ export default {
     },
     setTeamsToLookup: () => {
       return new Promise((resolve, reject) =>
-        axios
-          .get("https://localhost:44369/api/teams")
-          .then(
-            (response) => {
-              resolve(response);
-            },
-            (error) => {
-              reject(error);
-            }
-          )
+        axios.get("https://localhost:44369/api/teams").then(
+          (response) => {
+            resolve(response);
+          },
+          (error) => {
+            reject(error);
+          }
+        )
       );
     },
     setLeaguesToLookup: () => {

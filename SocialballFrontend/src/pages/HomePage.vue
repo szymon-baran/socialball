@@ -12,7 +12,11 @@
             />
           </div>
           <div class="col mt-2">
-            <DxButton text="Dodaj swoją drużynę" type="normal" />
+            <DxButton
+              text="Dodaj swoją drużynę"
+              @click="routerPushToTeamAdd"
+              type="normal"
+            />
           </div>
         </div>
         <div class="row mt-5">
@@ -37,6 +41,9 @@ export default {
   methods: {
     routerPushToRegister() {
       router.push({ path: "/register" });
+    },
+    routerPushToTeamAdd() {
+      router.push({ path: "/add-team" });
     },
   },
 };
