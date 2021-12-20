@@ -9,5 +9,6 @@ namespace SocialballWebAPI.DTOs
     {
         public Guid Id { get; set; }
         public bool IsAccepted { get; set; }
+        public Guid UserTeamId { get; set; }
     }
 }

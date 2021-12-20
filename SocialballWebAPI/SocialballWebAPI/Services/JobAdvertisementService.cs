@@ -269,6 +269,64 @@ namespace SocialballWebAPI.Services
                     _context.FromUserJobAdvertisements.RemoveRange(userAdvertisements);
                 }
             }
+            else
+            {
+                if (answer.JobAdvertisementAnswerType == JobAdvertisementType.FromUser)
+                {
+                    JobAdvertisementUserAnswer userAnswer = _context.JobAdvertisementUserAnswers.Include(x => x.User).ThenInclude(x => x.UserData).Single(x => x.Id == model.Id);
+                    FromTeamJobAdvertisement jobAdvertisement = _context.FromTeamJobAdvertisements.Include(x => x.Team).Single(x => x.Id == userAnswer.JobAdvertisementId);
+                    Message systemMessage = new Message
+                    {
+                        FromUserId = _context.UserDatas.First(x => x.UserType == UserType.System).UserId,
+                        Subject = "Odpowiedź odrzucona",
+                        Content = $"Twoja odpowiedź na ogłoszenie drużyny {jobAdvertisement.Team.Name ?? ""} została odrzucona.<br/><br/>Ta wiadomość została wygenerowana automatycznie, prosimy na nią nie odpowiadać.",
+                        SentOn = DateTime.Now,
+                        MessageType = MessageType.System
+                    };
+                    _context.Messages.Add(systemMessage);
+                    _context.SaveChanges();
+
+                    UserMessage userMessage = new UserMessage()
+                    {
+                        MessageId = systemMessage.Id,
+                        ToUserId = userAnswer.UserId
+                    };
+
+                    _context.UserMessages.Add(userMessage);
+                }
+                else if (answer.JobAdvertisementAnswerType == JobAdvertisementType.FromTeam)
+                {
+                    JobAdvertisementTeamAnswer teamAnswer = _context.JobAdvertisementTeamAnswers.Include(x => x.Team).Single(x => x.Id == model.Id);
+                    FromUserJobAdvertisement jobAdvertisement = _context.FromUserJobAdvertisements.Include(x => x.User).ThenInclude(x => x.UserData).Single(x => x.Id == teamAnswer.JobAdvertisementId);
+                    Message systemMessage = new Message
+                    {
+                        FromUserId = _context.UserDatas.First(x => x.UserType == UserType.System).UserId,
+                        Subject = "Odpowiedź odrzucona",
+                        Content = $"Odpowiedź Twojej drużyny na ogłoszenie zawodnika {jobAdvertisement.User.UserData.FirstName ?? ""} {jobAdvertisement.User.UserData.LastName ?? ""} została odrzucona.<br/><br/>Ta wiadomość została wygenerowana automatycznie, prosimy na nią nie odpowiadać.",
+                        SentOn = DateTime.Now,
+                        MessageType = MessageType.System
+                    };
+                    _context.Messages.Add(systemMessage);
+                    _context.SaveChanges();
+
+                    List<UserData> teamManagers = _context.UserDatas.Include(x => x.User).ThenInclude(x => x.UserData).Where(x => x.TeamId == teamAnswer.TeamId && x.User.UserData.UserType == UserType.Management).ToList();
+                    foreach (var person in teamManagers)
+                    {
+                        if (!person.UserId.HasValue)
+                        {
+                            continue;
+                        }
+
+                        UserMessage userMessage = new UserMessage()
+                        {
+                            MessageId = systemMessage.Id,
+                            ToUserId = person.UserId.Value
+                        };
+
+                        _context.UserMessages.Add(userMessage);
+                    }
+                }
+            }
             _context.JobAdvertisementAnswers.Update(answer);
             _context.SaveChanges();
         }

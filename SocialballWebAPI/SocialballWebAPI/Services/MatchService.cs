@@ -153,13 +153,13 @@ namespace SocialballWebAPI.Services
         public void SendMatchAnswer(MatchAnswerDto model)
         {
             Match match = _context.Matches.Single(x => x.Id == model.Id);
+            Team homeTeam = _context.Teams.Single(x => x.Id == match.HomeTeamId);
+            Team awayTeam = _context.Teams.Single(x => x.Id == match.AwayTeamId);
 
             if (model.IsAccepted)
             {
                 List<MatchEventGoal> homeTeamGoals = _context.MatchEventGoals.Where(x => x.MatchId == match.Id && x.TeamId == match.HomeTeamId).ToList();
                 List<MatchEventGoal> awayTeamGoals = _context.MatchEventGoals.Where(x => x.MatchId == match.Id && x.TeamId == match.AwayTeamId).ToList();
-                Team homeTeam = _context.Teams.Single(x => x.Id == match.HomeTeamId);
-                Team awayTeam = _context.Teams.Single(x => x.Id == match.AwayTeamId);
 
                 if (homeTeamGoals.Count > awayTeamGoals.Count)
                 {
@@ -183,6 +183,48 @@ namespace SocialballWebAPI.Services
             } 
             else
             {
+                Team team = new Team();
+                Team otherTeam = new Team();
+
+                if (awayTeam.Id == model.UserTeamId)
+                {
+                    team = homeTeam;
+                    otherTeam = awayTeam;
+                }
+                else
+                {
+                    team = awayTeam;
+                    otherTeam = homeTeam;
+                }
+
+                Message systemMessage = new Message
+                {
+                    FromUserId = _context.UserDatas.First(x => x.UserType == UserType.System).UserId,
+                    Subject = "Mecz niezaakceptowany",
+                    Content = $"Mecz przeciwko drużynie {otherTeam.Name} został odrzucony przez zarząd drużyny przeciwnej.<br/><br/>Ta wiadomość została wygenerowana automatycznie, prosimy na nią nie odpowiadać.",
+                    SentOn = DateTime.Now,
+                    MessageType = MessageType.System
+                };
+                _context.Messages.Add(systemMessage);
+                _context.SaveChanges();
+
+                List<UserData> teamManagers = _context.UserDatas.Include(x => x.User).ThenInclude(x => x.UserData).Where(x => x.TeamId == team.Id && x.User.UserData.UserType == UserType.Management).ToList();
+                foreach (var person in teamManagers)
+                {
+                    if (!person.UserId.HasValue)
+                    {
+                        continue;
+                    }
+
+                    UserMessage userMessage = new UserMessage()
+                    {
+                        MessageId = systemMessage.Id,
+                        ToUserId = person.UserId.Value
+                    };
+
+                    _context.UserMessages.Add(userMessage);
+                }
+
                 _context.Matches.Remove(match);
             }
 

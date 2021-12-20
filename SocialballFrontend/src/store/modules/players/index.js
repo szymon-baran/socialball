@@ -50,7 +50,7 @@ export default {
       state.player.Id = payload.id;
       state.player.FirstName = payload.firstName;
       state.player.LastName = payload.lastName;
-      state.player.DateOfBirth = payload.dateOfBirth;
+      state.player.DateOfBirth = new Date(payload.dateOfBirth);
       state.player.IsInjuredUntil = payload.isInjuredUntil;
       state.player.Email = payload.email;
       state.player.Position = payload.position;

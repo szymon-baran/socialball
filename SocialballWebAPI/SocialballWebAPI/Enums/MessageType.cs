@@ -13,6 +13,8 @@ namespace SocialballWebAPI.Enums
         [Display(Name = "Do swojej drużyny")]
         InsideTeam = 1,
         [Display(Name = "Do zarządu innej drużyny")]
-        ToOtherTeam = 2
+        ToOtherTeam = 2,
+        [Display(Name = "Systemowa")]
+        System = 3,
     }
 }

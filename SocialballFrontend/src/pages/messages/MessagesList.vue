@@ -40,7 +40,7 @@
           <SentMessagesList />
         </div>
       </DxItem>
-      <DxItem title="Otrzymane oferty transferowe">
+      <DxItem title="Otrzymane oferty transferowe" v-if="getLoggedInUser.userType == 1">
         <div>
           <ToPlayerTransferOffersList />
         </div>

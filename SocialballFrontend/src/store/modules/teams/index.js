@@ -79,9 +79,42 @@ export default {
     addTeam: async ({ state }) => {
       await axios.post("https://localhost:44369/api/teams", state.team);
     },
+    editTeamAdmin: async ({ state, dispatch }, selectedLeagueId) => {
+      await axios
+        .post("https://localhost:44369/api/admins/teamEdit", state.team)
+        .then(() => {
+          dispatch("setTeamsByLeagueAdmin", selectedLeagueId);
+        });
+    },
+    teamDeleteAdmin: async ({ state, dispatch }, selectedLeagueId) => {
+      await axios
+        .post("https://localhost:44369/api/admins/teamDeleteAdmin", {
+          Id: state.team.Id,
+        })
+        .then(() => {
+          dispatch("setTeamsByLeagueAdmin", selectedLeagueId);
+        });
+    },
+    teamImageDeleteAdmin: async ({ state }) => {
+      await axios.post(
+        "https://localhost:44369/api/admins/teamImageDeleteAdmin",
+        {
+          Id: state.team.Id,
+        }
+      );
+    },
     setTeamsByLeague({ commit }, leagueId) {
       axios
         .get("https://localhost:44369/api/teams/getTeamsByLeague", {
+          params: { leagueId: leagueId },
+        })
+        .then((response) => {
+          commit("SET_TEAMS", response.data);
+        });
+    },
+    setTeamsByLeagueAdmin({ commit }, leagueId) {
+      axios
+        .get("https://localhost:44369/api/admins/getTeamsList", {
           params: { leagueId: leagueId },
         })
         .then((response) => {

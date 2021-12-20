@@ -115,9 +115,9 @@ namespace SocialballWebAPI.Services
             {
                 FromUserId = _context.UserDatas.First(x => x.UserType == UserType.System).UserId,
                 Subject = "Oferta transferowa odrzucona",
-                Content = $"Oferta transferowa Twojej drużyny za zawodnika {playerTransferOffer.Player.FirstName ?? ""} {playerTransferOffer.Player.LastName} została odrzucona.<br/>Ta wiadomość została wygenerowana automatycznie, prosimy na nią nie odpowiadać.",
+                Content = $"Oferta transferowa Twojej drużyny za zawodnika {playerTransferOffer.Player.FirstName ?? ""} {playerTransferOffer.Player.LastName} została odrzucona.<br/><br/>Ta wiadomość została wygenerowana automatycznie, prosimy na nią nie odpowiadać.",
                 SentOn = DateTime.Now,
-                MessageType = MessageType.Private
+                MessageType = MessageType.System
             };
             _context.Messages.Add(systemMessage);
             _context.SaveChanges();

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SocialballWebAPI.Abstraction;
 using SocialballWebAPI.DTOs;
+using SocialballWebAPI.DTOs.Admins;
 using SocialballWebAPI.Enums;
 using SocialballWebAPI.Models;
 
@@ -27,9 +28,37 @@ namespace SocialballWebAPI.Controllers
         }
 
         [HttpGet("getUsersList")]
-        public ActionResult<IEnumerable<Player>> GetPlayers(Guid? teamId)
+        public ActionResult<IEnumerable<Player>> GetPlayers()
         {
             return Ok(AdminService.GetUsers());
+        }
+
+        [HttpGet("getTeamsList")]
+        public ActionResult<IEnumerable<Player>> GetTeams(Guid? leagueId)
+        {
+            return Ok(AdminService.GetTeams(leagueId));
+        }
+
+        [HttpPost("teamEdit")]
+        public ActionResult EditTeam([FromBody] AdminEditTeamDto model)
+        {
+            AdminService.EditTeam(model);
+
+            return Ok();
+        }
+
+        [HttpPost("teamDeleteAdmin")]
+        public ActionResult TeamDeleteAdmin(GuidDto model)
+        {
+            AdminService.TeamDeleteAdmin(model.Id);
+            return Ok();
+        }
+
+        [HttpPost("teamImageDeleteAdmin")]
+        public ActionResult TeamImageDeleteAdmin(GuidDto model)
+        {
+            AdminService.TeamImageDeleteAdmin(model.Id);
+            return Ok();
         }
     }
 }

@@ -186,7 +186,8 @@ export default {
     sendMatchAnswer: async ({ state, dispatch }, { isAccepted: isAccepted, teamId: teamId }) => {
       let wrapper = {
         Id: state.match.Id,
-        IsAccepted: isAccepted
+        IsAccepted: isAccepted,
+        UserTeamId: teamId
       }
       await axios
         .post("https://localhost:44369/api/matches/sendMatchAnswer", wrapper, {

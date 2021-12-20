@@ -51,11 +51,6 @@
         <li class="font-weight-bold" v-if="isLoggedIn">
           <router-link to="/profile" draggable="false">
             <i class="fas fa-user-circle mr-2"></i>
-            <span
-              class="mr-1 red-color"
-              v-if="getLoggedInUser.userType == 10"
-            >[admin]</span
-            >
             <span>{{ getUsername }}</span>
           </router-link>
           <a
@@ -138,6 +133,7 @@ export default {
     },
     logoutMethod() {
       this.logout();
+      this.$router.push({ path: "/" });
       useToast().success("Wylogowano pomyślnie!");
     },
     openMobileMenu() {

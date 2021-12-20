@@ -29,6 +29,7 @@
           >{{ getPlayerDetails.TeamName }}</router-link
         >
       </h4>
+      <p class="main-color" v-if="getLoggedInUser.userType === 2">Konto zarządu drużyny</p>
       <p v-if="getPlayerDetails.Earnings">Twoje aktualne zarobki miesięczne: {{ getPlayerDetails.Earnings }} PLN.</p>
     </div>
     <div v-else class="text-center">

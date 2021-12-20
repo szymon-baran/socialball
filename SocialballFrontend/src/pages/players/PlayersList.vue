@@ -10,6 +10,7 @@
       @row-click="onRowClick"
       :column-auto-width="true"
       width="100%"
+      no-data-text="Brak zawodników"
     >
       <DxFilterRow :visible="true" />
       <DxLoadPanel :enabled="true" />

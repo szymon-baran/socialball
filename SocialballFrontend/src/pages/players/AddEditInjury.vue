@@ -201,7 +201,7 @@ export default {
         this.addEditPlayerInjury(this.userTeamId).then(() => {
           this.popupVisible = false;
           this.$emit("closed");
-          useToast().success("Edycja kontuzji zakończona pomyślnie!");
+          useToast().success("Edycja zawodnika zakończona pomyślnie!");
         });
       } else if (validationResult.isValid && !this.showToEdit) {
         this.addEditPlayerInjury(this.userTeamId).then(() => {

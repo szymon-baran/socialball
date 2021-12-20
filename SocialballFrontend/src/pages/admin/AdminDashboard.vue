@@ -54,6 +54,7 @@
         <div class="col-6 col-md-6 mb-3">
           <DxButton
             text="Zarządzanie drużynami"
+            @click="routerPushToTeamsAdmin"
             type="danger"
             width="610px"
             height="150px"
@@ -95,6 +96,9 @@ export default {
     },
     routerPushToMatches() {
       this.$router.push({ path: `/matches` });
+    },
+    routerPushToTeamsAdmin() {
+      this.$router.push({ path: `/admin-teams` });
     },
   },
   mounted() {},

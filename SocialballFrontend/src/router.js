@@ -14,6 +14,7 @@ import InjuriesList from "./pages/players/InjuriesList.vue";
 import TeamDetails from "./pages/teams/TeamDetails.vue";
 import TeamsList from "./pages/teams/TeamsList.vue";
 import TeamAdd from "./pages/teams/TeamAdd.vue";
+import AdminTeamsList from "./pages/admin/AdminTeamsList.vue";
 
 //Matches
 import MatchesList from "./pages/matches/MatchesList.vue";
@@ -55,6 +56,7 @@ const router = createRouter({
       meta: { guest: false },
     },
     { path: "/teams", component: TeamsList, meta: { admin: true } },
+    { path: "/admin-teams", component: AdminTeamsList, meta: { admin: true, adminOnly: true } },
     {
       path: "/teams/:id",
       component: TeamDetails,
@@ -87,7 +89,7 @@ const router = createRouter({
     },
     { path: "/:pageNotFound(.*)", component: PageNotFound },
     { path: "/no-permission", component: NoPermissionPage },
-    { path: "/admin", component: AdminDashboard, meta: { admin: true } },
+    { path: "/admin", component: AdminDashboard, meta: { admin: true, adminOnly: true } },
   ],
 });
 
@@ -107,6 +109,12 @@ router.beforeEach((to, from, next) => {
     !to.meta.player
   ) {
     if (getUserType != 2) {
+      return next({ path: "/no-permission" });
+    }
+  }
+
+  if (to.meta.adminOnly) {
+    if (getUserType != 10) {
       return next({ path: "/no-permission" });
     }
   }

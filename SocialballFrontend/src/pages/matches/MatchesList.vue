@@ -16,6 +16,7 @@
       @row-click="showMatchDetails"
       :column-auto-width="true"
       width="100%"
+      no-data-text="Brak meczy"
     >
       <DxFilterRow :visible="true" />
       <DxLoadPanel :enabled="true" />
