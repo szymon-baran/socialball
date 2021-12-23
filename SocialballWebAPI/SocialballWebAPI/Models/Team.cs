@@ -16,7 +16,7 @@ namespace SocialballWebAPI.Models
             JobAdvertisementAnswers = new HashSet<JobAdvertisementAnswer>();
             FromTeamPlayerTransferOffers = new HashSet<PlayerTransferOffer>();
             ToTeamPlayerTransferOffers = new HashSet<PlayerTransferOffer>();
-            TeamMatchEvents = new HashSet<MatchEvent>();
+            MatchPlayers = new HashSet<MatchPlayer>();
         }
 
         public Guid Id { get; set; }
@@ -33,6 +33,6 @@ namespace SocialballWebAPI.Models
         public virtual ICollection<JobAdvertisementAnswer> JobAdvertisementAnswers { get; set; }
         public virtual ICollection<PlayerTransferOffer> FromTeamPlayerTransferOffers { get; set; }
         public virtual ICollection<PlayerTransferOffer> ToTeamPlayerTransferOffers { get; set; }
-        public virtual ICollection<MatchEvent> TeamMatchEvents { get; set; }
+        public virtual ICollection<MatchPlayer> MatchPlayers { get; set; }
     }
 }

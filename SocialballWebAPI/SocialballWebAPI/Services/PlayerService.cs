@@ -16,6 +16,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using SocialballWebAPI.Extensions;
 
 namespace SocialballWebAPI.Services
 {
@@ -39,7 +40,8 @@ namespace SocialballWebAPI.Services
 
         public object GetPlayersByTeamId(Guid teamId)
         {
-            return _context.Players.Where(x => x.UserType == UserType.Player && x.TeamId == teamId).Select(x => new {
+            return _context.Players.Where(x => x.UserType == UserType.Player && x.TeamId == teamId).Select(x => new
+            {
                 x.Id,
                 x.FirstName,
                 x.LastName,
@@ -54,25 +56,7 @@ namespace SocialballWebAPI.Services
 
         public GetPlayerDto GetPlayerDetails(Guid id)
         {
-            Player player = _context.Players
-                .Include(x => x.MatchEvents)
-                    .ThenInclude(y => y.Match)
-                        .ThenInclude(z => z.HomeTeam)
-                .Include(x => x.MatchEvents)
-                    .ThenInclude(y => y.Match)
-                        .ThenInclude(z => z.AwayTeam)
-                .Include(x => x.MatchEvents)
-                    .ThenInclude(y => ((MatchEventGoal)y).AssistPlayer)
-                .Include(x => x.MatchGoalsAssisted)
-                    .ThenInclude(y => y.Match)
-                        .ThenInclude(z => z.HomeTeam)
-                .Include(x => x.MatchGoalsAssisted)
-                    .ThenInclude(y => y.Match)
-                        .ThenInclude(z => z.AwayTeam)
-                .Include(x => x.MatchGoalsAssisted)
-                    .ThenInclude(y => y.Player)
-                .Include(x => x.User)
-            .FirstOrDefault(x => x.Id == id);
+            Player player = _context.Players.Include(x => x.Team).Include(x => x.User).FirstOrDefault(x => x.Id == id);
             if (player == null)
             {
                 throw new KeyNotFoundException();
@@ -86,26 +70,42 @@ namespace SocialballWebAPI.Services
             {
                 model.Email = player.User.Email;
             }
-            model.Goals = player.MatchEvents.Where(x => x.MatchEventType == MatchEventType.Goal && x.Match.IsConfirmed).Select(x => new GoalInPlayerDetailsDto
-            {
-                Id = x.Id,
-                Minute = x.Minute,
-                MatchId = x.MatchId,
-                MatchBetween = x.Match.HomeTeam.Name + " - " + x.Match.AwayTeam.Name,
-                DateTime = x.Match.DateTime,
-                GoalAssistPlayerName = ((MatchEventGoal)x).AssistPlayer != null ? (((MatchEventGoal)x).AssistPlayer.FirstName + " " + ((MatchEventGoal)x).AssistPlayer.LastName) : null
-            }).OrderByDescending(x => x.DateTime).ToList();
-            model.Assists = player.MatchGoalsAssisted.Where(x => x.Match.IsConfirmed).Select(x => new GoalInPlayerDetailsDto
-            {
-                Id = x.Id,
-                Minute = x.Minute,
-                MatchId = x.MatchId,
-                MatchBetween = x.Match.HomeTeam.Name + " - " + x.Match.AwayTeam.Name,
-                DateTime = x.Match.DateTime,
-                GoalScorerName = x.Player.FirstName + " " + x.Player.LastName
-            }).OrderByDescending(x => x.DateTime).ToList();
+            model.Goals = _context.MatchEventGoals
+                .Include(x => x.MatchPlayer)
+                    .ThenInclude(x => x.Match)
+                        .ThenInclude(x => x.HomeTeam)
+                .Include(x => x.MatchPlayer)
+                    .ThenInclude(x => x.Match)
+                        .ThenInclude(x => x.AwayTeam)
+                .Include(x => x.AssistPlayer)
+                .Where(x => x.MatchPlayer.PlayerId == player.Id && x.MatchEventType == MatchEventType.Goal && x.MatchPlayer.Match.IsConfirmed).Select(x => new GoalInPlayerDetailsDto
+                {
+                    Id = x.Id,
+                    Minute = x.Minute,
+                    MatchId = x.MatchPlayer.MatchId,
+                    MatchBetween = x.MatchPlayer.Match.HomeTeam.Name + " - " + x.MatchPlayer.Match.AwayTeam.Name,
+                    DateTime = x.MatchPlayer.Match.DateTime,
+                    GoalAssistPlayerName = x.AssistPlayer != null ? (x.AssistPlayer.FirstName + " " + x.AssistPlayer.LastName) : null
+                }).OrderByDescending(x => x.DateTime).ToList();
+            model.Assists = _context.MatchEventGoals
+                .Include(x => x.MatchPlayer)
+                    .ThenInclude(x => x.Match)
+                        .ThenInclude(x => x.HomeTeam)
+                .Include(x => x.MatchPlayer)
+                    .ThenInclude(x => x.Match)
+                        .ThenInclude(x => x.AwayTeam)
+                .Include(x => x.AssistPlayer)
+                .Where(x => x.AssistPlayerId == player.Id && x.MatchEventType == MatchEventType.Goal && x.MatchPlayer.Match.IsConfirmed).Select(x => new GoalInPlayerDetailsDto
+                {
+                    Id = x.Id,
+                    Minute = x.Minute,
+                    MatchId = x.MatchPlayer.MatchId,
+                    MatchBetween = x.MatchPlayer.Match.HomeTeam.Name + " - " + x.MatchPlayer.Match.AwayTeam.Name,
+                    DateTime = x.MatchPlayer.Match.DateTime,
+                    GoalScorerName = x.MatchPlayer.Player.FirstName + " " + x.MatchPlayer.Player.LastName
+                }).OrderByDescending(x => x.DateTime).ToList();
 
-            var lookup = player.MatchEvents.Where(x => x.Match.DateTime.Year == DateTime.Today.Year && x.MatchEventType == MatchEventType.Goal && x.Match.IsConfirmed).ToLookup(y => y.Match.DateTime.Month);
+            var lookup = _context.MatchEventGoals.Include(x => x.MatchPlayer).ThenInclude(x => x.Match).Where(x => x.MatchPlayer.PlayerId == player.Id && x.MatchPlayer.Match.DateTime.Year == DateTime.Today.Year && x.MatchEventType == MatchEventType.Goal && x.MatchPlayer.Match.IsConfirmed).ToLookup(y => y.MatchPlayer.Match.DateTime.Month);
 
             model.CurrentYearGoalsToChart =
                 from month in Enumerable.Range(1, 12)
@@ -168,7 +168,7 @@ namespace SocialballWebAPI.Services
 
         public GetPlayerDto GetPlayerDetailsByUserId(Guid userId)
         {
-            Player player = _context.Players.Include(x => x.MatchEvents.Where(y => y.MatchEventType == MatchEventType.Goal)).Include(x => x.Team).FirstOrDefault(x => x.UserId == userId);
+            Player player = _context.Players.Include(x => x.MatchesPlayer).ThenInclude(x => x.MatchEvents.Where(y => y.MatchEventType == MatchEventType.Goal)).Include(x => x.Team).FirstOrDefault(x => x.UserId == userId);
             if (player == null)
             {
                 throw new KeyNotFoundException();
@@ -228,10 +228,10 @@ namespace SocialballWebAPI.Services
 
         public List<SelectList> GetPlayersByTeamToLookup(Guid teamId)
         {
-            List<SelectList> players = _context.Players.Where(x => x.TeamId == teamId).Select(x => new SelectList
+            List<SelectList> players = _context.Players.Where(x => x.TeamId == teamId).OrderBy(x => x.Position).Select(x => new SelectList
             {
                 Id = x.Id,
-                Name = x.FirstName + " " + x.LastName
+                Name = $"{x.FirstName} {x.LastName} ({EnumExtensions.GetEnumText<PositionType>(x.Position)})"
             }).ToList();
 
             return players;

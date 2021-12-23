@@ -1,4 +1,5 @@
-﻿using SocialballWebAPI.Enums;
+﻿using SocialballWebAPI.DTOs.MatchPlayers;
+using SocialballWebAPI.Enums;
 using SocialballWebAPI.Models;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace SocialballWebAPI.DTOs
         public string Image { get; set; }
         public DateTime DateOfBirth { get; set; }
         public DateTime IsInjuredUntil { get; set; }
+        public List<MatchPlayerDto> MatchesPlayer { get; set; }
         public List<GoalInPlayerDetailsDto> Goals { get; set; }
         public List<GoalInPlayerDetailsDto> Assists { get; set; }
         public object CurrentYearGoalsToChart { get; set; }

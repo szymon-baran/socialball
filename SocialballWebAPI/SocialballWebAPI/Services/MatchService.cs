@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using SocialballWebAPI.Abstraction;
 using SocialballWebAPI.DTOs;
+using SocialballWebAPI.DTOs.MatchEvents;
+using SocialballWebAPI.DTOs.MatchPlayers;
 using SocialballWebAPI.Enums;
 using SocialballWebAPI.Models;
 using SocialballWebAPI.ViewModels;
@@ -26,24 +28,24 @@ namespace SocialballWebAPI.Services
 
         public object GetAllMatches()
         {
-            return _context.Matches.Where(x => x.IsConfirmed).Include(x => x.MatchEvents).ThenInclude(x => x.Player).ToList();
+            return _context.Matches.Where(x => x.IsConfirmed).Include(x => x.MatchPlayers).ThenInclude(x => x.MatchEvents).Include(x => x.MatchPlayers).ThenInclude(x => x.Player).ToList();
         }
 
         public object GetTeamMatches(Guid teamId)
         {
-            return _context.Matches.Where(x => x.IsConfirmed && (x.HomeTeamId == teamId || x.AwayTeamId == teamId)).Include(x => x.MatchEvents).ThenInclude(x => x.Player).ToList();
+            return _context.Matches.Where(x => x.IsConfirmed && (x.HomeTeamId == teamId || x.AwayTeamId == teamId)).Include(x => x.MatchPlayers).ThenInclude(x => x.MatchEvents).Include(x => x.MatchPlayers).ThenInclude(x => x.Player).ToList();
         }
 
         public object GetUnconfirmedMatches(Guid teamId)
         {
-            return _context.Matches.Where(x => !x.IsConfirmed && (x.HomeTeamId == teamId || x.AwayTeamId == teamId)).Include(x => x.MatchEvents).ThenInclude(x => x.Player).Include(x => x.HomeTeam).Include(x => x.AwayTeam).Select(x => new
+            return _context.Matches.Where(x => !x.IsConfirmed && (x.HomeTeamId == teamId || x.AwayTeamId == teamId)).Include(x => x.MatchPlayers).ThenInclude(x => x.MatchEvents).Include(x => x.MatchPlayers).ThenInclude(x => x.Player).Include(x => x.HomeTeam).Include(x => x.AwayTeam).Select(x => new
             {
                 x.Id,
                 x.HomeTeamId,
                 x.HomeTeam,
                 x.AwayTeamId,
                 x.AwayTeam,
-                x.MatchEvents,
+                x.MatchPlayers,
                 x.AddedByTeamId,
                 x.Stadium,
                 x.DateTime,
@@ -54,15 +56,11 @@ namespace SocialballWebAPI.Services
         public MatchDetailsDto GetMatchDetails(Guid id)
         {
             Match match = _context.Matches
-                    .Include(x => x.MatchEvents)
-                        .ThenInclude(x => (x as MatchEventGoal).AssistPlayer)
-                    .Include(x => x.MatchEvents)
-                        .ThenInclude(x => x.Player)
-                    .Include(x => x.AwayTeam)
-                        .ThenInclude(x => x.League)
-                    .Include(x => x.HomeTeam)
-                        .ThenInclude(x => x.League)
-                .FirstOrDefault(x => x.Id == id);
+            .Include(x => x.AwayTeam)
+                .ThenInclude(x => x.League)
+            .Include(x => x.HomeTeam)
+                .ThenInclude(x => x.League)
+            .Single(x => x.Id == id);
 
             if (match == null)
             {
@@ -70,9 +68,47 @@ namespace SocialballWebAPI.Services
             }
 
             MatchDetailsDto model = _mapper.Map<MatchDetailsDto>(match);
+            List<GetMatchPlayerDto> homeMatchPlayers = _context.MatchPlayers.Include(x => x.Player).Where(x => x.MatchId == match.Id && x.TeamId == match.HomeTeamId).Select(x => new GetMatchPlayerDto
+            {
+                Id = x.Id,
+                FirstName = x.Player.FirstName,
+                LastName = x.Player.LastName,
+                Position = x.Position,
+                Number = x.Number.HasValue ? x.Number.Value : 0
+            }).ToList();
+            model.HomeMatchGoalkeeper = homeMatchPlayers.Single(x => x.Position == PositionType.Goalkeeper);
+            model.HomeMatchDefenders = homeMatchPlayers.Where(x => x.Position == PositionType.Defender).ToList();
+            model.HomeMatchMidfielders = homeMatchPlayers.Where(x => x.Position == PositionType.Midfielder).ToList();
+            model.HomeMatchStrikers = homeMatchPlayers.Where(x => x.Position == PositionType.Striker).ToList();
 
-            model.HomeTeam.Image = "https://socialball-avatars.s3.eu-central-1.amazonaws.com/" + model.HomeTeam.Id;
-            model.AwayTeam.Image = "https://socialball-avatars.s3.eu-central-1.amazonaws.com/" + model.AwayTeam.Id;
+            List<GetMatchPlayerDto> awayMatchPlayers = _context.MatchPlayers.Include(x => x.Player).Where(x => x.MatchId == match.Id && x.TeamId == match.AwayTeamId).Select(x => new GetMatchPlayerDto
+            {
+                Id = x.Id,
+                FirstName = x.Player.FirstName,
+                LastName = x.Player.LastName,
+                Position = x.Position,
+                Number = x.Number.HasValue ? x.Number.Value : 0
+            }).ToList();
+            model.AwayMatchGoalkeeper = awayMatchPlayers.Single(x => x.Position == PositionType.Goalkeeper);
+            model.AwayMatchDefenders = awayMatchPlayers.Where(x => x.Position == PositionType.Defender).ToList();
+            model.AwayMatchMidfielders = awayMatchPlayers.Where(x => x.Position == PositionType.Midfielder).ToList();
+            model.AwayMatchStrikers = awayMatchPlayers.Where(x => x.Position == PositionType.Striker).ToList();
+
+            model.MatchEvents = _context.MatchEvents.Include(x => x.MatchPlayer).ThenInclude(x => x.Player).Include(x => ((MatchEventGoal)x).AssistPlayer).Where(x => x.MatchPlayer.MatchId == match.Id).Select(x => new GetMatchEventDto
+            {
+                Id = x.Id,
+                TeamId = x.MatchPlayer.TeamId,
+                FirstName = x.MatchPlayer.Player.FirstName,
+                LastName = x.MatchPlayer.Player.LastName,
+                AssistPlayerFirstName = x is MatchEventGoal ? ((MatchEventGoal)x).AssistPlayer.FirstName : "",
+                AssistPlayerLastName = x is MatchEventGoal ? ((MatchEventGoal)x).AssistPlayer.LastName : "",
+                Minute = x.Minute,
+                PenaltyType = x is MatchEventFoul ? ((MatchEventFoul)x).PenaltyType : null,
+                MatchEventType = x.MatchEventType
+            }).ToList();
+
+            model.HomeTeam.Image = "https://socialball-avatars.s3.eu-central-1.amazonaws.com/" + model.HomeTeamId;
+            model.AwayTeam.Image = "https://socialball-avatars.s3.eu-central-1.amazonaws.com/" + model.AwayTeamId;
 
             WebRequest webRequestHomeTeam = WebRequest.Create(model.HomeTeam.Image);
             WebResponse webResponseHomeTeam;
@@ -114,35 +150,66 @@ namespace SocialballWebAPI.Services
             _context.Matches.Add(match);
             _context.SaveChanges();
 
+            foreach (var matchPlayerModel in model.HomeMatchPlayers)
+            {
+                if (match.HomeTeamId.HasValue)
+                {
+                    MatchPlayer matchPlayer = new MatchPlayer()
+                    {
+                        PlayerId = matchPlayerModel.PlayerId,
+                        MatchId = match.Id,
+                        TeamId = match.HomeTeamId.Value,
+                        Position = matchPlayerModel.Position,
+                        Number = matchPlayerModel.Number
+                    };
+                    _context.MatchPlayers.Add(matchPlayer);
+                    _context.SaveChanges();
+                }
+            }
+
+            foreach (var matchPlayerModel in model.AwayMatchPlayers)
+            {
+                if (match.AwayTeamId.HasValue)
+                {
+                    MatchPlayer matchPlayer = new MatchPlayer()
+                    {
+                        PlayerId = matchPlayerModel.PlayerId,
+                        MatchId = match.Id,
+                        TeamId = match.AwayTeamId.Value,
+                        Position = matchPlayerModel.Position,
+                        Number = matchPlayerModel.Number
+                    };
+                    _context.MatchPlayers.Add(matchPlayer);
+                    _context.SaveChanges();
+                }
+            }
+
+            List<MatchPlayer> matchPlayers = _context.MatchPlayers.Where(x => x.MatchId == match.Id).ToList();
+
             foreach (var eventModel in model.MatchEvents)
             {
-                switch (eventModel.MatchEventType)
+                if (eventModel.MatchEventType == MatchEventType.Goal)
                 {
-                    case MatchEventType.Goal:
-                        MatchEventGoal matchEventGoal = new MatchEventGoal()
-                        {
-                            MatchId = match.Id,
-                            PlayerId = eventModel.PlayerId,
-                            TeamId = eventModel.EventTeamId,
-                            Minute = eventModel.Minute,
-                            MatchEventType = eventModel.MatchEventType,
-                            AssistPlayerId = eventModel.AssistPlayerId
-                        };
-                        _context.MatchEventGoals.Add(matchEventGoal);
-                        
-                        break;
-                    case MatchEventType.Foul:
-                        MatchEventFoul matchEventFoul = new MatchEventFoul()
-                        {
-                            MatchId = match.Id,
-                            PlayerId = eventModel.PlayerId,
-                            TeamId = eventModel.EventTeamId,
-                            Minute = eventModel.Minute,
-                            MatchEventType = eventModel.MatchEventType,
-                            PenaltyType = eventModel.PenaltyType
-                        };
-                        _context.MatchEventFouls.Add(matchEventFoul);
-                        break;
+                    MatchEventGoal matchEventGoal = new MatchEventGoal()
+                    {
+                        MatchPlayerId = matchPlayers.Single(x => x.PlayerId == eventModel.PlayerId).Id,
+                        Minute = eventModel.Minute,
+                        MatchEventType = eventModel.MatchEventType,
+                        AssistPlayerId = eventModel.AssistPlayerId
+                    };
+                    _context.MatchEventGoals.Add(matchEventGoal);
+                }
+
+                else if (eventModel.MatchEventType == MatchEventType.Foul)
+                {
+                    MatchEventFoul matchEventFoul = new MatchEventFoul()
+                    {
+                        MatchPlayerId = matchPlayers.Single(x => x.PlayerId == eventModel.PlayerId).Id,
+                        Minute = eventModel.Minute,
+                        MatchEventType = eventModel.MatchEventType,
+                        PenaltyType = eventModel.PenaltyType
+                    };
+                    _context.MatchEventFouls.Add(matchEventFoul);
                 }
             }
 
@@ -158,8 +225,8 @@ namespace SocialballWebAPI.Services
 
             if (model.IsAccepted)
             {
-                List<MatchEventGoal> homeTeamGoals = _context.MatchEventGoals.Where(x => x.MatchId == match.Id && x.TeamId == match.HomeTeamId).ToList();
-                List<MatchEventGoal> awayTeamGoals = _context.MatchEventGoals.Where(x => x.MatchId == match.Id && x.TeamId == match.AwayTeamId).ToList();
+                List<MatchEventGoal> homeTeamGoals = _context.MatchEventGoals.Include(x => x.MatchPlayer).Where(x => x.MatchPlayer.MatchId == match.Id && x.MatchPlayer.TeamId == match.HomeTeamId).ToList();
+                List<MatchEventGoal> awayTeamGoals = _context.MatchEventGoals.Where(x => x.MatchPlayer.MatchId == match.Id && x.MatchPlayer.TeamId == match.AwayTeamId).ToList();
 
                 if (homeTeamGoals.Count > awayTeamGoals.Count)
                 {
@@ -180,7 +247,7 @@ namespace SocialballWebAPI.Services
                 }
 
                 match.IsConfirmed = model.IsAccepted;
-            } 
+            }
             else
             {
                 Team team = new Team();

@@ -163,7 +163,6 @@ header {
   align-items: center;
   z-index: 88888;
   border-bottom: 1px solid #898d90;
-  border-radius: 10px;
 }
 
 header a {

@@ -40,6 +40,7 @@ namespace SocialballWebAPI.Models
         public virtual DbSet<JobAdvertisementTeamAnswer> JobAdvertisementTeamAnswers { get; set; }
         public virtual DbSet<JobAdvertisementUserAnswer> JobAdvertisementUserAnswers { get; set; }
         public virtual DbSet<PlayerTransferOffer> PlayerTransferOffers { get; set; }
+        public virtual DbSet<MatchPlayer> MatchPlayers { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -174,7 +175,30 @@ namespace SocialballWebAPI.Models
                 entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             });
 
-            #region MatchEvents
+            #region MatchPlayers
+
+            modelBuilder.Entity<MatchPlayer>(entity =>
+            {
+                entity.ToTable("MatchPlayers");
+
+                entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+
+                entity.HasOne(d => d.Player)
+                    .WithMany(p => p.MatchesPlayer)
+                    .HasForeignKey(d => d.PlayerId)
+                    .HasConstraintName("FK_MatchPlayers_Players")
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(d => d.Team)
+                    .WithMany(p => p.MatchPlayers)
+                    .HasForeignKey(d => d.TeamId)
+                    .HasConstraintName("FK_MatchPlayers_Teams");
+
+                entity.HasOne(d => d.Match)
+                    .WithMany(p => p.MatchPlayers)
+                    .HasForeignKey(d => d.MatchId)
+                    .HasConstraintName("FK_MatchPlayers_Matches");
+            });
 
             modelBuilder.Entity<MatchEvent>(entity =>
             {
@@ -187,16 +211,11 @@ namespace SocialballWebAPI.Models
                     .HasValue<MatchEventGoal>(MatchEventType.Goal)
                     .HasValue<MatchEventFoul>(MatchEventType.Foul);
 
-                entity.HasOne(d => d.Player)
+                entity.HasOne(d => d.MatchPlayer)
                     .WithMany(p => p.MatchEvents)
-                    .HasForeignKey(d => d.PlayerId)
-                    .HasConstraintName("FK_MatchGoals_Players1")
+                    .HasForeignKey(d => d.MatchPlayerId)
+                    .HasConstraintName("FK_MatchEvents_MatchPlayers")
                     .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasOne(d => d.Team)
-                    .WithMany(p => p.TeamMatchEvents)
-                    .HasForeignKey(d => d.TeamId)
-                    .HasConstraintName("FK_MatchEvents_Teams");
             });
 
             modelBuilder.Entity<MatchEventGoal>(entity =>
@@ -215,7 +234,7 @@ namespace SocialballWebAPI.Models
                 entity.ToTable("MatchEvents");
             });
 
-            #endregion MatchEvents
+            #endregion MatchPlayers
 
             #region Messages
 

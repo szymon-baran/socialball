@@ -16,6 +16,14 @@ export default {
         Stadium: "",
         DateTime: null,
         MatchEvents: [],
+        HomeMatchGoalkeeper: {},
+        HomeMatchDefenders: {},
+        HomeMatchMidfielders: {},
+        HomeMatchStrikers: {},
+        AwayMatchGoalkeeper: {},
+        AwayMatchDefenders: {},
+        AwayMatchMidfielders: {},
+        AwayMatchStrikers: {},
         IsConfirmed: false,
         IsUnconfirmedByYourTeam: false,
         AddedByTeamId: "",
@@ -35,16 +43,18 @@ export default {
       state.matches.forEach((match) => {
         let homeGoals = 0;
         let awayGoals = 0;
-        match.matchEvents.forEach((event) => {
-          // Filtrowanie tylko goli
-          if (event.matchEventType === 1) {
-            if (event.teamId === match.homeTeamId) {
-              homeGoals++;
-            } else if (event.teamId === match.awayTeamId) {
-              awayGoals++;
+        match.matchPlayers.forEach((matchPlayer) => {
+          matchPlayer.matchEvents.forEach((event) => {
+            // Filtrowanie tylko goli
+            if (event.matchEventType === 1) {
+              if (matchPlayer.teamId === match.homeTeamId) {
+                homeGoals++;
+              } else if (matchPlayer.teamId === match.awayTeamId) {
+                awayGoals++;
+              }
             }
-          }
-        });
+          });
+        })
         match.result = homeGoals + ":" + awayGoals;
       });
     },
@@ -62,6 +72,14 @@ export default {
       state.match.MatchEvents = payload.matchEvents.sort(
         (x, y) => x.minute - y.minute
       );
+      state.match.HomeMatchGoalkeeper = payload.homeMatchGoalkeeper;
+      state.match.HomeMatchDefenders = payload.homeMatchDefenders;
+      state.match.HomeMatchMidfielders = payload.homeMatchMidfielders;
+      state.match.HomeMatchStrikers = payload.homeMatchStrikers;
+      state.match.AwayMatchGoalkeeper = payload.awayMatchGoalkeeper;
+      state.match.AwayMatchDefenders = payload.awayMatchDefenders;
+      state.match.AwayMatchMidfielders = payload.awayMatchMidfielders;
+      state.match.AwayMatchStrikers = payload.awayMatchStrikers;
       state.match.IsConfirmed = payload.isConfirmed;
       state.match.IsUnconfirmedByYourTeam = payload.isUnconfirmedByYourTeam;
       state.match.AddedByTeamId = payload.addedByTeamId;
@@ -76,6 +94,14 @@ export default {
       state.match.Stadium = "";
       state.match.DateTime = null;
       state.match.MatchEvents = [];
+      state.match.HomeMatchGoalkeeper = {};
+      state.match.HomeMatchDefenders = [];
+      state.match.HomeMatchMidfielders = [];
+      state.match.HomeMatchStrikers = [];
+      state.match.AwayMatchGoalkeeper = {};
+      state.match.AwayMatchDefenders = [];
+      state.match.AwayMatchMidfielders = [];
+      state.match.AwayMatchStrikers = [];
       state.match.IsConfirmed = false;
       state.match.IsUnconfirmedByYourTeam = false;
       state.match.AddedByTeamId = "";

@@ -23,5 +23,15 @@ namespace SocialballWebAPI.Extensions
             }
             return values;
         }
+
+        public static string GetEnumText<T>(int? value)
+        {
+            foreach (var itemType in Enum.GetValues(typeof(T)))
+            {
+                if (value.HasValue && (int)itemType == value.Value)
+                    return itemType.GetType().GetMember(itemType.ToString()).First().GetCustomAttribute<DisplayAttribute>() != null ? itemType.GetType().GetMember(itemType.ToString()).First().GetCustomAttribute<DisplayAttribute>().Name : Enum.GetName(typeof(T), itemType);
+            }
+            return "brak";
+        }
     }
 }
