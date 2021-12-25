@@ -6,8 +6,8 @@
       :close-on-outside-click="false"
       :show-close-button="false"
       :show-title="true"
-      width="50%"
-      height="90%"
+      width="50vw"
+      height="90vh"
       container=".dx-viewport"
       title="Szczegóły meczu"
       :shading="false"
@@ -35,7 +35,7 @@
       />
       <DxScrollView width="100%" height="100%">
         <div class="m-3 text-center">
-          <div class="line">
+          <div>
             <div class="row">
               <h3 class="col">
                 <router-link
@@ -75,175 +75,14 @@
               </div>
             </div>
           </div>
-          <div class="row">
-            <div class="col">
-              {{ Stadium }}
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              {{ getFormattedDateTime }}
-            </div>
-          </div>
-          <div class="row" v-if="matchTypes">
-            <div class="col">
-              {{ matchTypes[MatchType].name }}
-            </div>
-          </div>
-          <div class="row">
-            <div class="col" v-if="HomeTeam.league">
-              {{ HomeTeam.league.name }}
-            </div>
-            <div class="col" v-if="AwayTeam.league">
-              {{ AwayTeam.league.name }}
-            </div>
-          </div>
-          <div class="line mt-4" />
-          <h4>Składy</h4>
-          <div class="row mt-4 pitch">
-            <div class="container">
-              <div class="col text-center">
-                <div class="row mt-3">
-                  <div class="col circle-center">
-                    <div class="player">
-                      {{ HomeMatchGoalkeeper.number }}
-                    </div>
-                    <span class="text-player">
-                      {{ HomeMatchGoalkeeper.lastName }}
-                    </span>
-                  </div>
-                </div>
-                <div class="row mt-4">
-                  <div
-                    class="col circle-center"
-                    v-for="defender in HomeMatchDefenders"
-                    v-bind:key="defender"
-                  >
-                    <div class="player">
-                      {{ defender.number }}
-                    </div>
-                    <span class="text-player">
-                      {{ defender.lastName }}
-                    </span>
-                  </div>
-                </div>
-                <div class="row mt-4">
-                  <div
-                    class="col circle-center"
-                    v-for="midfielder in HomeMatchMidfielders"
-                    v-bind:key="midfielder"
-                  >
-                    <div class="player">
-                      {{ midfielder.number }}
-                    </div>
-                    <span class="text-player">
-                      {{ midfielder.lastName }}
-                    </span>
-                  </div>
-                </div>
-                <div class="row mt-4">
-                  <div
-                    class="col circle-center"
-                    v-for="striker in HomeMatchStrikers"
-                    v-bind:key="striker"
-                  >
-                    <div class="player">
-                      {{ striker.number }}
-                    </div>
-                    <span class="text-player">
-                      {{ striker.lastName }}
-                    </span>
-                  </div>
-                </div>
-                <div class="mt-3">
-                  &nbsp;
-                </div>
-                <div class="row mt-4">
-                  <div
-                    class="col circle-center"
-                    v-for="striker in AwayMatchStrikers"
-                    v-bind:key="striker"
-                  >
-                    <div class="player">
-                      {{ striker.number }}
-                    </div>
-                    <span class="text-player">
-                      {{ striker.lastName }}
-                    </span>
-                  </div>
-                </div>
-                <div class="row mt-4">
-                  <div
-                    class="col circle-center"
-                    v-for="midfielder in AwayMatchMidfielders"
-                    v-bind:key="midfielder"
-                  >
-                    <div class="player">
-                      {{ midfielder.number }}
-                    </div>
-                    <span class="text-player">
-                      {{ midfielder.lastName }}
-                    </span>
-                  </div>
-                </div>
-                <div class="row mt-4">
-                  <div
-                    class="col circle-center"
-                    v-for="defender in AwayMatchDefenders"
-                    v-bind:key="defender"
-                  >
-                    <div class="player">
-                      {{ defender.number }}
-                    </div>
-                    <span class="text-player">
-                      {{ defender.lastName }}
-                    </span>
-                  </div>
-                </div>
-                <div class="row mt-4 mb-3">
-                  <div class="col circle-center">
-                    <div class="player">
-                      {{ AwayMatchGoalkeeper.number }}
-                    </div>
-                    <span class="text-player">
-                      {{ AwayMatchGoalkeeper.lastName }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="line mt-4" />
-          <h4>Przebieg meczu</h4>
-          <div v-for="event in MatchEvents" v-bind:key="event.id">
-            <div class="row">
-              <div class="col" v-if="event.teamId === AwayTeamId" />
-              <div class="col" v-if="event.matchEventType === 1">
-                <i class="fas fa-futbol ico main-color"></i> {{ event.minute }}'
-                {{ event.lastName }}
-                <div v-if="event.assistPlayerLastName">
-                  <i class="far fa-handshake ico main-color"></i>
-                  {{ event.assistPlayerLastName }}
-                </div>
-              </div>
-              <div class="col" v-if="event.matchEventType === 2">
-                <span v-if="event.penaltyType === 0">
-                  <i class="fas fa-exclamation ico main-color"></i>
-                  {{ event.minute }}' {{ event.lastName }}
-                </span>
-                <span v-if="event.penaltyType === 1">
-                  <i class="fas fa-square ico yellow-color"></i>
-                  {{ event.minute }}' {{ event.lastName }}
-                </span>
-                <span v-if="event.penaltyType === 2">
-                  <i class="fas fa-square ico red-color"></i>
-                  {{ event.minute }}'
-                  {{ event.lastName }}
-                </span>
-              </div>
-              <div class="col" v-if="event.teamId === HomeTeamId" />
-            </div>
-          </div>
+          <DxTabPanel class="mt-4">
+            <DxItem title="Informacje i przebieg meczu">
+              <MatchDetailsInformations />
+            </DxItem>
+            <DxItem title="Składy drużyn">
+              <MatchDetailsTeamLineups />
+            </DxItem>
+          </DxTabPanel>
         </div>
       </DxScrollView>
     </DxPopup>
@@ -259,6 +98,9 @@ const { mapFields } = createHelpers({
 });
 import { useToast } from "vue-toastification";
 import { DxScrollView } from "devextreme-vue/scroll-view";
+import DxTabPanel, { DxItem } from "devextreme-vue/tab-panel";
+import MatchDetailsInformations from "./MatchDetailsInformations";
+import MatchDetailsTeamLineups from "./MatchDetailsTeamLineups";
 
 export default {
   name: "MatchDetails",
@@ -278,7 +120,6 @@ export default {
   },
   data() {
     return {
-      matchTypes: [],
       popupVisible: true,
       closeButtonOptions: {
         text: "Zamknij",
@@ -317,24 +158,11 @@ export default {
       "match.MatchType",
       "match.DateTime",
       "match.MatchEvents",
-      "match.HomeMatchGoalkeeper",
-      "match.HomeMatchDefenders",
-      "match.HomeMatchMidfielders",
-      "match.HomeMatchStrikers",
-      "match.AwayMatchGoalkeeper",
-      "match.AwayMatchDefenders",
-      "match.AwayMatchMidfielders",
-      "match.AwayMatchStrikers",
     ]),
-    getFormattedDateTime() {
-      var tmpDate = new Date(this.DateTime);
-      return tmpDate.toLocaleString();
-    },
   },
   methods: {
     ...mapActions({
       setMatchDetails: "matches/setMatchDetails",
-      getMatchTypesLookup: "matches/getMatchTypesLookup",
       sendMatchAnswer: "matches/sendMatchAnswer",
       getUserTeamId: "authentication/getUserTeamId",
     }),
@@ -355,11 +183,12 @@ export default {
     DxPopup,
     DxToolbarItem,
     DxScrollView,
+    DxTabPanel,
+    DxItem,
+    MatchDetailsInformations,
+    MatchDetailsTeamLineups,
   },
   mounted() {
-    this.getMatchTypesLookup().then((response) => {
-      this.matchTypes = response.data;
-    });
     this.getUserTeamId().then((response) => {
       this.userTeamId = response.data;
     });
@@ -389,41 +218,5 @@ h4 {
 .avatar {
   width: 120px;
   height: 120px;
-}
-.pitch {
-  background: #26a65b;
-  width: 30vw;
-  height: 100%;
-  border-radius: 5px;
-  padding: 20px;
-  margin: 0px;
-  display: inline-block;
-}
-.pitch .container {
-  width: 95%;
-  height: 99%;
-  border: 2px solid #eee;
-  padding: 0px;
-}
-.player {
-  text-align: center;
-  width: 2vw;
-  height: 2vw;
-  background: #eee;
-  font-weight: bold;
-  font-size: 120%;
-  color: #2f363c;
-  border: 2px solid #2f363c;
-  padding: 8px;
-  border-radius: 50%;
-}
-.text-player {
-  background: #2f363c;
-  padding: 4px 6px;
-  border-radius: 20px;
-}
-.circle-center {
-  text-align: -webkit-center;
-  cursor: pointer;
 }
 </style>
