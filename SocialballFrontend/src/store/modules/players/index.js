@@ -101,6 +101,15 @@ export default {
           commit("SET_PLAYERS", response.data);
         });
     },
+    setUsersAdmin({ commit }) {
+      axios
+        .get("https://localhost:44369/api/admins/getUsersList", {
+          headers: authHeader(),
+        })
+        .then((response) => {
+          commit("SET_PLAYERS", response.data);
+        });
+    },
     setLeaguesToLookup: () => {
       return new Promise((resolve, reject) =>
         axios.get("https://localhost:44369/api/teams/getLeaguesToLookup").then(
@@ -198,6 +207,38 @@ export default {
         })
         .then(() => {
           dispatch("setPlayers", state.player.TeamId);
+        });
+    },
+    setUserTypesToLookup: () => {
+      return new Promise((resolve, reject) =>
+        axios
+          .get("https://localhost:44369/api/players/getUserTypesToLookup")
+          .then(
+            (response) => {
+              resolve(response);
+            },
+            (error) => {
+              reject(error);
+            }
+          )
+      );
+    },
+    banUserAdmin: async ({ dispatch }, id) => {
+      await axios
+        .post("https://localhost:44369/api/admins/banUser", {
+          Id: id,
+        })
+        .then(() => {
+          dispatch("setUsersAdmin");
+        });
+    },
+    unbanUserAdmin: async ({ dispatch }, id) => {
+      await axios
+        .post("https://localhost:44369/api/admins/unbanUser", {
+          Id: id,
+        })
+        .then(() => {
+          dispatch("setUsersAdmin");
         });
     },
   },

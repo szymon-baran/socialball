@@ -46,6 +46,7 @@
         <div class="col-6 col-md-6 mb-3">
           <DxButton
             text="Zarządzanie użytkownikami"
+            @click="routerPushToUsersAdmin"
             type="danger"
             width="610px"
             height="150px"
@@ -96,6 +97,9 @@ export default {
     },
     routerPushToMatches() {
       this.$router.push({ path: `/matches` });
+    },
+    routerPushToUsersAdmin() {
+      this.$router.push({ path: `/admin-users` });
     },
     routerPushToTeamsAdmin() {
       this.$router.push({ path: `/admin-teams` });

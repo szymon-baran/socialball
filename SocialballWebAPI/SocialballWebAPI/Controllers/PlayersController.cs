@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using SocialballWebAPI.Abstraction;
 using SocialballWebAPI.DTOs;
 using SocialballWebAPI.Enums;
+using SocialballWebAPI.Extensions;
 using SocialballWebAPI.Models;
 
 namespace SocialballWebAPI.Controllers
@@ -106,6 +107,12 @@ namespace SocialballWebAPI.Controllers
         public ActionResult<Guid?> GetUserTeamId(Guid userId)
         {
             return Ok(PlayerService.GetUserTeamId(userId));
+        }
+
+        [HttpGet("getUserTypesToLookup")]
+        public ActionResult GetPenaltyTypesToLookup()
+        {
+            return Ok(EnumExtensions.GetValues<UserType>());
         }
 
     }

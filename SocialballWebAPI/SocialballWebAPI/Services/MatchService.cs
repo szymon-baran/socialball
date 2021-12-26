@@ -71,6 +71,7 @@ namespace SocialballWebAPI.Services
             List<GetMatchPlayerDto> homeMatchPlayers = _context.MatchPlayers.Include(x => x.Player).Where(x => x.MatchId == match.Id && x.TeamId == match.HomeTeamId).Select(x => new GetMatchPlayerDto
             {
                 Id = x.Id,
+                PlayerId = x.PlayerId,
                 FirstName = x.Player.FirstName,
                 LastName = x.Player.LastName,
                 Position = x.Position,
@@ -84,6 +85,7 @@ namespace SocialballWebAPI.Services
             List<GetMatchPlayerDto> awayMatchPlayers = _context.MatchPlayers.Include(x => x.Player).Where(x => x.MatchId == match.Id && x.TeamId == match.AwayTeamId).Select(x => new GetMatchPlayerDto
             {
                 Id = x.Id,
+                PlayerId = x.PlayerId,
                 FirstName = x.Player.FirstName,
                 LastName = x.Player.LastName,
                 Position = x.Position,

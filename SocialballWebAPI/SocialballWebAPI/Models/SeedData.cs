@@ -183,194 +183,226 @@ namespace SocialballWebAPI.Models
                 {
                     Id = Guid.NewGuid(),
                     Username = "admin",
-                    Password = "$2a$12$X1.ol7hzKMckfmNoD.SypOhAHyMY0YI0bTlmK8d7.xP.uvJ3txpp6"
+                    Password = "$2a$12$X1.ol7hzKMckfmNoD.SypOhAHyMY0YI0bTlmK8d7.xP.uvJ3txpp6",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "system",
-                    Password = "$2a$12$YswdpjKMlfq.uDwMeutIR.14fKKijtcrOE5AfTL8Sgfl/XbhLGzVK"
+                    Password = "$2a$12$YswdpjKMlfq.uDwMeutIR.14fKKijtcrOE5AfTL8Sgfl/XbhLGzVK",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "kkowal",
-                    Password = "$2a$12$qMqcqttFFEjwHRtBmfZeVux/xcYOwgIabVYGmDtm9Dyf2trJoEGaq"
+                    Password = "$2a$12$qMqcqttFFEjwHRtBmfZeVux/xcYOwgIabVYGmDtm9Dyf2trJoEGaq",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "jnowak",
-                    Password = "$2a$12$DrkrqobbU.oA2lr8Xa9Bi.ARRcF8IjvegpWC.coe/EPdeBTnr2Onu"
+                    Password = "$2a$12$DrkrqobbU.oA2lr8Xa9Bi.ARRcF8IjvegpWC.coe/EPdeBTnr2Onu",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "nzuk",
-                    Password = "$2a$12$X54DkDuZJGgh0fYlDGjhreoAWeHd9s9GFldIPCjdzKBwHXMUuYeL2"
+                    Password = "$2a$12$X54DkDuZJGgh0fYlDGjhreoAWeHd9s9GFldIPCjdzKBwHXMUuYeL2",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "inowacki",
-                    Password = "$2a$12$9K18WQ.W1j7uiJNeUQfQouCrS834I.mmBqCIWq/.eHDwvrWA4z.hS"
+                    Password = "$2a$12$9K18WQ.W1j7uiJNeUQfQouCrS834I.mmBqCIWq/.eHDwvrWA4z.hS",
+                    IsActive = true
                 },
                 // generic players
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "mprzykladowski",
-                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe"
+                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "kwojownik",
-                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe"
+                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "romarinho",
-                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe"
+                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "lpopovic",
-                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe"
+                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "skowalski",
-                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe"
+                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "mbarometr",
-                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe"
+                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "spluco",
-                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe"
+                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "mmane",
-                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe"
+                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "reast",
-                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe"
+                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "dmichalski",
-                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe"
+                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "trezerwa",
-                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe"
+                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "sdelavega",
-                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe"
+                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "crodriguez",
-                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe"
+                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "jbartkowiak",
-                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe"
+                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "kborowka",
-                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe"
+                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "bfernandes",
-                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe"
+                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "pbielecki",
-                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe"
+                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "kkwiatkowski",
-                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe"
+                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "jbob",
-                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe"
+                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "nsavic",
-                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe"
+                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "mnoric",
-                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe"
+                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "ggundmundson",
-                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe"
+                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "sbarylka",
-                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe"
+                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "wokno",
-                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe"
+                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "cnowy",
-                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe"
+                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe",
+                    IsActive = true
                 },
                 new User()
                 {
                     Id = Guid.NewGuid(),
                     Username = "pchudy",
-                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe"
+                    Password = "$2a$12$mvMytnJMEFFzR2rK/G0vwOLZ27JF8ozdNfJpf7GQhSTDqGkcT3yBe",
+                    IsActive = true
                 }
                 );
                 await dbContext.SaveChangesAsync();

@@ -33,7 +33,16 @@ namespace SocialballWebAPI.Services
 
         public object GetUsers()
         {
-            return _context.Users.Include(x => x.UserData).Where(x => x.UserData.UserType != UserType.System).OrderBy(x => x.UserData.UserType).ToList();
+            return _context.Users.Include(x => x.UserData).Where(x => x.UserData.UserType != UserType.System).OrderBy(x => x.UserData.UserType).Select(x => new
+            {
+                x.Id,
+                Name = $"{x.UserData.LastName} {x.UserData.FirstName}",
+                x.Username,
+                x.UserData.UserType,
+                x.IsActive,
+                UserDataId = x.UserData.Id,
+                x.Email
+            }).ToList();
         }
 
         public object GetTeams(Guid? leagueId)
@@ -75,6 +84,22 @@ namespace SocialballWebAPI.Services
             };
 
             client.DeleteObjectAsync(request).Wait();
+        }
+
+        public void BanUser(Guid id)
+        {
+            User user = _context.Users.Single(x => x.Id == id);
+            user.IsActive = false;
+            _context.Users.Update(user);
+            _context.SaveChanges();
+        }
+
+        public void UnbanUser(Guid id)
+        {
+            User user = _context.Users.Single(x => x.Id == id);
+            user.IsActive = true;
+            _context.Users.Update(user);
+            _context.SaveChanges();
         }
     }
 }

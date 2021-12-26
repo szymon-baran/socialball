@@ -35,7 +35,7 @@ namespace SocialballWebAPI.Services
             // return null if user not found
             if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.Password)) return null;
 
-            if (user.UserData.UserType == UserType.System) return null;
+            if (user.UserData.UserType == UserType.System || !user.IsActive) return null;
 
             // authentication successful so generate jwt token
             var token = generateJwtToken(user);

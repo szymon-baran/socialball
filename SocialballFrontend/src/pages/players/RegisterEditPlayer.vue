@@ -189,7 +189,7 @@
               <DxValidationSummary />
             </div>
             <div class="col">
-              <p class="text-center" v-if="TeamId">Wybór drużyny będzie wymagał akceptacji przez członka jej zarządu!</p>
+              <p class="text-center" v-if="TeamId && !showToEdit">Wybór drużyny będzie wymagał akceptacji przez członka jej zarządu!</p>
             </div>
             <div class="col text-right">
               <DxButton

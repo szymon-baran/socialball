@@ -60,5 +60,19 @@ namespace SocialballWebAPI.Controllers
             AdminService.TeamImageDeleteAdmin(model.Id);
             return Ok();
         }
+
+        [HttpPost("banUser")]
+        public ActionResult BanUser(GuidDto model)
+        {
+            AdminService.BanUser(model.Id);
+            return Ok();
+        }
+
+        [HttpPost("unbanUser")]
+        public ActionResult UnbanUser(GuidDto model)
+        {
+            AdminService.UnbanUser(model.Id);
+            return Ok();
+        }
     }
 }

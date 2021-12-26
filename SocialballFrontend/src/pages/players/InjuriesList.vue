@@ -132,12 +132,10 @@ export default {
     this.setPositionsToLookup().then((response) => {
       this.positions = response.data;
     });
-    if (this.isLoggedIn) {
-      this.getUserTeamId().then((response) => {
-        this.userTeamId = response.data;
-        this.setPlayers(response.data);
-      });
-    }
+    this.getUserTeamId().then((response) => {
+      this.userTeamId = response.data;
+      this.setPlayers(response.data);
+    });
     this.setAllTeams();
   },
   components: {

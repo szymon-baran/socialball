@@ -35,7 +35,7 @@
               <li v-if="player.Citizenship">
                 Narodowość: {{ player.Citizenship }}
               </li>
-              <li v-if="player.Email">E-mail kontaktowy: {{ player.Email }}</li>
+              <li v-if="player.Email">E-mail kontaktowy: <a :href="getEmailLink()">{{ player.Email }}</a></li>
             </div>
           </div>
         </div>
@@ -228,6 +228,9 @@ export default {
       const dateOfBirthYear = new Date(this.player.DateOfBirth).getFullYear();
       return todayYear - dateOfBirthYear;
     },
+    getEmailLink() {
+      return "mailto:" + this.player.Email;
+    }
   },
   mounted() {
     this.setPlayerDetails(this.$route.params.id);

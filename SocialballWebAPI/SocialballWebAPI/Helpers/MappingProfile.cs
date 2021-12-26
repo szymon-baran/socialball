@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SocialballWebAPI.DTOs;
+using SocialballWebAPI.DTOs.MatchPlayers;
 using SocialballWebAPI.Models;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace SocialballWebAPI.Helpers
             CreateMap<Match, MatchDetailsDto>().ReverseMap();
             CreateMap<PlayerTransferOffer, PlayerTransferOfferDto>().ReverseMap();
             CreateMap<PlayerTransferOffer, AddPlayerTransferOfferDto>().ReverseMap();
+            CreateMap<MatchPlayer, MatchPlayerDto>().ReverseMap();
         }
     }
 }

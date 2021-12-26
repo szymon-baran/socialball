@@ -5,12 +5,19 @@
       <div class="col text-center">
         <div class="row mt-3">
           <div class="col circle-center">
-            <div class="player home-gk-color">
-              {{ match.HomeMatchGoalkeeper.number }}
-            </div>
-            <span class="text-player">
-              {{ match.HomeMatchGoalkeeper.lastName }}
-            </span>
+            <router-link
+              :to="{
+                name: 'playerDetails',
+                params: { id: match.HomeMatchGoalkeeper.playerId },
+              }"
+            >
+              <div class="player home-gk-color">
+                {{ match.HomeMatchGoalkeeper.number }}
+              </div>
+              <span class="text-player">
+                {{ match.HomeMatchGoalkeeper.lastName }}
+              </span>
+            </router-link>
           </div>
         </div>
         <div class="row mt-4">
@@ -19,12 +26,16 @@
             v-for="defender in match.HomeMatchDefenders"
             v-bind:key="defender"
           >
-            <div class="player home-color">
-              {{ defender.number }}
-            </div>
-            <span class="text-player">
-              {{ defender.lastName }}
-            </span>
+            <router-link
+              :to="{ name: 'playerDetails', params: { id: defender.playerId } }"
+            >
+              <div class="player home-color">
+                {{ defender.number }}
+              </div>
+              <span class="text-player">
+                {{ defender.lastName }}
+              </span>
+            </router-link>
           </div>
         </div>
         <div class="row mt-4">
@@ -33,12 +44,19 @@
             v-for="midfielder in match.HomeMatchMidfielders"
             v-bind:key="midfielder"
           >
-            <div class="player home-color">
-              {{ midfielder.number }}
-            </div>
-            <span class="text-player">
-              {{ midfielder.lastName }}
-            </span>
+            <router-link
+              :to="{
+                name: 'playerDetails',
+                params: { id: midfielder.playerId },
+              }"
+            >
+              <div class="player home-color">
+                {{ midfielder.number }}
+              </div>
+              <span class="text-player">
+                {{ midfielder.lastName }}
+              </span>
+            </router-link>
           </div>
         </div>
         <div class="row mt-4">
@@ -47,12 +65,16 @@
             v-for="striker in match.HomeMatchStrikers"
             v-bind:key="striker"
           >
-            <div class="player home-color">
-              {{ striker.number }}
-            </div>
-            <span class="text-player">
-              {{ striker.lastName }}
-            </span>
+            <router-link
+              :to="{ name: 'playerDetails', params: { id: striker.playerId } }"
+            >
+              <div class="player home-color">
+                {{ striker.number }}
+              </div>
+              <span class="text-player">
+                {{ striker.lastName }}
+              </span>
+            </router-link>
           </div>
         </div>
         <div class="mt-3">
@@ -64,12 +86,16 @@
             v-for="striker in match.AwayMatchStrikers"
             v-bind:key="striker"
           >
-            <div class="player away-color">
-              {{ striker.number }}
-            </div>
-            <span class="text-player">
-              {{ striker.lastName }}
-            </span>
+            <router-link
+              :to="{ name: 'playerDetails', params: { id: striker.playerId } }"
+            >
+              <div class="player away-color">
+                {{ striker.number }}
+              </div>
+              <span class="text-player">
+                {{ striker.lastName }}
+              </span>
+            </router-link>
           </div>
         </div>
         <div class="row mt-4">
@@ -78,12 +104,19 @@
             v-for="midfielder in match.AwayMatchMidfielders"
             v-bind:key="midfielder"
           >
-            <div class="player away-color">
-              {{ midfielder.number }}
-            </div>
-            <span class="text-player">
-              {{ midfielder.lastName }}
-            </span>
+            <router-link
+              :to="{
+                name: 'playerDetails',
+                params: { id: midfielder.playerId },
+              }"
+            >
+              <div class="player away-color">
+                {{ midfielder.number }}
+              </div>
+              <span class="text-player">
+                {{ midfielder.lastName }}
+              </span>
+            </router-link>
           </div>
         </div>
         <div class="row mt-4">
@@ -92,22 +125,33 @@
             v-for="defender in match.AwayMatchDefenders"
             v-bind:key="defender"
           >
-            <div class="player away-color">
-              {{ defender.number }}
-            </div>
-            <span class="text-player">
-              {{ defender.lastName }}
-            </span>
+            <router-link
+              :to="{ name: 'playerDetails', params: { id: defender.playerId } }"
+            >
+              <div class="player away-color">
+                {{ defender.number }}
+              </div>
+              <span class="text-player">
+                {{ defender.lastName }}
+              </span>
+            </router-link>
           </div>
         </div>
         <div class="row mt-4 mb-3">
           <div class="col circle-center">
-            <div class="player away-gk-color">
-              {{ match.AwayMatchGoalkeeper.number }}
-            </div>
-            <span class="text-player">
-              {{ match.AwayMatchGoalkeeper.lastName }}
-            </span>
+            <router-link
+              :to="{
+                name: 'playerDetails',
+                params: { id: match.AwayMatchGoalkeeper.playerId },
+              }"
+            >
+              <div class="player away-gk-color">
+                {{ match.AwayMatchGoalkeeper.number }}
+              </div>
+              <span class="text-player">
+                {{ match.AwayMatchGoalkeeper.lastName }}
+              </span>
+            </router-link>
           </div>
         </div>
       </div>
@@ -154,6 +198,13 @@ export default {
   height: 99%;
   border: 2px solid #eee;
   padding: 0px;
+}
+a {
+  text-decoration: none;
+}
+a:hover {
+  color: #cccccc;
+  text-decoration: none;
 }
 .player {
   text-align: center;

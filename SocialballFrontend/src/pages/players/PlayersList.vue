@@ -36,7 +36,6 @@
         data-field="isInjured"
         caption="Czy kontuzjowany"
         data-type="boolean"
-        :filter-value="false"
       />
     </DxDataGrid>
   </div>

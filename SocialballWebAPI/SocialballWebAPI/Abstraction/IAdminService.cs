@@ -16,5 +16,7 @@ namespace SocialballWebAPI.Abstraction
         void EditTeam(AdminEditTeamDto model);
         void TeamDeleteAdmin(Guid id);
         void TeamImageDeleteAdmin(Guid id);
+        void BanUser(Guid id);
+        void UnbanUser(Guid id);
     }
 }

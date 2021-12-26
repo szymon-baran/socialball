@@ -313,7 +313,7 @@ namespace SocialballWebAPI.Services
             userData.LastName = model.LastName;
             userData.DateOfBirth = model.DateOfBirth;
             userData.Citizenship = model.Citizenship;
-            userData.Earnings = model.Earnings;
+            userData.Earnings = model.Earnings != null ? model.Earnings : userData.Earnings;
             userData.User.Email = model.Email;
 
             if (model.Image != null && model.Image.Length > 0)

@@ -28,7 +28,7 @@
         <DxValidationGroup :ref="groupRefKey">
           <div class="row">
             <div class="col">
-              <label for="playersSelectBox" class="form-label">Pozycja</label>
+              <label for="playersSelectBox" class="form-label">Zawodnik</label>
               <DxSelectBox
                 :dataSource="players"
                 value-expr="id"

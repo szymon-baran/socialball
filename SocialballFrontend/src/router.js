@@ -14,6 +14,7 @@ import InjuriesList from "./pages/players/InjuriesList.vue";
 import TeamDetails from "./pages/teams/TeamDetails.vue";
 import TeamsList from "./pages/teams/TeamsList.vue";
 import TeamAdd from "./pages/teams/TeamAdd.vue";
+import AdminUsersList from "./pages/admin/AdminUsersList.vue";
 import AdminTeamsList from "./pages/admin/AdminTeamsList.vue";
 
 //Matches
@@ -56,6 +57,7 @@ const router = createRouter({
       meta: { guest: false },
     },
     { path: "/teams", component: TeamsList, meta: { admin: true } },
+    { path: "/admin-users", component: AdminUsersList, meta: { admin: true, adminOnly: true } },
     { path: "/admin-teams", component: AdminTeamsList, meta: { admin: true, adminOnly: true } },
     {
       path: "/teams/:id",
