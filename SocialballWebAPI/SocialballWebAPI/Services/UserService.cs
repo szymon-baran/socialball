@@ -19,18 +19,18 @@ namespace SocialballWebAPI.Services
 {
     public class UserService : IUserService
     {
-        private readonly SocialballDBContext _context;
         private readonly AppSettings _appSettings;
+        private readonly IUserRepository _userRepository;
 
-        public UserService(SocialballDBContext context, IOptions<AppSettings> appSettings)
+        public UserService(IOptions<AppSettings> appSettings, IUserRepository userRepository)
         {
-            _context = context;
             _appSettings = appSettings.Value;
+            _userRepository = userRepository;
         }
 
         public AuthenticateResponse Authenticate(AuthenticateRequest model)
         {
-            var user = _context.Users.Include(x => x.UserData).SingleOrDefault(x => x.Username == model.Username);
+            var user = _userRepository.GetUserDetailsByUsername(model.Username);
 
             // return null if user not found
             if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.Password)) return null;
@@ -43,14 +43,9 @@ namespace SocialballWebAPI.Services
             return new AuthenticateResponse(user, token);
         }
 
-        public IEnumerable<User> GetAll()
-        {
-            return _context.Users;
-        }
-
         public User GetById(Guid id)
         {
-            return _context.Users.FirstOrDefault(x => x.Id == id);
+            return _userRepository.GetUserDetails(id);
         }
 
         public Guid AddUserAccountForNewPlayer(RegisterPlayerDto playerModel)
@@ -61,8 +56,7 @@ namespace SocialballWebAPI.Services
                 Password = BCrypt.Net.BCrypt.HashPassword(playerModel.LoginPassword),
                 Email = playerModel.Email
             };
-            _context.Users.Add(user);
-            _context.SaveChanges();
+            _userRepository.AddUser(user);
 
             return user.Id;
         }
@@ -75,8 +69,7 @@ namespace SocialballWebAPI.Services
                 Password = BCrypt.Net.BCrypt.HashPassword(model.LoginPassword),
                 Email = model.Email
             };
-            _context.Users.Add(user);
-            _context.SaveChanges();
+            _userRepository.AddUser(user);
 
             return user.Id;
         }
@@ -100,7 +93,7 @@ namespace SocialballWebAPI.Services
 
         public List<SelectList> GetUsersToLookup()
         {
-            List<SelectList> users = _context.Users.Include(x => x.UserData).Where(x => x.UserData.UserType == UserType.Player).Select(x => new SelectList
+            List<SelectList> users = _userRepository.GetPlayersUsers().Select(x => new SelectList
             {
                 Id = x.Id,
                 Name = x.UserData.FirstName + " " + x.UserData.LastName

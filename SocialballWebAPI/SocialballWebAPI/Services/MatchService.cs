@@ -17,28 +17,38 @@ namespace SocialballWebAPI.Services
 {
     public class MatchService : IMatchService
     {
-        private readonly SocialballDBContext _context;
         private readonly IMapper _mapper;
+        private readonly IMatchRepository _matchRepository;
+        private readonly IMatchPlayerRepository _matchPlayerRepository;
+        private readonly IMatchEventRepository _matchEventRepository;
+        private readonly ITeamRepository _teamRepository;
+        private readonly IPlayerRepository _playerRepository;
+        private readonly IMessageRepository _messageRepository;
 
-        public MatchService(SocialballDBContext context, IMapper mapper)
+        public MatchService(IMapper mapper, IMatchRepository matchRepository, IMatchPlayerRepository matchPlayerRepository, IMatchEventRepository matchEventRepository, ITeamRepository teamRepository, IPlayerRepository playerRepository, IMessageRepository messageRepository)
         {
-            _context = context;
             _mapper = mapper;
+            _matchRepository = matchRepository;
+            _matchPlayerRepository = matchPlayerRepository;
+            _matchEventRepository = matchEventRepository;
+            _teamRepository = teamRepository;
+            _playerRepository = playerRepository;
+            _messageRepository = messageRepository;
         }
 
         public object GetAllMatches()
         {
-            return _context.Matches.Where(x => x.IsConfirmed).Include(x => x.MatchPlayers).ThenInclude(x => x.MatchEvents).Include(x => x.MatchPlayers).ThenInclude(x => x.Player).ToList();
+            return _matchRepository.GetConfirmedMatches();
         }
 
         public object GetTeamMatches(Guid teamId)
         {
-            return _context.Matches.Where(x => x.IsConfirmed && (x.HomeTeamId == teamId || x.AwayTeamId == teamId)).Include(x => x.MatchPlayers).ThenInclude(x => x.MatchEvents).Include(x => x.MatchPlayers).ThenInclude(x => x.Player).ToList();
+            return _matchRepository.GetConfirmedTeamMatches(teamId);
         }
 
         public object GetUnconfirmedMatches(Guid teamId)
         {
-            return _context.Matches.Where(x => !x.IsConfirmed && (x.HomeTeamId == teamId || x.AwayTeamId == teamId)).Include(x => x.MatchPlayers).ThenInclude(x => x.MatchEvents).Include(x => x.MatchPlayers).ThenInclude(x => x.Player).Include(x => x.HomeTeam).Include(x => x.AwayTeam).Select(x => new
+            return _matchRepository.GetUnconfirmedTeamMatches(teamId).Select(x => new
             {
                 x.Id,
                 x.HomeTeamId,
@@ -55,12 +65,7 @@ namespace SocialballWebAPI.Services
 
         public MatchDetailsDto GetMatchDetails(Guid id)
         {
-            Match match = _context.Matches
-            .Include(x => x.AwayTeam)
-                .ThenInclude(x => x.League)
-            .Include(x => x.HomeTeam)
-                .ThenInclude(x => x.League)
-            .Single(x => x.Id == id);
+            Match match = _matchRepository.GetMatchDetails(id);
 
             if (match == null)
             {
@@ -68,50 +73,52 @@ namespace SocialballWebAPI.Services
             }
 
             MatchDetailsDto model = _mapper.Map<MatchDetailsDto>(match);
-            List<GetMatchPlayerDto> homeMatchPlayers = _context.MatchPlayers.Include(x => x.Player).Where(x => x.MatchId == match.Id && x.TeamId == match.HomeTeamId).Select(x => new GetMatchPlayerDto
+            if (match.HomeTeamId.HasValue && match.AwayTeamId.HasValue)
             {
-                Id = x.Id,
-                PlayerId = x.PlayerId,
-                FirstName = x.Player.FirstName,
-                LastName = x.Player.LastName,
-                Position = x.Position,
-                Number = x.Number.HasValue ? x.Number.Value : 0
-            }).ToList();
-            model.HomeMatchGoalkeeper = homeMatchPlayers.Single(x => x.Position == PositionType.Goalkeeper);
-            model.HomeMatchDefenders = homeMatchPlayers.Where(x => x.Position == PositionType.Defender).ToList();
-            model.HomeMatchMidfielders = homeMatchPlayers.Where(x => x.Position == PositionType.Midfielder).ToList();
-            model.HomeMatchStrikers = homeMatchPlayers.Where(x => x.Position == PositionType.Striker).ToList();
+                List<GetMatchPlayerDto> homeMatchPlayers = _matchPlayerRepository.GetMatchPlayersInMatchByTeam(match.Id, match.HomeTeamId.Value).Select(x => new GetMatchPlayerDto
+                {
+                    Id = x.Id,
+                    PlayerId = x.PlayerId,
+                    FirstName = x.Player.FirstName,
+                    LastName = x.Player.LastName,
+                    Position = x.Position,
+                    Number = x.Number.HasValue ? x.Number.Value : 0
+                }).ToList();
+                model.HomeMatchGoalkeeper = homeMatchPlayers.Single(x => x.Position == PositionType.Goalkeeper);
+                model.HomeMatchDefenders = homeMatchPlayers.Where(x => x.Position == PositionType.Defender).ToList();
+                model.HomeMatchMidfielders = homeMatchPlayers.Where(x => x.Position == PositionType.Midfielder).ToList();
+                model.HomeMatchStrikers = homeMatchPlayers.Where(x => x.Position == PositionType.Striker).ToList();
 
-            List<GetMatchPlayerDto> awayMatchPlayers = _context.MatchPlayers.Include(x => x.Player).Where(x => x.MatchId == match.Id && x.TeamId == match.AwayTeamId).Select(x => new GetMatchPlayerDto
-            {
-                Id = x.Id,
-                PlayerId = x.PlayerId,
-                FirstName = x.Player.FirstName,
-                LastName = x.Player.LastName,
-                Position = x.Position,
-                Number = x.Number.HasValue ? x.Number.Value : 0
-            }).ToList();
-            model.AwayMatchGoalkeeper = awayMatchPlayers.Single(x => x.Position == PositionType.Goalkeeper);
-            model.AwayMatchDefenders = awayMatchPlayers.Where(x => x.Position == PositionType.Defender).ToList();
-            model.AwayMatchMidfielders = awayMatchPlayers.Where(x => x.Position == PositionType.Midfielder).ToList();
-            model.AwayMatchStrikers = awayMatchPlayers.Where(x => x.Position == PositionType.Striker).ToList();
+                List<GetMatchPlayerDto> awayMatchPlayers = _matchPlayerRepository.GetMatchPlayersInMatchByTeam(match.Id, match.AwayTeamId.Value).Select(x => new GetMatchPlayerDto
+                {
+                    Id = x.Id,
+                    PlayerId = x.PlayerId,
+                    FirstName = x.Player.FirstName,
+                    LastName = x.Player.LastName,
+                    Position = x.Position,
+                    Number = x.Number.HasValue ? x.Number.Value : 0
+                }).ToList();
+                model.AwayMatchGoalkeeper = awayMatchPlayers.Single(x => x.Position == PositionType.Goalkeeper);
+                model.AwayMatchDefenders = awayMatchPlayers.Where(x => x.Position == PositionType.Defender).ToList();
+                model.AwayMatchMidfielders = awayMatchPlayers.Where(x => x.Position == PositionType.Midfielder).ToList();
+                model.AwayMatchStrikers = awayMatchPlayers.Where(x => x.Position == PositionType.Striker).ToList();
 
-            model.MatchEvents = _context.MatchEvents.Include(x => x.MatchPlayer).ThenInclude(x => x.Player).Include(x => ((MatchEventGoal)x).AssistPlayer).Where(x => x.MatchPlayer.MatchId == match.Id).Select(x => new GetMatchEventDto
-            {
-                Id = x.Id,
-                TeamId = x.MatchPlayer.TeamId,
-                FirstName = x.MatchPlayer.Player.FirstName,
-                LastName = x.MatchPlayer.Player.LastName,
-                AssistPlayerFirstName = x is MatchEventGoal ? ((MatchEventGoal)x).AssistPlayer.FirstName : "",
-                AssistPlayerLastName = x is MatchEventGoal ? ((MatchEventGoal)x).AssistPlayer.LastName : "",
-                Minute = x.Minute,
-                PenaltyType = x is MatchEventFoul ? ((MatchEventFoul)x).PenaltyType : null,
-                MatchEventType = x.MatchEventType
-            }).ToList();
+                model.MatchEvents = _matchEventRepository.GetMatchEventsInMatch(match.Id).Select(x => new GetMatchEventDto
+                {
+                    Id = x.Id,
+                    TeamId = x.MatchPlayer.TeamId,
+                    FirstName = x.MatchPlayer.Player.FirstName,
+                    LastName = x.MatchPlayer.Player.LastName,
+                    AssistPlayerFirstName = x is MatchEventGoal ? ((MatchEventGoal)x).AssistPlayer.FirstName : "",
+                    AssistPlayerLastName = x is MatchEventGoal ? ((MatchEventGoal)x).AssistPlayer.LastName : "",
+                    Minute = x.Minute,
+                    PenaltyType = x is MatchEventFoul ? ((MatchEventFoul)x).PenaltyType : null,
+                    MatchEventType = x.MatchEventType
+                }).ToList();
 
-            model.HomeTeam.Image = "https://socialball-avatars.s3.eu-central-1.amazonaws.com/" + model.HomeTeamId;
-            model.AwayTeam.Image = "https://socialball-avatars.s3.eu-central-1.amazonaws.com/" + model.AwayTeamId;
-
+                model.HomeTeam.Image = "https://socialball-avatars.s3.eu-central-1.amazonaws.com/" + model.HomeTeamId;
+                model.AwayTeam.Image = "https://socialball-avatars.s3.eu-central-1.amazonaws.com/" + model.AwayTeamId;
+            }
             WebRequest webRequestHomeTeam = WebRequest.Create(model.HomeTeam.Image);
             WebResponse webResponseHomeTeam;
             try
@@ -149,8 +156,7 @@ namespace SocialballWebAPI.Services
                 AddedByTeamId = model.AddedByTeamId
             };
 
-            _context.Matches.Add(match);
-            _context.SaveChanges();
+            _matchRepository.AddMatch(match);
 
             foreach (var matchPlayerModel in model.HomeMatchPlayers)
             {
@@ -164,8 +170,7 @@ namespace SocialballWebAPI.Services
                         Position = matchPlayerModel.Position,
                         Number = matchPlayerModel.Number
                     };
-                    _context.MatchPlayers.Add(matchPlayer);
-                    _context.SaveChanges();
+                    _matchPlayerRepository.AddMatchPlayer(matchPlayer);
                 }
             }
 
@@ -181,12 +186,11 @@ namespace SocialballWebAPI.Services
                         Position = matchPlayerModel.Position,
                         Number = matchPlayerModel.Number
                     };
-                    _context.MatchPlayers.Add(matchPlayer);
-                    _context.SaveChanges();
+                    _matchPlayerRepository.AddMatchPlayer(matchPlayer);
                 }
             }
 
-            List<MatchPlayer> matchPlayers = _context.MatchPlayers.Where(x => x.MatchId == match.Id).ToList();
+            List<MatchPlayer> matchPlayers = _matchPlayerRepository.GetMatchPlayersInMatch(match.Id);
 
             foreach (var eventModel in model.MatchEvents)
             {
@@ -199,7 +203,7 @@ namespace SocialballWebAPI.Services
                         MatchEventType = eventModel.MatchEventType,
                         AssistPlayerId = eventModel.AssistPlayerId
                     };
-                    _context.MatchEventGoals.Add(matchEventGoal);
+                    _matchEventRepository.AddMatchEventGoal(matchEventGoal);
                 }
 
                 else if (eventModel.MatchEventType == MatchEventType.Foul)
@@ -211,41 +215,42 @@ namespace SocialballWebAPI.Services
                         MatchEventType = eventModel.MatchEventType,
                         PenaltyType = eventModel.PenaltyType
                     };
-                    _context.MatchEventFouls.Add(matchEventFoul);
+                    _matchEventRepository.AddMatchEventFoul(matchEventFoul);
                 }
             }
-
-            _context.SaveChanges();
-
         }
 
         public void SendMatchAnswer(MatchAnswerDto model)
         {
-            Match match = _context.Matches.Single(x => x.Id == model.Id);
-            Team homeTeam = _context.Teams.Single(x => x.Id == match.HomeTeamId);
-            Team awayTeam = _context.Teams.Single(x => x.Id == match.AwayTeamId);
+            Match match = _matchRepository.GetMatchDetails(model.Id);
+            if (!match.HomeTeamId.HasValue || !match.AwayTeamId.HasValue)
+            {
+                throw new NullReferenceException();
+            }
+            Team homeTeam = _teamRepository.GetTeamDetails(match.HomeTeamId.Value);
+            Team awayTeam = _teamRepository.GetTeamDetails(match.AwayTeamId.Value);
 
             if (model.IsAccepted)
             {
-                List<MatchEventGoal> homeTeamGoals = _context.MatchEventGoals.Include(x => x.MatchPlayer).Where(x => x.MatchPlayer.MatchId == match.Id && x.MatchPlayer.TeamId == match.HomeTeamId).ToList();
-                List<MatchEventGoal> awayTeamGoals = _context.MatchEventGoals.Where(x => x.MatchPlayer.MatchId == match.Id && x.MatchPlayer.TeamId == match.AwayTeamId).ToList();
+                List<MatchEventGoal> homeTeamGoals = _matchEventRepository.GetGoalsInMatchByTeam(match.Id, match.HomeTeamId.Value);
+                List<MatchEventGoal> awayTeamGoals = _matchEventRepository.GetGoalsInMatchByTeam(match.Id, match.AwayTeamId.Value);
 
                 if (homeTeamGoals.Count > awayTeamGoals.Count)
                 {
                     homeTeam.Points = homeTeam.Points + 3;
-                    _context.Teams.Update(homeTeam);
+                    _teamRepository.UpdateTeam(homeTeam);
                 }
                 else if (homeTeamGoals.Count < awayTeamGoals.Count)
                 {
                     awayTeam.Points = awayTeam.Points + 3;
-                    _context.Teams.Update(awayTeam);
+                    _teamRepository.UpdateTeam(awayTeam);
                 }
                 else if (homeTeamGoals.Count == awayTeamGoals.Count)
                 {
                     homeTeam.Points = homeTeam.Points + 1;
                     awayTeam.Points = awayTeam.Points + 1;
-                    _context.Teams.Update(homeTeam);
-                    _context.Teams.Update(awayTeam);
+                    _teamRepository.UpdateTeam(homeTeam);
+                    _teamRepository.UpdateTeam(awayTeam);
                 }
 
                 match.IsConfirmed = model.IsAccepted;
@@ -268,16 +273,15 @@ namespace SocialballWebAPI.Services
 
                 Message systemMessage = new Message
                 {
-                    FromUserId = _context.UserDatas.First(x => x.UserType == UserType.System).UserId,
+                    FromUserId = _playerRepository.GetSystemUserDetails().UserId,
                     Subject = "Mecz niezaakceptowany",
                     Content = $"Mecz przeciwko drużynie {otherTeam.Name} został odrzucony przez zarząd drużyny przeciwnej.<br/><br/>Ta wiadomość została wygenerowana automatycznie, prosimy na nią nie odpowiadać.",
                     SentOn = DateTime.Now,
                     MessageType = MessageType.System
                 };
-                _context.Messages.Add(systemMessage);
-                _context.SaveChanges();
+                _messageRepository.AddMessage(systemMessage);
 
-                List<UserData> teamManagers = _context.UserDatas.Include(x => x.User).ThenInclude(x => x.UserData).Where(x => x.TeamId == team.Id && x.User.UserData.UserType == UserType.Management).ToList();
+                List<UserData> teamManagers = _playerRepository.GetManagersInTeam(team.Id);
                 foreach (var person in teamManagers)
                 {
                     if (!person.UserId.HasValue)
@@ -290,14 +294,10 @@ namespace SocialballWebAPI.Services
                         MessageId = systemMessage.Id,
                         ToUserId = person.UserId.Value
                     };
-
-                    _context.UserMessages.Add(userMessage);
+                    _messageRepository.AddUserMessage(userMessage);
                 }
-
-                _context.Matches.Remove(match);
+                _matchRepository.RemoveMatch(match);
             }
-
-            _context.SaveChanges();
         }
     }
 }

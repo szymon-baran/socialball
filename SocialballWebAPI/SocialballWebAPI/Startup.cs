@@ -21,6 +21,7 @@ using SocialballWebAPI.Services;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using SocialballWebAPI.Abstraction;
+using SocialballWebAPI.Data.Repositories;
 
 namespace SocialballWebAPI
 {
@@ -50,6 +51,7 @@ namespace SocialballWebAPI
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
             // configure DI for application services
+            #region Services
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IPlayerService, PlayerService>();
             services.AddScoped<IMessageService, MessageService>();
@@ -58,6 +60,21 @@ namespace SocialballWebAPI
             services.AddScoped<IJobAdvertisementService, JobAdvertisementService>();
             services.AddScoped<IPlayerTransferOfferService, PlayerTransferOfferService>();
             services.AddScoped<IAdminService, AdminService>();
+            #endregion
+
+            #region Repositories
+            services.AddScoped<IPlayerRepository, PlayerRepository>();
+            services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddScoped<IMatchEventRepository, MatchEventRepository>();
+            services.AddScoped<IJobAdvertisementRepository, JobAdvertisementRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ITeamRepository, TeamRepository>();
+            services.AddScoped<ILeagueRepository, LeagueRepository>();
+            services.AddScoped<IJobAdvertisementAnswerRepository, JobAdvertisementAnswerRepository>();
+            services.AddScoped<IPlayerTransferOfferRepository, PlayerTransferOfferRepository>();
+            services.AddScoped<IMatchRepository, MatchRepository>();
+            services.AddScoped<IMatchPlayerRepository, MatchPlayerRepository>();
+            #endregion
 
             services.AddControllers().AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddDbContext<SocialballDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SocialballDB")));

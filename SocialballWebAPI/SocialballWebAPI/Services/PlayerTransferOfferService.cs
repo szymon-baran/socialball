@@ -21,18 +21,22 @@ namespace SocialballWebAPI.Services
 {
     public class PlayerTransferOfferService : IPlayerTransferOfferService
     {
-        private readonly SocialballDBContext _context;
         private readonly IMapper _mapper;
+        private readonly IPlayerTransferOfferRepository _playerTransferOfferRepository;
+        private readonly IPlayerRepository _playerRepository;
+        private readonly IMessageRepository _messageRepository;
 
-        public PlayerTransferOfferService(SocialballDBContext context, IMapper mapper)
+        public PlayerTransferOfferService(IMapper mapper, IPlayerTransferOfferRepository playerTransferOfferRepository, IPlayerRepository playerRepository, IMessageRepository messageRepository)
         {
-            _context = context;
             _mapper = mapper;
+            _playerTransferOfferRepository = playerTransferOfferRepository;
+            _playerRepository = playerRepository;
+            _messageRepository = messageRepository;
         }
 
         public List<PlayerTransferOfferDto> GetTeamTransferOffers(Guid teamId)
         {
-            return _context.PlayerTransferOffers.Where(x => x.ToTeamId == teamId).Include(x => x.Player).Include(x => x.FromTeam).Include(x => x.ToTeam).Select(x => new PlayerTransferOfferDto
+            return _playerTransferOfferRepository.GetToTeamTransferOffers(teamId).Select(x => new PlayerTransferOfferDto
             {
                 Id = x.Id,
                 PlayerId = x.PlayerId,
@@ -51,7 +55,7 @@ namespace SocialballWebAPI.Services
 
         public List<PlayerTransferOfferDto> GetFromTeamTransferOffers(Guid teamId)
         {
-            return _context.PlayerTransferOffers.Where(x => x.FromTeamId == teamId).Include(x => x.Player).Include(x => x.FromTeam).Include(x => x.ToTeam).Select(x => new PlayerTransferOfferDto
+            return _playerTransferOfferRepository.GetFromTeamTransferOffers(teamId).Select(x => new PlayerTransferOfferDto
             {
                 Id = x.Id,
                 PlayerId = x.PlayerId,
@@ -70,8 +74,8 @@ namespace SocialballWebAPI.Services
 
         public List<PlayerTransferOfferDto> GetPlayerTransferOffers(Guid userId)
         {
-            Player player = _context.Players.Single(x => x.UserId == userId);
-            return _context.PlayerTransferOffers.Where(x => x.PlayerId == player.Id).Include(x => x.Player).Include(x => x.FromTeam).Include(x => x.ToTeam).Select(x => new PlayerTransferOfferDto
+            Player player = _playerRepository.GetPlayerDetailsByUserId(userId);
+            return _playerTransferOfferRepository.GetPlayerTransferOffers(player.Id).Select(x => new PlayerTransferOfferDto
             {
                 Id = x.Id,
                 PlayerId = x.PlayerId,
@@ -93,13 +97,12 @@ namespace SocialballWebAPI.Services
             PlayerTransferOffer playerTransferOffer = _mapper.Map<PlayerTransferOffer>(model);
             playerTransferOffer.IsAcceptedByOtherTeam = false;
             playerTransferOffer.IsAcceptedByPlayer = false;
-            _context.PlayerTransferOffers.Add(playerTransferOffer);
-            _context.SaveChanges();
+            _playerTransferOfferRepository.AddPlayerTransferOffer(playerTransferOffer);
         }
 
         public PlayerTransferOfferDto GetPlayerTransferOfferDetails(Guid id)
         {
-            PlayerTransferOffer playerTransferOffer = _context.PlayerTransferOffers.Include(x => x.FromTeam).Include(x => x.ToTeam).Include(x => x.Player).Single(x => x.Id == id);
+            PlayerTransferOffer playerTransferOffer = _playerTransferOfferRepository.GetPlayerTransferOfferDetails(id);
             PlayerTransferOfferDto model = _mapper.Map<PlayerTransferOfferDto>(playerTransferOffer);
             model.PlayerName = playerTransferOffer.Player.FirstName + " " + playerTransferOffer.Player.LastName;
             model.FromTeamName = playerTransferOffer.FromTeam.Name;
@@ -109,20 +112,19 @@ namespace SocialballWebAPI.Services
 
         public void RejectOffer(Guid id)
         {
-            PlayerTransferOffer playerTransferOffer = _context.PlayerTransferOffers.Include(x => x.Player).Single(x => x.Id == id);
+            PlayerTransferOffer playerTransferOffer = _playerTransferOfferRepository.GetPlayerTransferOfferDetails(id);
 
             Message systemMessage = new Message
             {
-                FromUserId = _context.UserDatas.First(x => x.UserType == UserType.System).UserId,
+                FromUserId = _playerRepository.GetSystemUserDetails().UserId,
                 Subject = "Oferta transferowa odrzucona",
                 Content = $"Oferta transferowa Twojej drużyny za zawodnika {playerTransferOffer.Player.FirstName ?? ""} {playerTransferOffer.Player.LastName} została odrzucona.<br/><br/>Ta wiadomość została wygenerowana automatycznie, prosimy na nią nie odpowiadać.",
                 SentOn = DateTime.Now,
                 MessageType = MessageType.System
             };
-            _context.Messages.Add(systemMessage);
-            _context.SaveChanges();
+            _messageRepository.AddMessage(systemMessage);
 
-            List<UserData> teamManagers = _context.UserDatas.Include(x => x.User).ThenInclude(x => x.UserData).Where(x => x.TeamId == playerTransferOffer.FromTeamId && x.User.UserData.UserType == UserType.Management).ToList();
+            List<UserData> teamManagers = _playerRepository.GetManagersInTeam(playerTransferOffer.FromTeamId).ToList();
             foreach (var person in teamManagers)
             {
                 if (!person.UserId.HasValue)
@@ -136,29 +138,26 @@ namespace SocialballWebAPI.Services
                     ToUserId = person.UserId.Value
                 };
 
-                _context.UserMessages.Add(userMessage);
+                _messageRepository.AddUserMessage(userMessage);
             }
-            _context.PlayerTransferOffers.Remove(playerTransferOffer);
-            _context.SaveChanges();
 
+            _playerTransferOfferRepository.RemovePlayerTransferOffer(playerTransferOffer);
         }
 
         private void FinalizeTransfer(PlayerTransferOffer playerTransferOffer)
         {
-            Player player = _context.Players.Single(x => x.Id == playerTransferOffer.PlayerId);
+            Player player = _playerRepository.GetPlayerDetails(playerTransferOffer.PlayerId);
             player.TeamId = playerTransferOffer.FromTeamId;
             player.Earnings = playerTransferOffer.PlayerEarnings;
-            _context.Players.Update(player);
-            _context.PlayerTransferOffers.Remove(playerTransferOffer);
-            _context.SaveChanges();
+            _playerRepository.UpdatePlayer(player);
+            _playerTransferOfferRepository.RemovePlayerTransferOffer(playerTransferOffer);
         }
 
         public void AcceptOfferAsTeam(Guid id)
         {
-            PlayerTransferOffer playerTransferOffer = _context.PlayerTransferOffers.Single(x => x.Id == id);
+            PlayerTransferOffer playerTransferOffer = _playerTransferOfferRepository.GetPlayerTransferOfferDetails(id);
             playerTransferOffer.IsAcceptedByOtherTeam = true;
-            _context.PlayerTransferOffers.Update(playerTransferOffer);
-            _context.SaveChanges();
+            _playerTransferOfferRepository.UpdatePlayerTransferOffer(playerTransferOffer);
             if (playerTransferOffer.IsAcceptedByPlayer)
             {
                 FinalizeTransfer(playerTransferOffer);
@@ -167,10 +166,9 @@ namespace SocialballWebAPI.Services
 
         public void AcceptOfferAsPlayer(Guid id)
         {
-            PlayerTransferOffer playerTransferOffer = _context.PlayerTransferOffers.Single(x => x.Id == id);
+            PlayerTransferOffer playerTransferOffer = _playerTransferOfferRepository.GetPlayerTransferOfferDetails(id);
             playerTransferOffer.IsAcceptedByPlayer = true;
-            _context.PlayerTransferOffers.Update(playerTransferOffer);
-            _context.SaveChanges();
+            _playerTransferOfferRepository.UpdatePlayerTransferOffer(playerTransferOffer);
             if (playerTransferOffer.IsAcceptedByOtherTeam)
             {
                 FinalizeTransfer(playerTransferOffer);

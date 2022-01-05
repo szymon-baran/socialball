@@ -16,9 +16,12 @@
       <DxColumn data-field="message.subject" caption="Tytuł" />
       <DxColumn
         data-field="message.fromUser.userData.lastName"
-        caption="Nadawca"
+        caption="Nazwisko nadawcy"
       />
-        <!-- :calculate-display-value="getFullName" -->
+      <DxColumn
+        data-field="message.fromUser.userData.firstName"
+        caption="Imię nadawcy"
+      />
       <DxColumn
         data-field="message.sentOn"
         caption="Data otrzymania wiadomości"
@@ -90,9 +93,6 @@ export default {
       this.detailsPopupOptions.isVisible = false;
       this.detailsPopupOptions.selectedMessage = {};
     },
-    // getFullName(rowData) {
-    //   return rowData.message.fromUser.userData.firstName + " " + rowData.message.fromUser.userData.lastName;
-    // },
   },
   components: {
     DxDataGrid,

@@ -22,25 +22,31 @@ namespace SocialballWebAPI.Services
 {
     public class PlayerService : IPlayerService
     {
-        private readonly SocialballDBContext _context;
         private readonly IMapper _mapper;
-        private readonly IUserService UserService;
+        private readonly IUserService _userService;
+        private readonly IPlayerRepository _playerRepository;
+        private readonly IMatchEventRepository _matchEventRepository;
+        private readonly IJobAdvertisementAnswerRepository _jobAdvertisementAnswerRepository;
+        private readonly IUserRepository _userRepository;
 
-        public PlayerService(SocialballDBContext context, IMapper mapper, IUserService userService)
+        public PlayerService(IMapper mapper, IPlayerRepository playerRepository, IMatchEventRepository matchEventRepository, IJobAdvertisementAnswerRepository jobAdvertisementAnswerRepository, IUserRepository userRepository, IUserService userService)
         {
-            _context = context;
             _mapper = mapper;
-            UserService = userService;
+            _playerRepository = playerRepository;
+            _matchEventRepository = matchEventRepository;
+            _jobAdvertisementAnswerRepository = jobAdvertisementAnswerRepository;
+            _userRepository = userRepository;
+            _userService = userService;
         }
 
         public object GetPlayers()
         {
-            return _context.Players.Where(x => x.UserType == UserType.Player).ToList();
+            return _playerRepository.GetPlayers();
         }
 
         public object GetPlayersByTeamId(Guid teamId)
         {
-            return _context.Players.Where(x => x.UserType == UserType.Player && x.TeamId == teamId).Select(x => new
+            return _playerRepository.GetPlayersInTeam(teamId).Select(x => new
             {
                 x.Id,
                 x.FirstName,
@@ -56,11 +62,12 @@ namespace SocialballWebAPI.Services
 
         public GetPlayerDto GetPlayerDetails(Guid id)
         {
-            Player player = _context.Players.Include(x => x.Team).Include(x => x.User).FirstOrDefault(x => x.Id == id);
+            Player player = _playerRepository.GetPlayerDetails(id);
             if (player == null)
             {
                 throw new KeyNotFoundException();
             }
+
             GetPlayerDto model = _mapper.Map<GetPlayerDto>(player);
             if (player.Team != null)
             {
@@ -70,42 +77,27 @@ namespace SocialballWebAPI.Services
             {
                 model.Email = player.User.Email;
             }
-            model.Goals = _context.MatchEventGoals
-                .Include(x => x.MatchPlayer)
-                    .ThenInclude(x => x.Match)
-                        .ThenInclude(x => x.HomeTeam)
-                .Include(x => x.MatchPlayer)
-                    .ThenInclude(x => x.Match)
-                        .ThenInclude(x => x.AwayTeam)
-                .Include(x => x.AssistPlayer)
-                .Where(x => x.MatchPlayer.PlayerId == player.Id && x.MatchEventType == MatchEventType.Goal && x.MatchPlayer.Match.IsConfirmed).Select(x => new GoalInPlayerDetailsDto
-                {
-                    Id = x.Id,
-                    Minute = x.Minute,
-                    MatchId = x.MatchPlayer.MatchId,
-                    MatchBetween = x.MatchPlayer.Match.HomeTeam.Name + " - " + x.MatchPlayer.Match.AwayTeam.Name,
-                    DateTime = x.MatchPlayer.Match.DateTime,
-                    GoalAssistPlayerName = x.AssistPlayer != null ? (x.AssistPlayer.FirstName + " " + x.AssistPlayer.LastName) : null
-                }).OrderByDescending(x => x.DateTime).ToList();
-            model.Assists = _context.MatchEventGoals
-                .Include(x => x.MatchPlayer)
-                    .ThenInclude(x => x.Match)
-                        .ThenInclude(x => x.HomeTeam)
-                .Include(x => x.MatchPlayer)
-                    .ThenInclude(x => x.Match)
-                        .ThenInclude(x => x.AwayTeam)
-                .Include(x => x.AssistPlayer)
-                .Where(x => x.AssistPlayerId == player.Id && x.MatchEventType == MatchEventType.Goal && x.MatchPlayer.Match.IsConfirmed).Select(x => new GoalInPlayerDetailsDto
-                {
-                    Id = x.Id,
-                    Minute = x.Minute,
-                    MatchId = x.MatchPlayer.MatchId,
-                    MatchBetween = x.MatchPlayer.Match.HomeTeam.Name + " - " + x.MatchPlayer.Match.AwayTeam.Name,
-                    DateTime = x.MatchPlayer.Match.DateTime,
-                    GoalScorerName = x.MatchPlayer.Player.FirstName + " " + x.MatchPlayer.Player.LastName
-                }).OrderByDescending(x => x.DateTime).ToList();
 
-            var lookup = _context.MatchEventGoals.Include(x => x.MatchPlayer).ThenInclude(x => x.Match).Where(x => x.MatchPlayer.PlayerId == player.Id && x.MatchPlayer.Match.DateTime.Year == DateTime.Today.Year && x.MatchEventType == MatchEventType.Goal && x.MatchPlayer.Match.IsConfirmed).ToLookup(y => y.MatchPlayer.Match.DateTime.Month);
+            model.Goals = _matchEventRepository.GetGoalsByPlayer(player.Id).Select(x => new GoalInPlayerDetailsDto
+            {
+                Id = x.Id,
+                Minute = x.Minute,
+                MatchId = x.MatchPlayer.MatchId,
+                MatchBetween = x.MatchPlayer.Match.HomeTeam.Name + " - " + x.MatchPlayer.Match.AwayTeam.Name,
+                DateTime = x.MatchPlayer.Match.DateTime,
+                GoalAssistPlayerName = x.AssistPlayer != null ? (x.AssistPlayer.FirstName + " " + x.AssistPlayer.LastName) : null
+            }).OrderByDescending(x => x.DateTime).ToList();
+            model.Assists = _matchEventRepository.GetAssistsByPlayer(player.Id).Select(x => new GoalInPlayerDetailsDto
+            {
+                Id = x.Id,
+                Minute = x.Minute,
+                MatchId = x.MatchPlayer.MatchId,
+                MatchBetween = x.MatchPlayer.Match.HomeTeam.Name + " - " + x.MatchPlayer.Match.AwayTeam.Name,
+                DateTime = x.MatchPlayer.Match.DateTime,
+                GoalScorerName = x.MatchPlayer.Player.FirstName + " " + x.MatchPlayer.Player.LastName
+            }).OrderByDescending(x => x.DateTime).ToList();
+
+            var lookup = _matchEventRepository.GetGoalsPerMonthByPlayer(player.Id);
 
             model.CurrentYearGoalsToChart =
                 from month in Enumerable.Range(1, 12)
@@ -133,13 +125,12 @@ namespace SocialballWebAPI.Services
 
         public GetUserDataDto GetUserDataDetails(Guid id)
         {
-            UserData userData = _context.UserDatas
-                .Include(x => x.User)
-            .FirstOrDefault(x => x.Id == id);
+            UserData userData = _playerRepository.GetUserDataDetails(id);
             if (userData == null)
             {
                 throw new KeyNotFoundException();
             }
+
             GetUserDataDto model = _mapper.Map<GetUserDataDto>(userData);
             if (userData.Team != null)
             {
@@ -168,11 +159,12 @@ namespace SocialballWebAPI.Services
 
         public GetPlayerDto GetPlayerDetailsByUserId(Guid userId)
         {
-            Player player = _context.Players.Include(x => x.MatchesPlayer).ThenInclude(x => x.MatchEvents.Where(y => y.MatchEventType == MatchEventType.Goal)).Include(x => x.Team).FirstOrDefault(x => x.UserId == userId);
+            Player player = _playerRepository.GetPlayerDetailsByUserId(userId);
             if (player == null)
             {
                 throw new KeyNotFoundException();
             }
+
             GetPlayerDto model = _mapper.Map<GetPlayerDto>(player);
 
             model.Image = "https://socialball-avatars.s3.eu-central-1.amazonaws.com/" + player.Id;
@@ -193,11 +185,12 @@ namespace SocialballWebAPI.Services
 
         public GetUserDataDto GetUserDataByUserId(Guid userId)
         {
-            UserData userData = _context.UserDatas.Include(x => x.Team).FirstOrDefault(x => x.UserId == userId);
+            UserData userData = _playerRepository.GetUserDataDetailsByUserId(userId);
             if (userData == null)
             {
                 throw new KeyNotFoundException();
             }
+
             GetUserDataDto model = _mapper.Map<GetUserDataDto>(userData);
 
             model.Image = "https://socialball-avatars.s3.eu-central-1.amazonaws.com/" + userData.Id;
@@ -218,17 +211,18 @@ namespace SocialballWebAPI.Services
 
         public Guid? GetUserTeamId(Guid userId)
         {
-            UserData userData = _context.UserDatas.FirstOrDefault(x => x.UserId == userId);
+            UserData userData = _playerRepository.GetUserDataDetailsByUserId(userId);
             if (userData == null)
             {
                 throw new KeyNotFoundException();
             }
+
             return userData.TeamId.HasValue ? userData.TeamId.Value : null;
         }
 
         public List<SelectList> GetPlayersByTeamToLookup(Guid teamId)
         {
-            List<SelectList> players = _context.Players.Where(x => x.TeamId == teamId).OrderBy(x => x.Position).Select(x => new SelectList
+            List<SelectList> players = _playerRepository.GetPlayersInTeam(teamId).OrderBy(x => x.Position).Select(x => new SelectList
             {
                 Id = x.Id,
                 Name = $"{x.FirstName} {x.LastName} ({EnumExtensions.GetEnumText<PositionType>(x.Position)})"
@@ -268,7 +262,7 @@ namespace SocialballWebAPI.Services
 
         public void AddPlayer(RegisterPlayerDto playerModel)
         {
-            Guid userId = UserService.AddUserAccountForNewPlayer(playerModel);
+            Guid userId = _userService.AddUserAccountForNewPlayer(playerModel);
 
             Player player = new Player()
             {
@@ -280,8 +274,8 @@ namespace SocialballWebAPI.Services
                 UserId = userId,
                 UserType = UserType.Player,
             };
+            _playerRepository.AddPlayer(player);
 
-            _context.Players.Add(player);
             if (playerModel.TeamId.HasValue)
             {
                 JobAdvertisementUserAnswer jobAdvertisementUserAnswer = new JobAdvertisementUserAnswer()
@@ -293,9 +287,8 @@ namespace SocialballWebAPI.Services
                     UserId = userId,
                     IsResponded = false,
                 };
-                _context.JobAdvertisementUserAnswers.Add(jobAdvertisementUserAnswer);
+                _jobAdvertisementAnswerRepository.AddJobAdvertisementUserAnswer(jobAdvertisementUserAnswer);
             }
-            _context.SaveChanges();
 
             if (playerModel.Image != null && playerModel.Image.Length > 0)
             {
@@ -308,7 +301,7 @@ namespace SocialballWebAPI.Services
 
         public void EditUserData(EditPlayerDto model)
         {
-            UserData userData = _context.UserDatas.Include(x => x.User).Single(x => x.Id == model.Id);
+            UserData userData = _playerRepository.GetUserDataDetails(model.Id);
             userData.FirstName = model.FirstName;
             userData.LastName = model.LastName;
             userData.DateOfBirth = model.DateOfBirth;
@@ -327,35 +320,32 @@ namespace SocialballWebAPI.Services
             if (userData.UserType == UserType.Player)
             {
                 ((Player)userData).Position = (int?)model.Position;
-                _context.Players.Update((Player)userData);
+                _playerRepository.UpdatePlayer((Player)userData);
             }
             else
             {
-                _context.UserDatas.Update(userData);
+                _playerRepository.UpdateUserData(userData);
             }
-            _context.SaveChanges();
 
         }
 
         public void AddEditPlayerInjury(PlayerInjuryDto model)
         {
-            Player player = _context.Players.Single(x => x.Id == model.Id);
+            Player player = _playerRepository.GetPlayerDetails(model.Id);
             player.IsInjuredUntil = model.IsInjuredUntil.AddHours(1);
-            _context.Players.Update(player);
-            _context.SaveChanges();
+            _playerRepository.UpdatePlayer(player);
         }
 
         public void KickPlayerOutOfTeam(Guid id)
         {
-            Player player = _context.Players.Single(x => x.Id == id);
+            Player player = _playerRepository.GetPlayerDetails(id);
             player.TeamId = null;
-            _context.Players.Update(player);
-            _context.SaveChanges();
+            _playerRepository.UpdatePlayer(player);
         }
 
         public bool CheckUsernameUniqueness(string username)
         {
-            return !_context.Users.Any(x => x.Username == username);
+            return _userRepository.CheckUsernameUniqueness(username);
         }
 
     }

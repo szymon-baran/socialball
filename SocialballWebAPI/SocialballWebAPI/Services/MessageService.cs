@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using SocialballWebAPI.Abstraction;
+using SocialballWebAPI.Data.Repositories;
 using SocialballWebAPI.DTOs;
 using SocialballWebAPI.Enums;
 using SocialballWebAPI.Models;
@@ -13,34 +14,36 @@ namespace SocialballWebAPI.Services
 {
     public class MessageService : IMessageService
     {
-        private readonly SocialballDBContext _context;
+        private readonly IMessageRepository _messageRepository;
+        private readonly IPlayerRepository _playerRepository;
         private readonly IMapper _mapper;
 
-        public MessageService(SocialballDBContext context, IMapper mapper)
+        public MessageService(IMessageRepository messageRepository, IPlayerRepository playerRepository, IMapper mapper)
         {
-            _context = context;
+            _messageRepository = messageRepository;
+            _playerRepository = playerRepository;
             _mapper = mapper;
         }
 
         public object GetUserMessages(Guid userId)
         {
-            return _context.UserMessages.Include(x => x.Message).ThenInclude(x => x.FromUser).ThenInclude(x => x.UserData).Where(x => x.IsActive && x.ToUserId == userId).ToList();
+            return _messageRepository.GetUserMessages(userId);
         }
 
         public object GetUserSentMessages(Guid userId)
         {
-            return _context.UserMessages.Include(x => x.ToUser).ThenInclude(x => x.UserData).Include(x => x.Message).Where(x => x.Message.FromUserId == userId).ToList();
+            return _messageRepository.GetUserSentMessages(userId);
         }
 
         public Message GetMessageDetails(Guid id)
         {
-            Message message = _context.Messages.Single(x => x.Id == id);
+            Message message = _messageRepository.GetMessageDetails(id);
             if (message == null)
             {
                 throw new KeyNotFoundException();
             }
 
-            return message;
+            return new Message();
         }
 
         public void AddMessage(SendMessageDto model)
@@ -48,8 +51,7 @@ namespace SocialballWebAPI.Services
             Message message = _mapper.Map<Message>(model);
             message.SentOn = DateTime.Now;
 
-            _context.Messages.Add(message);
-            _context.SaveChanges();
+            _messageRepository.AddMessage(message);
 
             if (model.MessageType == MessageType.Private && model.ToUserId.HasValue)
             {
@@ -59,11 +61,11 @@ namespace SocialballWebAPI.Services
                     ToUserId = model.ToUserId.Value
                 };
 
-                _context.UserMessages.Add(userMessage);
+                _messageRepository.AddUserMessage(userMessage);
             }
             else if (model.MessageType == MessageType.InsideTeam && model.ToTeamId.HasValue)
             {
-                List<UserData> peopleInTeam = _context.UserDatas.Where(x => x.TeamId == model.ToTeamId.Value).ToList();
+                List<UserData> peopleInTeam = _playerRepository.GetUserDatasInTeam(model.ToTeamId.Value);
                 foreach (var person in peopleInTeam)
                 {
                     if (!person.UserId.HasValue)
@@ -77,12 +79,12 @@ namespace SocialballWebAPI.Services
                         ToUserId = person.UserId.Value
                     };
 
-                    _context.UserMessages.Add(userMessage);
+                    _messageRepository.AddUserMessage(userMessage);
                 }
             }
             else if (model.MessageType == MessageType.ToOtherTeam && model.ToTeamId.HasValue)
             {
-                List<UserData> teamManagersInTeam = _context.UserDatas.Where(x => x.TeamId == model.ToTeamId.Value && x.UserType == UserType.Management).ToList();
+                List<UserData> teamManagersInTeam = _playerRepository.GetManagersInTeam(model.ToTeamId.Value);
                 foreach (var person in teamManagersInTeam)
                 {
                     if (!person.UserId.HasValue)
@@ -96,24 +98,23 @@ namespace SocialballWebAPI.Services
                         ToUserId = person.UserId.Value
                     };
 
-                    _context.UserMessages.Add(userMessage);
+                    _messageRepository.AddUserMessage(userMessage);
                 }
             }
-            _context.SaveChanges();
         }
 
         public void MarkMessageAsRead(Guid id)
         {
-            UserMessage userMessage = _context.UserMessages.Single(x => x.Id == id);
+            UserMessage userMessage = _messageRepository.GetUserMessageDetails(id);
             userMessage.IsRead = true;
-            _context.SaveChanges();
+            _messageRepository.UpdateUserMessage(userMessage);
         }
 
         public void DeleteMessage(Guid id)
         {
-            UserMessage userMessage = _context.UserMessages.Single(x => x.Id == id);
+            UserMessage userMessage = _messageRepository.GetUserMessageDetails(id);
             userMessage.IsActive = false;
-            _context.SaveChanges();
+            _messageRepository.UpdateUserMessage(userMessage);
         }
 
     }

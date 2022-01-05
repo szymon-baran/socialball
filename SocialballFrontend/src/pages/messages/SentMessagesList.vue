@@ -14,7 +14,8 @@
       <DxLoadPanel :enabled="true" />
       <DxSorting mode="none" />
       <DxColumn data-field="message.subject" caption="Tytuł wiadomości" />
-      <DxColumn data-field="toUser.userData.lastName" caption="Odbiorca" />
+      <DxColumn data-field="toUser.userData.lastName" caption="Nazwisko odbiorcy" />
+      <DxColumn data-field="toUser.userData.firstName" caption="Imię odbiorcy" />
       <DxColumn
         data-field="message.sentOn"
         caption="Data wysłania wiadomości"

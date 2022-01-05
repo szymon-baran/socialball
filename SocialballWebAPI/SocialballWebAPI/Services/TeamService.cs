@@ -21,20 +21,24 @@ namespace SocialballWebAPI.Services
 {
     public class TeamService : ITeamService
     {
-        private readonly SocialballDBContext _context;
         private readonly IMapper _mapper;
-        private readonly IUserService UserService;
+        private readonly IUserService _userService;
+        private readonly ITeamRepository _teamRepository;
+        private readonly IPlayerRepository _playerRepository;
+        private readonly ILeagueRepository _leagueRepository;
 
-        public TeamService(SocialballDBContext context, IMapper mapper, IUserService userService)
+        public TeamService(ITeamRepository teamRepository, IPlayerRepository playerRepository, ILeagueRepository leagueRepository, IMapper mapper, IUserService userService)
         {
-            _context = context;
+            _teamRepository = teamRepository;
+            _playerRepository = playerRepository;
+            _leagueRepository = leagueRepository;
             _mapper = mapper;
-            UserService = userService;
+            _userService = userService;
         }
 
         public object GetTeams()
         {
-            return _context.Teams.Include(x => x.League).Where(x => x.IsActive).ToList();
+            return _teamRepository.GetTeams();
         }
 
         private async Task UploadImage(MemoryStream stream, string fileName)
@@ -68,7 +72,7 @@ namespace SocialballWebAPI.Services
 
         public void AddTeam(AddTeamDto model)
         {
-            Guid userId = UserService.AddUserAccountForNewTeamManager(model);
+            Guid userId = _userService.AddUserAccountForNewTeamManager(model);
 
             Team team = new Team()
             {
@@ -76,8 +80,7 @@ namespace SocialballWebAPI.Services
                 LeagueId = model.LeagueId,
                 IsActive = false
             };
-            _context.Teams.Add(team);
-            _context.SaveChanges();
+            _teamRepository.AddTeam(team);
 
             TeamManager teamManager = new TeamManager()
             {
@@ -88,8 +91,7 @@ namespace SocialballWebAPI.Services
                 UserType = UserType.Management,
                 TeamId = team.Id
             };
-            _context.TeamManagers.Add(teamManager);
-            _context.SaveChanges();
+            _playerRepository.AddTeamManager(teamManager);
 
             if (model.Image != null && model.Image.Length > 0)
             {
@@ -103,17 +105,17 @@ namespace SocialballWebAPI.Services
 
         public object GetTeamsByLeague(Guid leagueId)
         {
-            return _context.Teams.Include(x => x.League).Where(x => x.IsActive && x.LeagueId == leagueId).ToList();
+            return _teamRepository.GetTeamsByLeague(leagueId);
         }
 
         public List<SelectList> GetTeamsToSelectList()
         {
-            return _context.Teams.Where(x => x.IsActive).Select(x => new SelectList { Id = x.Id, Name = x.Name }).ToList();
+            return _teamRepository.GetTeams().Select(x => new SelectList { Id = x.Id, Name = x.Name }).ToList();
         }
 
         public List<League> GetLeaguesToLookup()
         {
-            return _context.Leagues.OrderBy(x => x.Ranking).ToList();
+            return _leagueRepository.GetLeagues();
         }
 
         public List<PositionsInTeam> GetTeamsToChart(Guid teamId)
@@ -125,7 +127,7 @@ namespace SocialballWebAPI.Services
                 positionsInTeams.Add(new PositionsInTeam
                 {
                     Position = p,
-                    NumberOfPlayers = _context.Players.Where(x => x.TeamId == teamId && x.Position == (int)p).Count()
+                    NumberOfPlayers = _playerRepository.GetPlayersInTeam(teamId).Where(x => x.Position == (int)p).Count()
                 });
             }
 
@@ -134,7 +136,7 @@ namespace SocialballWebAPI.Services
 
         public TeamDto GetTeamDetails(Guid id)
         {
-            Team team = _context.Teams.Include(x => x.League).FirstOrDefault(x => x.Id == id);
+            Team team = _teamRepository.GetTeamDetails(id);
             if (team == null)
             {
                 throw new KeyNotFoundException();

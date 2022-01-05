@@ -13,21 +13,25 @@ namespace SocialballWebAPI.Services
 {
     public class JobAdvertisementService : IJobAdvertisementService
     {
-        private readonly SocialballDBContext _context;
-        private readonly IMapper _mapper;
-        private IPlayerService PlayerService;
+        private IPlayerService _playerService;
+        private IJobAdvertisementRepository _jobAdvertisementRepository;
+        private IPlayerRepository _playerRepository;
+        private IJobAdvertisementAnswerRepository _jobAdvertisementAnswerRepository;
+        private IMessageRepository _messageRepository;
 
-        public JobAdvertisementService(SocialballDBContext context, IMapper mapper, IPlayerService playerService)
+        public JobAdvertisementService(IPlayerService playerService, IJobAdvertisementRepository jobAdvertisementRepository, IPlayerRepository playerRepository, IJobAdvertisementAnswerRepository jobAdvertisementAnswerRepository, IMessageRepository messageRepository)
         {
-            _context = context;
-            _mapper = mapper;
-            PlayerService = playerService;
+            _playerService = playerService;
+            _jobAdvertisementRepository = jobAdvertisementRepository;
+            _jobAdvertisementAnswerRepository = jobAdvertisementAnswerRepository;
+            _playerRepository = playerRepository;
+            _messageRepository = messageRepository;
         }
 
         public object GetUserJobAdvertisements(Guid userId)
         {
-            GetPlayerDto player = PlayerService.GetPlayerDetailsByUserId(userId);
-            return _context.FromTeamJobAdvertisements.Where(x => x.Position == player.Position && x.IsActive == true).Select(x => new
+            GetPlayerDto player = _playerService.GetPlayerDetailsByUserId(userId);
+            return _jobAdvertisementRepository.GetFromTeamJobAdvertisementsByPosition(player.Position).Select(x => new
             {
                 x.Id,
                 x.TeamId,
@@ -41,8 +45,8 @@ namespace SocialballWebAPI.Services
 
         public object GetTeamJobAdvertisements(Guid userId)
         {
-            UserData userData = _context.UserDatas.First(x => x.UserId == userId);
-            return _context.FromUserJobAdvertisements.Where(x => x.IsActive == true).Select(x => new
+            UserData userData = _playerRepository.GetUserDataDetailsByUserId(userId);
+            return _jobAdvertisementRepository.GetFromUserJobAdvertisements().Select(x => new
             {
                 x.Id,
                 x.UserId,
@@ -56,16 +60,16 @@ namespace SocialballWebAPI.Services
 
         public List<FromTeamJobAdvertisement> GetMyTeamJobAdvertisements(Guid userId)
         {
-            UserData userData = _context.UserDatas.First(x => x.UserId == userId);
-            return _context.FromTeamJobAdvertisements.Where(x => x.TeamId == userData.TeamId).ToList();
+            UserData userData = _playerRepository.GetUserDataDetailsByUserId(userId);
+            return _jobAdvertisementRepository.GetFromTeamJobAdvertisementsByTeamId(userData.TeamId);
         }
 
         public object GetJobAdvertisementsAnswers(Guid userId)
         {
-            UserData userData = _context.UserDatas.Single(x => x.UserId == userId);
+            UserData userData = _playerRepository.GetUserDataDetailsByUserId(userId);
             if (userData.UserType == UserType.Management)
             {
-                return _context.JobAdvertisementUserAnswers.Where(x => x.TeamId == userData.TeamId || (x.JobAdvertisement is FromTeamJobAdvertisement ? ((FromTeamJobAdvertisement)x.JobAdvertisement).TeamId == userData.TeamId : false)).Select(x => new
+                return _jobAdvertisementAnswerRepository.GetJobAdvertisementUserAnswersByTeam(userData.TeamId).Select(x => new
                 {
                     x.Id,
                     x.JobAdvertisementId,
@@ -80,7 +84,7 @@ namespace SocialballWebAPI.Services
             }
             else
             {
-                return _context.JobAdvertisementTeamAnswers.Where(x => x.JobAdvertisement is FromUserJobAdvertisement ? ((FromUserJobAdvertisement)x.JobAdvertisement).UserId == userData.UserId : false).Select(x => new
+                return _jobAdvertisementAnswerRepository.GetJobAdvertisementTeamAnswersByUser(userData.UserId).Select(x => new
                 {
                     x.Id,
                     x.JobAdvertisementId,
@@ -97,7 +101,7 @@ namespace SocialballWebAPI.Services
 
         public JobAdvertisementDto GetJobAdvertisementDetails(Guid id)
         {
-            JobAdvertisement jobAdvertisement = _context.JobAdvertisements.Single(x => x.Id == id);
+            JobAdvertisement jobAdvertisement = _jobAdvertisementRepository.GetJobAdvertisementDetails(id);
             JobAdvertisementDto model = new JobAdvertisementDto()
             {
                 Id = jobAdvertisement.Id,
@@ -110,7 +114,7 @@ namespace SocialballWebAPI.Services
             switch (model.JobAdvertisementType)
             {
                 case JobAdvertisementType.FromTeam:
-                    FromTeamJobAdvertisement fromTeam = _context.FromTeamJobAdvertisements.Include(x => x.Team).Single(x => x.Id == id);
+                    FromTeamJobAdvertisement fromTeam = _jobAdvertisementRepository.GetFromTeamJobAdvertisementDetails(id);
                     model.TeamId = fromTeam.TeamId;
                     model.TeamName = fromTeam.Team.Name;
                     model.Earnings = fromTeam.Earnings;
@@ -118,7 +122,7 @@ namespace SocialballWebAPI.Services
                     model.Position = fromTeam.Position;
                     break;
                 case JobAdvertisementType.FromUser:
-                    FromUserJobAdvertisement fromUser = _context.FromUserJobAdvertisements.Include(x => x.User).ThenInclude(x => x.UserData).Single(x => x.Id == id);
+                    FromUserJobAdvertisement fromUser = _jobAdvertisementRepository.GetFromUserJobAdvertisementDetails(id);
                     model.UserId = fromUser.UserId;
                     model.UserFullName = fromUser.User.UserData.FirstName + " " + fromUser.User.UserData.LastName;
                     break;
@@ -129,25 +133,25 @@ namespace SocialballWebAPI.Services
 
         public FromUserJobAdvertisement GetUserJobAdvertisementDetails(Guid userId)
         {
-            FromUserJobAdvertisement jobAdvertisement = _context.FromUserJobAdvertisements.FirstOrDefault(x => x.UserId == userId);
+            FromUserJobAdvertisement jobAdvertisement = _jobAdvertisementRepository.GetFromUserJobAdvertisementDetailsByUserId(userId);
             return jobAdvertisement;
         }
 
         private JobAdvertisementTeamAnswer GetJobAdvertisementTeamAnswerDetails(Guid id)
         {
-            JobAdvertisementTeamAnswer answer = _context.JobAdvertisementTeamAnswers.Include(x => x.Team).First(x => x.Id == id);
+            JobAdvertisementTeamAnswer answer = _jobAdvertisementAnswerRepository.GetJobAdvertisementTeamAnswerDetails(id);
             return answer;
         }
 
         private JobAdvertisementUserAnswer GetJobAdvertisementUserAnswerDetails(Guid id)
         {
-            JobAdvertisementUserAnswer answer = _context.JobAdvertisementUserAnswers.Include(x => x.User).ThenInclude(x => x.UserData).First(x => x.Id == id);
+            JobAdvertisementUserAnswer answer = _jobAdvertisementAnswerRepository.GetJobAdvertisementUserAnswerDetails(id);
             return answer;
         }
 
         public object GetJobAdvertisementAnswerDetails(Guid id)
         {
-            JobAdvertisementType answerType = _context.JobAdvertisementAnswers.First(x => x.Id == id).JobAdvertisementAnswerType;
+            JobAdvertisementType answerType = _jobAdvertisementAnswerRepository.GetJobAdvertisementAnswerDetails(id).JobAdvertisementAnswerType;
             switch (answerType)
             {
                 case JobAdvertisementType.FromTeam:
@@ -161,7 +165,7 @@ namespace SocialballWebAPI.Services
 
         public void UpdateUserJobAdvertisement(UserJobAdvertisementDto model)
         {
-            FromUserJobAdvertisement user = _context.FromUserJobAdvertisements.FirstOrDefault(x => x.UserId == model.UserId) ?? new FromUserJobAdvertisement();
+            FromUserJobAdvertisement user = _jobAdvertisementRepository.GetFromUserJobAdvertisementDetailsByUserId(model.UserId) ?? new FromUserJobAdvertisement();
             user.JobAdvertisementType = JobAdvertisementType.FromUser;
             user.Location = model.Location;
             user.Content = model.Content;
@@ -171,14 +175,13 @@ namespace SocialballWebAPI.Services
 
             if (user.Id == null || user.Id == Guid.Empty)
             {
-                _context.FromUserJobAdvertisements.Add(user);
+                _jobAdvertisementRepository.AddFromUserJobAdvertisement(user);
             }
             else
             {
-                _context.FromUserJobAdvertisements.Update(user);
+                _jobAdvertisementRepository.UpdateFromUserJobAdvertisement(user);
             }
 
-            _context.SaveChanges();
             return;
         }
 
@@ -194,13 +197,12 @@ namespace SocialballWebAPI.Services
                 Position = model.Position,
                 IsActive = model.IsActive
             };
-            _context.FromTeamJobAdvertisements.Add(jobAdvertisement);
-            _context.SaveChanges();
+            _jobAdvertisementRepository.AddFromTeamJobAdvertisement(jobAdvertisement);
         }
 
         public void EditMyTeamJobAdvertisement(TeamJobAdvertisementDto model)
         {
-            FromTeamJobAdvertisement jobAdvertisement = _context.FromTeamJobAdvertisements.Single(x => x.Id == model.Id);
+            FromTeamJobAdvertisement jobAdvertisement = _jobAdvertisementRepository.GetFromTeamJobAdvertisementDetails(model.Id.Value);
             jobAdvertisement.TeamId = model.TeamId;
             jobAdvertisement.Location = model.Location;
             jobAdvertisement.Content = model.Content;
@@ -208,8 +210,7 @@ namespace SocialballWebAPI.Services
             jobAdvertisement.TrainingSessionsPerWeek = model.TrainingSessionsPerWeek;
             jobAdvertisement.Position = model.Position;
             jobAdvertisement.IsActive = model.IsActive;
-            _context.FromTeamJobAdvertisements.Update(jobAdvertisement);
-            _context.SaveChanges();
+            _jobAdvertisementRepository.EditFromTeamJobAdvertisement(jobAdvertisement);
         }
 
         public void AddJobAdvertisementAnswer(JobAdvertisementAnswerDto model)
@@ -217,7 +218,7 @@ namespace SocialballWebAPI.Services
             switch (model.JobAdvertisementAnswerType)
             {
                 case JobAdvertisementType.FromTeam:
-                    UserData userData = _context.UserDatas.Single(x => x.UserId == model.UserId.Value);
+                    UserData userData = _playerRepository.GetUserDataDetailsByUserId(model.UserId.Value);
                     JobAdvertisementTeamAnswer jobAdvertisementTeam = new JobAdvertisementTeamAnswer()
                     {
                         JobAdvertisementId = model.JobAdvertisementId,
@@ -228,7 +229,7 @@ namespace SocialballWebAPI.Services
                         ResponseContent = model.ResponseContent,
                         TeamId = userData.TeamId.Value,
                     };
-                    _context.JobAdvertisementTeamAnswers.Add(jobAdvertisementTeam);
+                    _jobAdvertisementAnswerRepository.AddJobAdvertisementTeamAnswer(jobAdvertisementTeam);
                     break;
                 case JobAdvertisementType.FromUser:
                     JobAdvertisementUserAnswer jobAdvertisementUser = new JobAdvertisementUserAnswer()
@@ -241,94 +242,96 @@ namespace SocialballWebAPI.Services
                         ResponseContent = model.ResponseContent,
                         UserId = model.UserId.Value,
                     };
-                    _context.JobAdvertisementUserAnswers.Add(jobAdvertisementUser);
+                    _jobAdvertisementAnswerRepository.AddJobAdvertisementUserAnswer(jobAdvertisementUser);
                     break;
             }
-            _context.SaveChanges();
+
             return;
         }
 
         public void AddResponseToJobAdvertisementAnswer(JobAdvertisementAnswerDto model)
         {
-            JobAdvertisementAnswer answer = _context.JobAdvertisementAnswers.Include(x => x.JobAdvertisement).Single(x => x.Id == model.Id);
+            JobAdvertisementAnswer answer = _jobAdvertisementAnswerRepository.GetJobAdvertisementAnswerDetails(model.Id.Value);
             answer.IsResponded = true;
             answer.IsResponsePositive = model.IsResponsePositive;
             answer.ResponseContent = model.ResponseContent;
             if (model.IsResponsePositive)
             {
-                UserData userData = _context.UserDatas.Single(x => x.UserId == model.UserId);
-                if (userData.TeamId == null || userData.TeamId == Guid.Empty)
+                if (model.UserId.HasValue)
                 {
-                    userData.TeamId = model.TeamId;
-                    userData.Earnings = answer.JobAdvertisement?.Earnings;
-                }
-                _context.UserDatas.Update(userData);
-                List<FromUserJobAdvertisement> userAdvertisements = _context.FromUserJobAdvertisements.Where(x => x.UserId == userData.UserId).ToList();
-                if (userAdvertisements.Count > 0)
-                {
-                    _context.FromUserJobAdvertisements.RemoveRange(userAdvertisements);
+                    UserData userData = _playerRepository.GetUserDataDetailsByUserId(model.UserId.Value);
+                    if (userData.TeamId == null || userData.TeamId == Guid.Empty)
+                    {
+                        userData.TeamId = model.TeamId;
+                        userData.Earnings = answer.JobAdvertisement?.Earnings;
+                    }
+                    _playerRepository.UpdateUserData(userData);
+                    List<FromUserJobAdvertisement> userAdvertisements = _jobAdvertisementRepository.GetFromUserJobAdvertisementsByUserId(userData.UserId.Value);
+                    if (userAdvertisements.Count > 0)
+                    {
+                        _jobAdvertisementRepository.RemoveFromUserJobAdvertisementsRange(userAdvertisements);
+                    }
                 }
             }
             else
             {
                 if (answer.JobAdvertisementAnswerType == JobAdvertisementType.FromUser)
                 {
-                    JobAdvertisementUserAnswer userAnswer = _context.JobAdvertisementUserAnswers.Include(x => x.User).ThenInclude(x => x.UserData).Single(x => x.Id == model.Id);
-                    FromTeamJobAdvertisement jobAdvertisement = _context.FromTeamJobAdvertisements.Include(x => x.Team).Single(x => x.Id == userAnswer.JobAdvertisementId);
+                    JobAdvertisementUserAnswer userAnswer = _jobAdvertisementAnswerRepository.GetJobAdvertisementUserAnswerDetails(model.Id.Value);
+                    FromTeamJobAdvertisement jobAdvertisement = _jobAdvertisementRepository.GetFromTeamJobAdvertisementDetails(userAnswer.JobAdvertisementId.Value);
                     Message systemMessage = new Message
                     {
-                        FromUserId = _context.UserDatas.First(x => x.UserType == UserType.System).UserId,
+                        FromUserId = _playerRepository.GetSystemUserDetails().UserId,
                         Subject = "Odpowiedź odrzucona",
                         Content = $"Twoja odpowiedź na ogłoszenie drużyny {jobAdvertisement.Team.Name ?? ""} została odrzucona.<br/><br/>Ta wiadomość została wygenerowana automatycznie, prosimy na nią nie odpowiadać.",
                         SentOn = DateTime.Now,
                         MessageType = MessageType.System
                     };
-                    _context.Messages.Add(systemMessage);
-                    _context.SaveChanges();
+                    _messageRepository.AddMessage(systemMessage);
 
                     UserMessage userMessage = new UserMessage()
                     {
                         MessageId = systemMessage.Id,
                         ToUserId = userAnswer.UserId
                     };
-
-                    _context.UserMessages.Add(userMessage);
+                    _messageRepository.AddUserMessage(userMessage);
                 }
                 else if (answer.JobAdvertisementAnswerType == JobAdvertisementType.FromTeam)
                 {
-                    JobAdvertisementTeamAnswer teamAnswer = _context.JobAdvertisementTeamAnswers.Include(x => x.Team).Single(x => x.Id == model.Id);
-                    FromUserJobAdvertisement jobAdvertisement = _context.FromUserJobAdvertisements.Include(x => x.User).ThenInclude(x => x.UserData).Single(x => x.Id == teamAnswer.JobAdvertisementId);
+                    JobAdvertisementTeamAnswer teamAnswer = _jobAdvertisementAnswerRepository.GetJobAdvertisementTeamAnswerDetails(model.Id.Value);
+                    FromUserJobAdvertisement jobAdvertisement = _jobAdvertisementRepository.GetFromUserJobAdvertisementDetails(teamAnswer.JobAdvertisementId.Value);
                     Message systemMessage = new Message
                     {
-                        FromUserId = _context.UserDatas.First(x => x.UserType == UserType.System).UserId,
+                        FromUserId = _playerRepository.GetSystemUserDetails().UserId,
                         Subject = "Odpowiedź odrzucona",
                         Content = $"Odpowiedź Twojej drużyny na ogłoszenie zawodnika {jobAdvertisement.User.UserData.FirstName ?? ""} {jobAdvertisement.User.UserData.LastName ?? ""} została odrzucona.<br/><br/>Ta wiadomość została wygenerowana automatycznie, prosimy na nią nie odpowiadać.",
                         SentOn = DateTime.Now,
                         MessageType = MessageType.System
                     };
-                    _context.Messages.Add(systemMessage);
-                    _context.SaveChanges();
+                    _messageRepository.AddMessage(systemMessage);
 
-                    List<UserData> teamManagers = _context.UserDatas.Include(x => x.User).ThenInclude(x => x.UserData).Where(x => x.TeamId == teamAnswer.TeamId && x.User.UserData.UserType == UserType.Management).ToList();
-                    foreach (var person in teamManagers)
+                    if (teamAnswer.TeamId.HasValue)
                     {
-                        if (!person.UserId.HasValue)
+                        List<UserData> teamManagers = _playerRepository.GetManagersInTeam(teamAnswer.TeamId.Value);
+                        foreach (var person in teamManagers)
                         {
-                            continue;
+                            if (!person.UserId.HasValue)
+                            {
+                                continue;
+                            }
+
+                            UserMessage userMessage = new UserMessage()
+                            {
+                                MessageId = systemMessage.Id,
+                                ToUserId = person.UserId.Value
+                            };
+
+                            _messageRepository.AddUserMessage(userMessage);
                         }
-
-                        UserMessage userMessage = new UserMessage()
-                        {
-                            MessageId = systemMessage.Id,
-                            ToUserId = person.UserId.Value
-                        };
-
-                        _context.UserMessages.Add(userMessage);
                     }
                 }
             }
-            _context.JobAdvertisementAnswers.Update(answer);
-            _context.SaveChanges();
+            _jobAdvertisementAnswerRepository.UpdateJobAdvertisementAnswer(answer);
         }
 
     }

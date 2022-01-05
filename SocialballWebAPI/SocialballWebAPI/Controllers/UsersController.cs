@@ -36,13 +36,5 @@ namespace SocialballWebAPI.Controllers
 
             return Ok(response);
         }
-
-        [Authorize]
-        [HttpGet]
-        public IActionResult GetAll()
-        {
-            var users = UserService.GetAll();
-            return Ok(users);
-        }
     }
 }

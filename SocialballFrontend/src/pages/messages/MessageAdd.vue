@@ -27,7 +27,13 @@
       <form>
         <DxValidationGroup :ref="groupRefKey">
           <div class="row">
-            <div class="col" v-if="messageType === messageTypeEnum.PRIVATE">
+            <div
+              class="col"
+              v-if="
+                messageType === messageTypeEnum.PRIVATE &&
+                  !isUserSelectorReadOnly
+              "
+            >
               <label for="toUserIdSelectBox" class="form-label">Odbiorca</label>
               <DxSelectBox
                 :dataSource="users"
@@ -38,7 +44,13 @@
                 :read-only="isUserSelectorReadOnly"
               />
             </div>
-            <div class="col" v-if="messageType === messageTypeEnum.OTHER_TEAM">
+            <div
+              class="col"
+              v-if="
+                messageType === messageTypeEnum.OTHER_TEAM &&
+                  !isUserSelectorReadOnly
+              "
+            >
               <label for="toTeamIdSelectBox" class="form-label"
                 >Odbiorca (zarząd)</label
               >
@@ -193,6 +205,9 @@ export default {
       }
     },
     getTitle() {
+      if (this.userIdFromProfile) {
+        return "Odpowiedz na wiadomość";
+      }
       switch (this.messageType) {
         case messageTypeEnum.PRIVATE:
           return "Wyślij wiadomość prywatną";

@@ -23,17 +23,19 @@ namespace SocialballWebAPI.Services
     public class AdminService : IAdminService
     {
         private readonly SocialballDBContext _context;
-        private readonly IMapper _mapper;
+        private readonly IUserRepository _userRepository;
+        private readonly ITeamRepository _teamRepository;
 
-        public AdminService(SocialballDBContext context, IMapper mapper)
+        public AdminService(SocialballDBContext context, IUserRepository userRepository, ITeamRepository teamRepository)
         {
             _context = context;
-            _mapper = mapper;
+            _userRepository = userRepository;
+            _teamRepository = teamRepository;
         }
 
         public object GetUsers()
         {
-            return _context.Users.Include(x => x.UserData).Where(x => x.UserData.UserType != UserType.System).OrderBy(x => x.UserData.UserType).Select(x => new
+            return _userRepository.AdminGetUsers().Select(x => new
             {
                 x.Id,
                 Name = $"{x.UserData.LastName} {x.UserData.FirstName}",
@@ -47,25 +49,24 @@ namespace SocialballWebAPI.Services
 
         public object GetTeams(Guid? leagueId)
         {
-            return _context.Teams.Where(x => !leagueId.HasValue || x.LeagueId == leagueId).ToList();
+            return _teamRepository.AdminGetTeamsByLeague(leagueId);
         }
 
         public void EditTeam(AdminEditTeamDto model)
         {
-            Team team = _context.Teams.Single(x => x.Id == model.Id);
+            Team team = _teamRepository.GetTeamDetails(model.Id);
             team.Name = model.Name;
             team.LeagueId = model.LeagueId;
             team.IsActive = model.IsActive;
 
-            _context.Teams.Update(team);
-            _context.SaveChanges();
+            _teamRepository.UpdateTeam(team);
         }
 
         public void TeamDeleteAdmin(Guid id)
         {
-            Team team = _context.Teams.Single(x => x.Id == id);
-            _context.Teams.Remove(team);
-            _context.SaveChanges();
+            Team team = _teamRepository.GetTeamDetails(id);
+
+            _teamRepository.RemoveTeam(team);
         }
 
         public void TeamImageDeleteAdmin(Guid id)
@@ -88,18 +89,16 @@ namespace SocialballWebAPI.Services
 
         public void BanUser(Guid id)
         {
-            User user = _context.Users.Single(x => x.Id == id);
+            User user = _userRepository.GetUserDetails(id);
             user.IsActive = false;
-            _context.Users.Update(user);
-            _context.SaveChanges();
+            _userRepository.UpdateUser(user);
         }
 
         public void UnbanUser(Guid id)
         {
-            User user = _context.Users.Single(x => x.Id == id);
+            User user = _userRepository.GetUserDetails(id);
             user.IsActive = true;
-            _context.Users.Update(user);
-            _context.SaveChanges();
+            _userRepository.UpdateUser(user);
         }
     }
 }
