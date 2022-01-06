@@ -42,7 +42,7 @@ namespace SocialballWebAPI.Controllers
 
         [HttpGet("getUnconfirmedMatches")]
         [Authorize]
-        public ActionResult<IEnumerable<Match>> GetUnconfirmedMatches(Guid teamId)
+        public ActionResult GetUnconfirmedMatches(Guid teamId)
         {
             return Ok(MatchService.GetUnconfirmedMatches(teamId));
         }

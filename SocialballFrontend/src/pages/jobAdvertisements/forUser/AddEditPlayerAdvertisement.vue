@@ -1,6 +1,5 @@
 <template>
-  <div>
-    <h3>Dodaj/edytuj własne ogłoszenie</h3>
+  <div class="mt-2">
     <form>
       <DxValidationGroup :ref="groupRefKey">
         <div class="row">

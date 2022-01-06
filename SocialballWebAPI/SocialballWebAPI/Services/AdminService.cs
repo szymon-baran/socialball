@@ -22,13 +22,11 @@ namespace SocialballWebAPI.Services
 {
     public class AdminService : IAdminService
     {
-        private readonly SocialballDBContext _context;
         private readonly IUserRepository _userRepository;
         private readonly ITeamRepository _teamRepository;
 
-        public AdminService(SocialballDBContext context, IUserRepository userRepository, ITeamRepository teamRepository)
+        public AdminService(IUserRepository userRepository, ITeamRepository teamRepository)
         {
-            _context = context;
             _userRepository = userRepository;
             _teamRepository = teamRepository;
         }

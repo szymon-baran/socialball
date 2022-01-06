@@ -13,6 +13,7 @@ namespace SocialballWebAPI.Abstraction
         List<Match> GetUnconfirmedTeamMatches(Guid teamId);
         Match GetMatchDetails(Guid id);
         void AddMatch(Match match);
+        void UpdateMatch(Match match);
         void RemoveMatch(Match match);
     }
 }

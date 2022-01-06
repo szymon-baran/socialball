@@ -28,8 +28,9 @@ namespace SocialballWebAPI.Services
         private readonly IMatchEventRepository _matchEventRepository;
         private readonly IJobAdvertisementAnswerRepository _jobAdvertisementAnswerRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IMatchPlayerRepository _matchPlayerRepository;
 
-        public PlayerService(IMapper mapper, IPlayerRepository playerRepository, IMatchEventRepository matchEventRepository, IJobAdvertisementAnswerRepository jobAdvertisementAnswerRepository, IUserRepository userRepository, IUserService userService)
+        public PlayerService(IMapper mapper, IPlayerRepository playerRepository, IMatchEventRepository matchEventRepository, IJobAdvertisementAnswerRepository jobAdvertisementAnswerRepository, IUserRepository userRepository, IUserService userService, IMatchPlayerRepository matchPlayerRepository)
         {
             _mapper = mapper;
             _playerRepository = playerRepository;
@@ -37,6 +38,7 @@ namespace SocialballWebAPI.Services
             _jobAdvertisementAnswerRepository = jobAdvertisementAnswerRepository;
             _userRepository = userRepository;
             _userService = userService;
+            _matchPlayerRepository = matchPlayerRepository;
         }
 
         public object GetPlayers()
@@ -78,6 +80,7 @@ namespace SocialballWebAPI.Services
                 model.Email = player.User.Email;
             }
 
+            model.MatchCount = _matchPlayerRepository.GetPlayerMatchesCount(player.Id);
             model.Goals = _matchEventRepository.GetGoalsByPlayer(player.Id).Select(x => new GoalInPlayerDetailsDto
             {
                 Id = x.Id,
@@ -94,7 +97,7 @@ namespace SocialballWebAPI.Services
                 MatchId = x.MatchPlayer.MatchId,
                 MatchBetween = x.MatchPlayer.Match.HomeTeam.Name + " - " + x.MatchPlayer.Match.AwayTeam.Name,
                 DateTime = x.MatchPlayer.Match.DateTime,
-                GoalScorerName = x.MatchPlayer.Player.FirstName + " " + x.MatchPlayer.Player.LastName
+                GoalScorerName = x.MatchPlayer.Player.FirstName ?? "" + " " + x.MatchPlayer.Player.LastName
             }).OrderByDescending(x => x.DateTime).ToList();
 
             var lookup = _matchEventRepository.GetGoalsPerMonthByPlayer(player.Id);
@@ -272,7 +275,7 @@ namespace SocialballWebAPI.Services
                 Citizenship = playerModel.Citizenship,
                 DateOfBirth = playerModel.DateOfBirth.AddHours(12),
                 UserId = userId,
-                UserType = UserType.Player,
+                UserType = UserType.Player
             };
             _playerRepository.AddPlayer(player);
 

@@ -52,9 +52,7 @@ namespace SocialballWebAPI.Services
             {
                 x.Id,
                 x.HomeTeamId,
-                x.HomeTeam,
                 x.AwayTeamId,
-                x.AwayTeam,
                 x.MatchPlayers,
                 x.AddedByTeamId,
                 x.Stadium,
@@ -109,10 +107,10 @@ namespace SocialballWebAPI.Services
                     TeamId = x.MatchPlayer.TeamId,
                     FirstName = x.MatchPlayer.Player.FirstName,
                     LastName = x.MatchPlayer.Player.LastName,
-                    AssistPlayerFirstName = x is MatchEventGoal ? ((MatchEventGoal)x).AssistPlayer.FirstName : "",
-                    AssistPlayerLastName = x is MatchEventGoal ? ((MatchEventGoal)x).AssistPlayer.LastName : "",
+                    AssistPlayerFirstName = x is MatchEventGoal ? (((MatchEventGoal)x).AssistPlayer != null ? ((MatchEventGoal)x).AssistPlayer.FirstName : "") : "",
+                    AssistPlayerLastName = x is MatchEventGoal ? (((MatchEventGoal)x).AssistPlayer != null ? ((MatchEventGoal)x).AssistPlayer.LastName : "") : "",
                     Minute = x.Minute,
-                    PenaltyType = x is MatchEventFoul ? ((MatchEventFoul)x).PenaltyType : null,
+                    PenaltyType = x is MatchEventFoul ? (((MatchEventFoul)x).PenaltyType != null ? ((MatchEventFoul)x).PenaltyType : null) : null,
                     MatchEventType = x.MatchEventType
                 }).ToList();
 
@@ -254,6 +252,7 @@ namespace SocialballWebAPI.Services
                 }
 
                 match.IsConfirmed = model.IsAccepted;
+                _matchRepository.UpdateMatch(match);
             }
             else
             {

@@ -20,7 +20,7 @@ namespace SocialballWebAPI.Data.Repositories
 
         public List<FromTeamJobAdvertisement> GetFromTeamJobAdvertisementsByPosition(PositionType? positionType)
         {
-            return _context.FromTeamJobAdvertisements.Where(x => x.Position == positionType && x.IsActive == true).ToList();
+            return _context.FromTeamJobAdvertisements.Include(x => x.JobAdvertisementAnswers).Where(x => x.Position == positionType && x.IsActive == true).ToList();
         }
 
         public List<FromTeamJobAdvertisement> GetFromTeamJobAdvertisementsByTeamId(Guid? teamId)
@@ -55,7 +55,7 @@ namespace SocialballWebAPI.Data.Repositories
 
         public FromUserJobAdvertisement GetFromUserJobAdvertisementDetailsByUserId(Guid userId)
         {
-            return _context.FromUserJobAdvertisements.Include(x => x.User).ThenInclude(x => x.UserData).Single(x => x.UserId == userId);
+            return _context.FromUserJobAdvertisements.Include(x => x.User).ThenInclude(x => x.UserData).SingleOrDefault(x => x.UserId == userId) ?? new FromUserJobAdvertisement();
         }
 
         public void AddFromUserJobAdvertisement(FromUserJobAdvertisement fromUserJobAdvertisement)

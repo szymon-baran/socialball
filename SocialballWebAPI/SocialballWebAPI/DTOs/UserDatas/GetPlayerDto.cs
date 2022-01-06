@@ -27,5 +27,6 @@ namespace SocialballWebAPI.DTOs
         public List<GoalInPlayerDetailsDto> Goals { get; set; }
         public List<GoalInPlayerDetailsDto> Assists { get; set; }
         public object CurrentYearGoalsToChart { get; set; }
+        public int? MatchCount { get; set; }
     }
 }

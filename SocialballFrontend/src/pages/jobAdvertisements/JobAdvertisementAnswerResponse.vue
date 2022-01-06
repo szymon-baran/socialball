@@ -90,6 +90,7 @@ import DxValidationGroup from "devextreme-vue/validation-group";
 import { useToast } from "vue-toastification";
 import { jobAdvertisementTypeEnum } from "../../enums/jobAdvertisementTypeEnum";
 import { userTypeEnum } from "../../enums/userTypeEnum";
+import { custom } from "devextreme/ui/dialog";
 
 export default {
   name: "JobAdvertisementAnswerResponse",
@@ -165,16 +166,39 @@ export default {
       RESET_JOB_ADVERTISEMENT_ANSWER_FORM:
         "jobAdvertisements/RESET_JOB_ADVERTISEMENT_ANSWER_FORM",
     }),
-    async handleSubmit() {
+    handleSubmit() {
       let validationResult = this.validationGroup.validate();
       if (validationResult.isValid) {
-        await this.updateJobAdvertisementAnswer();
-        this.$router.push({ path: "/profile" });
-        useToast().success(
-          "Odpowiedź na zgłoszenie została wysłana pomyślnie!"
-        );
-        this.popupVisible = false;
-        this.$emit("close");
+        let actionType = this.IsResponsePositive ? "zaakceptować" : "odrzucić";
+        let dialog = custom({
+          title: "Potwierdzenie",
+          messageHtml: `Czy na pewno chcesz ${actionType} odpowiedź?<br>Ta akcja jest nieodwracalna!`,
+          buttons: [
+            {
+              text: "Tak",
+              onClick: () => {
+                return true;
+              },
+            },
+            {
+              text: "Nie",
+              onClick: () => {
+                return false;
+              },
+            },
+          ],
+        });
+        dialog.show().then((dialogResult) => {
+          if (dialogResult === true) {
+            this.updateJobAdvertisementAnswer();
+            this.$router.push({ path: "/profile" });
+            useToast().success(
+              "Odpowiedź na zgłoszenie została wysłana pomyślnie!"
+            );
+            this.popupVisible = false;
+            this.$emit("close");
+          }
+        });
       }
     },
   },

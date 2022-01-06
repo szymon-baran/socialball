@@ -40,6 +40,8 @@ namespace SocialballWebAPI.Data.Repositories
                 .Include(x => x.MatchPlayer)
                     .ThenInclude(x => x.Match)
                         .ThenInclude(x => x.AwayTeam)
+                .Include(x => x.MatchPlayer)
+                    .ThenInclude(x => x.Player)
                 .Include(x => x.AssistPlayer)
                 .Where(x => x.AssistPlayerId == playerId && x.MatchEventType == MatchEventType.Goal && x.MatchPlayer.Match.IsConfirmed).ToList();
         }

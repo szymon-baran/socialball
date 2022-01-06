@@ -1,6 +1,5 @@
 <template>
   <div style="min-height: 70vh;">
-    <h3>Odpowiedzi na Twoje ogłoszenia</h3>
     <DxDataGrid
       :data-source="getJobAdvertisementsAnswers"
       :remote-operations="false"
@@ -10,6 +9,7 @@
       @row-click="showJobAdvertisementAnswerDetails"
       :column-auto-width="true"
       width="100%"
+      no-data-text="Brak odpowiedzi"
     >
       <DxFilterRow :visible="true" />
       <DxLoadPanel :enabled="true" />

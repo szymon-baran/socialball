@@ -14,6 +14,7 @@
     >
       <DxFilterRow :visible="true" />
       <DxLoadPanel :enabled="true" />
+      <DxPaging :page-size="10" />
       <DxColumn data-field="firstName" caption="Imię" data-type="string" />
       <DxColumn data-field="lastName" caption="Nazwisko" data-type="string" />
       <DxColumn data-field="position" caption="Pozycja" data-type="number">
@@ -48,6 +49,7 @@ import {
   DxColumn,
   DxFilterRow,
   DxLookup,
+  DxPaging,
 } from "devextreme-vue/data-grid";
 
 import { mapGetters, mapActions, mapMutations } from "vuex";
@@ -101,6 +103,7 @@ export default {
     DxColumn,
     DxFilterRow,
     DxLookup,
+    DxPaging,
   },
   beforeUnmount() {
     this.RESET_PLAYERS();

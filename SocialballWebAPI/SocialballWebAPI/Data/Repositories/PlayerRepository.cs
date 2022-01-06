@@ -45,7 +45,7 @@ namespace SocialballWebAPI.Data.Repositories
 
         public Player GetPlayerDetailsByUserId(Guid userId)
         {
-            return _context.Players.Include(x => x.MatchesPlayer).ThenInclude(x => x.MatchEvents.Where(y => y.MatchEventType == MatchEventType.Goal)).Include(x => x.Team).FirstOrDefault(x => x.UserId == userId);
+            return _context.Players/*.Include(x => x.MatchesPlayer).ThenInclude(x => x.MatchEvents.Where(y => y.MatchEventType == MatchEventType.Goal))*/.Include(x => x.Team).FirstOrDefault(x => x.UserId == userId);
         }
 
         public UserData GetUserDataDetails(Guid id)

@@ -10,6 +10,7 @@ namespace SocialballWebAPI.Abstraction
     {
         List<MatchPlayer> GetMatchPlayersInMatch(Guid matchId);
         List<MatchPlayer> GetMatchPlayersInMatchByTeam(Guid matchId, Guid teamId);
+        int? GetPlayerMatchesCount(Guid playerId);
         void AddMatchPlayer(MatchPlayer matchPlayer);
     }
 }

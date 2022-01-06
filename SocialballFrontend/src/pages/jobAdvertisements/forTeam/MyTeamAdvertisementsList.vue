@@ -1,9 +1,7 @@
 <template>
   <div style="min-height: 70vh;">
-    <div class="row">
-      <div class="col">
-        <h3>Zarządzaj ogłoszeniami swojej drużyny</h3>
-      </div>
+    <div class="row mt-3 mb-2">
+      <div class="col"></div>
       <div class="col text-right">
         <DxButton
           text="Dodaj nowe ogłoszenie"
@@ -21,6 +19,7 @@
       @row-click="showEditPopup"
       :column-auto-width="true"
       width="100%"
+      no-data-text="Brak ogłoszeń"
     >
       <DxFilterRow :visible="true" />
       <DxLoadPanel :enabled="true" />
@@ -32,7 +31,10 @@
         />
       </DxColumn>
       <DxColumn data-field="location" caption="Lokalizacja" />
-      <DxColumn data-field="earnings" caption="Proponowane zarobki [PLN/miesiąc]" />
+      <DxColumn
+        data-field="earnings"
+        caption="Proponowane zarobki [PLN/miesiąc]"
+      />
       <DxColumn
         data-field="isActive"
         caption="Czy aktywne?"

@@ -88,8 +88,7 @@
                 v-model="Content"
                 id="contentTextBox"
                 :auto-resize-enabled="true"
-                :height="50"
-                :max-height="100"
+                :max-height="190"
               >
                 <DxValidator>
                   <DxRequiredRule message="Treść ogłoszenia jest wymagana!" />

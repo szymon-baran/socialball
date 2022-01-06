@@ -9,7 +9,7 @@
     <h3>Ogłoszenia poszukiwania drużyny</h3>
     <DxTabPanel>
       <DxItem title="Odpowiedzi na Twoje ogłoszenia">
-        <div class="mt-4">
+        <div>
           <JobAdvertisementsAnswersList />
         </div>
       </DxItem>
@@ -18,7 +18,7 @@
         v-if="getLoggedInUser.userType === userTypeEnum.PLAYER"
       >
         <template #default>
-          <div class="mt-4">
+          <div class="secondary-border mt-0">
             <AddEditPlayerAdvertisement />
           </div>
         </template>
@@ -28,7 +28,7 @@
         v-if="getLoggedInUser.userType === userTypeEnum.PLAYER"
       >
         <template #default>
-          <div class="mt-4">
+          <div>
             <UserAdvertisementsList />
           </div>
         </template>
@@ -38,7 +38,7 @@
         v-if="getLoggedInUser.userType === userTypeEnum.TEAM_MANAGEMENT"
       >
         <template #default>
-          <div class="mt-4">
+          <div>
             <MyTeamAdvertisementsList />
           </div>
         </template>
@@ -48,7 +48,7 @@
         v-if="getLoggedInUser.userType === userTypeEnum.TEAM_MANAGEMENT"
       >
         <template #default>
-          <div class="mt-4">
+          <div>
             <TeamAdvertisementsList />
           </div>
         </template>

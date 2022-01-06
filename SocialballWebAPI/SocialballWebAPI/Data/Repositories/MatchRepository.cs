@@ -29,7 +29,7 @@ namespace SocialballWebAPI.Data.Repositories
 
         public List<Match> GetUnconfirmedTeamMatches(Guid teamId)
         {
-            return _context.Matches.Where(x => !x.IsConfirmed && (x.HomeTeamId == teamId || x.AwayTeamId == teamId)).Include(x => x.MatchPlayers).ThenInclude(x => x.MatchEvents).Include(x => x.MatchPlayers).ThenInclude(x => x.Player).Include(x => x.HomeTeam).Include(x => x.AwayTeam).ToList();
+            return _context.Matches.Where(x => !x.IsConfirmed && (x.HomeTeamId == teamId || x.AwayTeamId == teamId)).Include(x => x.MatchPlayers).ThenInclude(x => x.MatchEvents).Include(x => x.MatchPlayers).ThenInclude(x => x.Player).ToList();
         }
 
         public Match GetMatchDetails(Guid id)
@@ -40,6 +40,12 @@ namespace SocialballWebAPI.Data.Repositories
         public void AddMatch(Match match)
         {
             _context.Matches.Add(match);
+            _context.SaveChanges();
+        }
+
+        public void UpdateMatch(Match match)
+        {
+            _context.Matches.Update(match);
             _context.SaveChanges();
         }
 

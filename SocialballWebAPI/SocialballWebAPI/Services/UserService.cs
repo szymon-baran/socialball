@@ -30,14 +30,14 @@ namespace SocialballWebAPI.Services
 
         public AuthenticateResponse Authenticate(AuthenticateRequest model)
         {
-            var user = _userRepository.GetUserDetailsByUsername(model.Username);
-
-            // return null if user not found
-            if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.Password)) return null;
-
-            if (user.UserData.UserType == UserType.System || !user.IsActive) return null;
-
-            // authentication successful so generate jwt token
+            User user = _userRepository.GetUserDetailsByUsername(model.Username);
+            if (user == null ||
+                !BCrypt.Net.BCrypt.Verify(model.Password, user.Password) ||
+                user.UserData.UserType == UserType.System ||
+                !user.IsActive)
+            {
+                return null;
+            }
             var token = generateJwtToken(user);
 
             return new AuthenticateResponse(user, token);
@@ -54,7 +54,8 @@ namespace SocialballWebAPI.Services
             {
                 Username = playerModel.LoginUsername,
                 Password = BCrypt.Net.BCrypt.HashPassword(playerModel.LoginPassword),
-                Email = playerModel.Email
+                Email = playerModel.Email,
+                IsActive = true
             };
             _userRepository.AddUser(user);
 

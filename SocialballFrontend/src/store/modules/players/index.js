@@ -27,6 +27,7 @@ export default {
         CurrentYearGoalsToChart: [],
         TeamName: "",
         UserId: "",
+        MatchCount: null,
       },
     };
   },
@@ -64,6 +65,7 @@ export default {
       state.player.CurrentYearGoalsToChart = payload.currentYearGoalsToChart;
       state.player.TeamName = payload.teamName;
       state.player.UserId = payload.userId;
+      state.player.MatchCount = payload.matchCount;
     },
     RESET_PLAYER_FORM(state) {
       state.player.Id = "";
@@ -86,6 +88,7 @@ export default {
       state.player.CurrentYearGoalsToChart = [];
       state.player.TeamName = "";
       state.player.UserId = "";
+      state.player.MatchCount = null;
     },
     updateField,
   },

@@ -27,6 +27,11 @@ namespace SocialballWebAPI.Data.Repositories
             return _context.MatchPlayers.Include(x => x.Player).Where(x => x.MatchId == matchId && x.TeamId == teamId).ToList();
         }
 
+        public int? GetPlayerMatchesCount(Guid playerId)
+        {
+            return _context.MatchPlayers.Include(x => x.Match).Where(x => x.Match.IsConfirmed && x.PlayerId == playerId).ToList().Count;
+        }
+
         public void AddMatchPlayer(MatchPlayer matchPlayer)
         {
             _context.MatchPlayers.Add(matchPlayer);

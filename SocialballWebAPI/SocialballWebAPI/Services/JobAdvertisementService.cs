@@ -13,7 +13,6 @@ namespace SocialballWebAPI.Services
 {
     public class JobAdvertisementService : IJobAdvertisementService
     {
-        private IPlayerService _playerService;
         private IJobAdvertisementRepository _jobAdvertisementRepository;
         private IPlayerRepository _playerRepository;
         private IJobAdvertisementAnswerRepository _jobAdvertisementAnswerRepository;
@@ -21,7 +20,6 @@ namespace SocialballWebAPI.Services
 
         public JobAdvertisementService(IPlayerService playerService, IJobAdvertisementRepository jobAdvertisementRepository, IPlayerRepository playerRepository, IJobAdvertisementAnswerRepository jobAdvertisementAnswerRepository, IMessageRepository messageRepository)
         {
-            _playerService = playerService;
             _jobAdvertisementRepository = jobAdvertisementRepository;
             _jobAdvertisementAnswerRepository = jobAdvertisementAnswerRepository;
             _playerRepository = playerRepository;
@@ -30,8 +28,8 @@ namespace SocialballWebAPI.Services
 
         public object GetUserJobAdvertisements(Guid userId)
         {
-            GetPlayerDto player = _playerService.GetPlayerDetailsByUserId(userId);
-            return _jobAdvertisementRepository.GetFromTeamJobAdvertisementsByPosition(player.Position).Select(x => new
+            Player player = _playerRepository.GetPlayerDetailsByUserId(userId);
+            return _jobAdvertisementRepository.GetFromTeamJobAdvertisementsByPosition((PositionType)player.Position).Select(x => new
             {
                 x.Id,
                 x.TeamId,
@@ -39,7 +37,8 @@ namespace SocialballWebAPI.Services
                 x.TrainingSessionsPerWeek,
                 x.Location,
                 x.JobAdvertisementType,
-                IsAlreadyAnswered = x.JobAdvertisementAnswers.Any(y => y is JobAdvertisementUserAnswer ? ((JobAdvertisementUserAnswer)y).UserId == userId && y.IsResponded == false : false)
+                IsAlreadyAnswered = x.JobAdvertisementAnswers
+                .Any(y => y is JobAdvertisementUserAnswer ? ((JobAdvertisementUserAnswer)y).UserId == userId && y.IsResponded == false : false)
             }).ToList();
         }
 

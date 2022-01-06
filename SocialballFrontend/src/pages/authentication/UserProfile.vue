@@ -30,11 +30,11 @@
         >
       </h4>
       <p class="main-color" v-if="getLoggedInUser.userType === 2">Konto zarządu drużyny</p>
-      <p v-if="getPlayerDetails.Earnings">Twoje aktualne zarobki miesięczne: {{ getPlayerDetails.Earnings }} PLN.</p>
+      <p v-if="getPlayerDetails.Earnings">Twoje zarobki za ten miesiąc wynoszą {{ getPlayerDetails.Earnings }} PLN.</p>
     </div>
     <div v-else class="text-center">
       <p>
-        Aktualnie nie posiadasz drużyny. <br />Nasza strona udostępnia
+        Aktualnie nie posiadasz drużyny. <br />Aplikacja udostępnia
         rozwiązanie umożliwiające zmianę tej sytuacji! Kliknij przycisk poniżej.
       </p>
       <DxButton

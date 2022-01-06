@@ -275,6 +275,7 @@
                         :data-source="players"
                         display-expr="name"
                         value-expr="id"
+                        :show-clear-button="true"
                       />
                     </DxColumn>
                     <DxColumn data-field="PenaltyType" caption="Rodzaj kary">

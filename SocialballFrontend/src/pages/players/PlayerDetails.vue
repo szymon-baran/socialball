@@ -51,6 +51,11 @@
     </div>
     <div class="secondary-border mt-3" v-if="areStatsVisible">
       <div class="row">
+        <div class="col mt-2">
+          <p>Zawodnik średnio zdobywa {{ player.Goals.length / player.MatchCount }} goli i {{ player.Assists.length / player.MatchCount }} asyst na mecz.</p>
+        </div>
+      </div>
+      <div class="row">
         <div class="col">
           <h4 class="line">Strzelone bramki ({{ player.Goals.length }})</h4>
           <DxDataGrid

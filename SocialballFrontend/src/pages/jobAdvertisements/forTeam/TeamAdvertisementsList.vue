@@ -1,6 +1,5 @@
 <template>
   <div style="min-height: 70vh;">
-    <h3>Ogłoszenia zawodników bez drużyny</h3>
     <DxDataGrid
       :data-source="getJobAdvertisements"
       :remote-operations="false"
@@ -10,6 +9,7 @@
       @row-click="showJobAdvertisementDetails"
       :column-auto-width="true"
       width="100%"
+      no-data-text="Brak ogłoszeń"
     >
       <DxFilterRow :visible="true" />
       <DxLoadPanel :enabled="true" />

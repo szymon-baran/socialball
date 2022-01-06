@@ -7,7 +7,7 @@
       :show-close-button="false"
       :show-title="true"
       :width="500"
-      :height="550"
+      :height="630"
       container=".dx-viewport"
       title="Odpowiedz na ogłoszenie"
       :shading="false"
