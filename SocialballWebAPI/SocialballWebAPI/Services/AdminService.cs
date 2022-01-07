@@ -31,6 +31,22 @@ namespace SocialballWebAPI.Services
             _teamRepository = teamRepository;
         }
 
+        private bool HasImage(string name)
+        {
+            WebRequest webRequest = WebRequest.Create(name);
+            WebResponse webResponse;
+            try
+            {
+                webResponse = webRequest.GetResponse();
+            }
+            catch //If exception thrown then couldn't get response from address
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public object GetUsers()
         {
             return _userRepository.AdminGetUsers().Select(x => new
@@ -42,7 +58,9 @@ namespace SocialballWebAPI.Services
                 x.IsActive,
                 UserDataId = x.UserData.Id,
                 x.Email
+                //HasImage = HasImage("https://socialball-avatars.s3.eu-central-1.amazonaws.com/" + x.UserData.Id.ToString())
             }).ToList();
+
         }
 
         public object GetTeams(Guid? leagueId)

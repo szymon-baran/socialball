@@ -165,7 +165,12 @@
                       />
                       <DxDataGridRequiredRule message="Wybierz pozycję!" />
                     </DxColumn>
-                    <DxColumn data-field="Number" caption="Numer zawodnika" />
+                    <DxColumn data-field="Number" caption="Numer zawodnika">
+                      <DxDataGridCustomRule
+                        :validation-callback="validateInsertedPlayerHomeNumber"
+                        message="Ten numer już jest zajęty"
+                      />
+                    </DxColumn>
                   </DxDataGrid>
                 </div>
                 <div class="col">
@@ -213,7 +218,12 @@
                       />
                       <DxDataGridRequiredRule message="Wybierz pozycję!" />
                     </DxColumn>
-                    <DxColumn data-field="Number" caption="Numer zawodnika" />
+                    <DxColumn data-field="Number" caption="Numer zawodnika">
+                      <DxDataGridCustomRule
+                        :validation-callback="validateInsertedPlayerAwayNumber"
+                        message="Ten numer już jest zajęty"
+                      />
+                    </DxColumn>
                   </DxDataGrid>
                 </div>
               </div>
@@ -229,6 +239,7 @@
                     :column-auto-width="true"
                     width="100%"
                     @editor-preparing="onEditorPreparing"
+                    @saved="onSaved"
                     ref="matchEventsDataGrid"
                     no-data-text="Brak zdarzeń"
                   >
@@ -267,6 +278,10 @@
                         value-expr="id"
                         :show-clear-button="true"
                       />
+                      <DxDataGridCustomRule
+                        :validation-callback="validateInsertedEventPlayer"
+                        message="Ten zawodnik nie bierze udziału w meczu."
+                      />
                       <DxDataGridRequiredRule message="Wybierz zawodnika!" />
                     </DxColumn>
                     <DxColumn data-field="Minute" caption="Minuta" />
@@ -276,6 +291,10 @@
                         display-expr="name"
                         value-expr="id"
                         :show-clear-button="true"
+                      />
+                      <DxDataGridCustomRule
+                        :validation-callback="validateInsertedEventAssistPlayer"
+                        message="Ten zawodnik nie bierze udziału w meczu."
                       />
                     </DxColumn>
                     <DxColumn data-field="PenaltyType" caption="Rodzaj kary">
@@ -462,6 +481,9 @@ export default {
         };
       }
     },
+    onSaved() {
+      this.players = this.homeTeamPlayers.concat(this.awayTeamPlayers);
+    },
     onHomeTeamChange() {
       this.HomeMatchPlayers = [];
       this.teamsSelected = this.getTeams.filter(
@@ -500,11 +522,41 @@ export default {
         return true;
       }
     },
+    validateInsertedPlayerHomeNumber(e) {
+      if (this.HomeMatchPlayers.find((x) => x.Number == e.value)) {
+        return false;
+      } else {
+        return true;
+      }
+    },
     validateInsertedPlayerAway(e) {
       if (this.AwayMatchPlayers.find((x) => x.PlayerId == e.value)) {
         return false;
       } else {
         return true;
+      }
+    },
+    validateInsertedPlayerAwayNumber(e) {
+      if (this.AwayMatchPlayers.find((x) => x.Number == e.value)) {
+        return false;
+      } else {
+        return true;
+      }
+    },
+    validateInsertedEventPlayer(e) {
+      const allPlayers = this.HomeMatchPlayers.concat(this.AwayMatchPlayers);
+      if (allPlayers.find((x) => x.PlayerId == e.value)) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    validateInsertedEventAssistPlayer(e) {
+      const allPlayers = this.HomeMatchPlayers.concat(this.AwayMatchPlayers);
+      if (e.value == null || allPlayers.find((x) => x.PlayerId == e.value)) {
+        return true;
+      } else {
+        return false;
       }
     },
   },

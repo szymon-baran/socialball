@@ -78,7 +78,9 @@
           </div>
         </div>
         <div class="mt-3">
-          &nbsp;
+          <div class="row">
+            <div class="col middle-line">&nbsp;</div>
+          </div>
         </div>
         <div class="row mt-4">
           <div
@@ -173,13 +175,13 @@ export default {
 
 <style scoped>
 .home-header {
-  margin: 0 0 1.5vh 0;
+  margin: 0 0 1vh 0;
   font-weight: bold;
   font-size: 150%;
   letter-spacing: 0.06em;
 }
 .away-header {
-  margin: 1.5vh 0 0 0;
+  margin: 1vh 0 0 0;
   font-weight: bold;
   font-size: 150%;
   letter-spacing: 0.06em;
@@ -236,5 +238,10 @@ a:hover {
 .circle-center {
   text-align: -webkit-center;
   cursor: pointer;
+}
+.middle-line {
+  border-bottom: 2px solid #eee;
+  margin: 0;
+  padding: 0;
 }
 </style>

@@ -29,7 +29,7 @@
           <div class="row">
             <div class="col">
               <label for="nameTextBox" class="form-label">Nazwa</label>
-              <DxTextBox v-model="Name" id="nameTextBox">
+              <DxTextBox v-model="Name" id="nameTextBox" :read-only="true">
                 <DxValidator>
                   <DxRequiredRule message="Podaj nazwę!" />
                 </DxValidator>
@@ -67,6 +67,7 @@
                 text="Usuń drużynę"
                 @click="handleDelete()"
                 type="danger"
+                styling-mode="outlined"
                 class="mb-4"
               />
             </div>
@@ -77,7 +78,7 @@
                 text="Usuń zdjęcie drużyny"
                 @click="handlePhotoDelete()"
                 type="danger"
-                styling-mode="outlined"
+                styling-mode="text"
                 class="mb-4"
               />
             </div>

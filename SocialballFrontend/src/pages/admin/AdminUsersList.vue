@@ -13,6 +13,7 @@
     >
       <DxFilterRow :visible="true" />
       <DxLoadPanel :enabled="true" />
+      <DxPaging :page-size="15" />
       <DxColumn
         data-field="username"
         caption="Nazwa użytkownika"
@@ -67,6 +68,12 @@
             v-if="data.data.email"
             ><i class="fas fa-envelope ml-2"></i
           ></a>
+          <a
+            class="action"
+            title="Usuń zdjęcie użytkownika"
+            @click="handlePhotoDelete({ data })"
+            ><i class="fas fa-image ml-2"></i
+          ></a>
         </div>
       </template>
     </DxDataGrid>
@@ -80,10 +87,12 @@ import {
   DxColumn,
   DxFilterRow,
   DxLookup,
+  DxPaging,
 } from "devextreme-vue/data-grid";
 
 import { mapGetters, mapActions, mapMutations } from "vuex";
 import { useToast } from "vue-toastification";
+import { custom } from "devextreme/ui/dialog";
 
 export default {
   name: "AdminUsersList",
@@ -103,6 +112,7 @@ export default {
       setUserTypesToLookup: "players/setUserTypesToLookup",
       banUserAdmin: "players/banUserAdmin",
       unbanUserAdmin: "players/unbanUserAdmin",
+      userImageDeleteAdmin: "players/userImageDeleteAdmin",
     }),
     ...mapMutations({
       RESET_PLAYERS: "players/RESET_PLAYERS",
@@ -118,6 +128,34 @@ export default {
     getUserMail(data) {
       return data.data.data.email ? "mailto:" + data.data.data.email : "";
     },
+    handlePhotoDelete(data) {
+      let dialog = custom({
+        title: "Potwierdzenie",
+        messageHtml: `Czy na pewno chcesz usunąć zdjęcie profilowe użytkownika ${data.data.data.name}?`,
+        buttons: [
+          {
+            text: "Tak",
+            onClick: () => {
+              return true;
+            },
+          },
+          {
+            text: "Nie",
+            onClick: () => {
+              return false;
+            },
+          },
+        ],
+      });
+      dialog.show().then((dialogResult) => {
+        if (dialogResult === true) {
+          this.userImageDeleteAdmin(data.data.data.userDataId);
+          this.popupVisible = false;
+          this.$emit("closed");
+          useToast().success("Zdjęcie użytkownika zostało usunięte!");
+        }
+      });
+    },
   },
   mounted() {
     this.setUserTypesToLookup().then((response) => {
@@ -131,6 +169,7 @@ export default {
     DxColumn,
     DxFilterRow,
     DxLookup,
+    DxPaging,
   },
   beforeUnmount() {
     this.RESET_PLAYERS();

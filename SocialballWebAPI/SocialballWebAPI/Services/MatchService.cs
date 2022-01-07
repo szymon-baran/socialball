@@ -251,7 +251,7 @@ namespace SocialballWebAPI.Services
                     _teamRepository.UpdateTeam(awayTeam);
                 }
 
-                match.IsConfirmed = model.IsAccepted;
+                match.IsConfirmed = true;
                 _matchRepository.UpdateMatch(match);
             }
             else

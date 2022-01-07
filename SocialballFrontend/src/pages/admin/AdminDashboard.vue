@@ -48,7 +48,7 @@
             text="Zarządzanie użytkownikami"
             @click="routerPushToUsersAdmin"
             type="danger"
-            width="610px"
+            width="500px"
             height="150px"
           />
         </div>
@@ -57,7 +57,7 @@
             text="Zarządzanie drużynami"
             @click="routerPushToTeamsAdmin"
             type="danger"
-            width="610px"
+            width="500px"
             height="150px"
           />
         </div>

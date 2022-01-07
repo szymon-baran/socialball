@@ -17,7 +17,7 @@
     </div>
     <div class="line"></div>
     <div v-for="event in match.MatchEvents" v-bind:key="event.id">
-      <div class="row">
+      <div class="row mt-2">
         <div class="col" v-if="event.teamId === match.AwayTeamId" />
         <div class="col" v-if="event.matchEventType === 1">
           <i class="fas fa-futbol ico main-color"></i>

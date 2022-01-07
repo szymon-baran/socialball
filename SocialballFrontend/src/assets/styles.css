@@ -44,7 +44,7 @@ h4 {
 }
 
 .home-background {
-  background-image: url("homepage-background.jpeg");
+  background-image: url("homepage-new-bg.jpeg");
   background-attachment: fixed;
   background-size: cover;
   display: grid;
@@ -69,9 +69,9 @@ h4 {
 }
 
 .glass {
-  background-color: rgba(255, 255, 255, .15);  
+  background-color: rgba(255, 255, 255, .1);  
   backdrop-filter: blur(8px);
-  padding: 6rem;
+  padding: 5.5rem;
   border-radius: 10px;
 }
 

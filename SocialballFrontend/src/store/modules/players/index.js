@@ -244,5 +244,15 @@ export default {
           dispatch("setUsersAdmin");
         });
     },
+    // eslint-disable-next-line no-unused-vars
+    userImageDeleteAdmin: async ({ state }, id) => {
+      await axios.post(
+        "https://localhost:44369/api/admins/userImageDeleteAdmin",
+        {
+          Id: id,
+        }
+      );
+    },
+
   },
 };

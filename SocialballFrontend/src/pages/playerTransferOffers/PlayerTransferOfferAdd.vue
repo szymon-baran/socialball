@@ -103,7 +103,7 @@
                 v-model="Content"
                 id="contentTextArea"
                 :auto-resize-enabled="true"
-                :max-height="100"
+                :max-height="180"
               >
                 <DxValidator>
                   <DxRequiredRule message="Wprowadź treść oferty!" />

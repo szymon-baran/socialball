@@ -7,7 +7,7 @@
       :show-close-button="false"
       :show-title="true"
       :width="400"
-      :height="420"
+      :height="520"
       container=".dx-viewport"
       :title="getTitle()"
       :shading="false"
@@ -39,22 +39,29 @@
       </h4>
       <div class="mt-4">
         <p>Kwota transferu: {{ playerTransferOffer.TransferFee }} PLN</p>
-        <p>Przyszłe zarobki zawodnika: {{ playerTransferOffer.PlayerEarnings }} PLN/miesiąc</p>
+        <p>
+          Przyszłe zarobki zawodnika:
+          {{ playerTransferOffer.PlayerEarnings }} PLN/miesiąc
+        </p>
         <p>{{ playerTransferOffer.Content }}</p>
       </div>
-      <div
-        class="mt-5"
-        v-if="
-          !playerTransferOffer.IsAcceptedByPlayer ||
-            !playerTransferOffer.IsAcceptedByOtherTeam
-        "
-      >
-        <p>Oferta wymaga jeszcze akceptacji przez:</p>
+      <div class="mt-4">
+        <h4>Stan transferu:</h4>
         <ul>
-          <li v-if="!playerTransferOffer.IsAcceptedByOtherTeam">
+          <li>
+            <span v-if="!playerTransferOffer.IsAcceptedByOtherTeam"
+              >Oferta wymaga akceptacji przez</span
+            >
+            <span v-else>Oferta została już zaakceptowana przez</span>
             aktualną drużynę zawodnika ({{ playerTransferOffer.ToTeamName }})
           </li>
-          <li v-if="!playerTransferOffer.IsAcceptedByPlayer">zawodnika</li>
+          <li>
+            <span v-if="!playerTransferOffer.IsAcceptedByPlayer"
+              >Oferta wymaga akceptacji przez</span
+            >
+            <span v-else>Oferta została już zaakceptowana przez</span>
+            zawodnika
+          </li>
         </ul>
       </div>
     </DxPopup>
@@ -175,6 +182,14 @@ export default {
       });
     },
     accept() {
+      let warning = "";
+      if (
+        (this.showAsTeam && this.playerTransferOffer.IsAcceptedByPlayer) ||
+        (!this.showAsTeam && this.playerTransferOffer.IsAcceptedByOtherTeam)
+      ) {
+        warning =
+          "<br>Zaakceptuj ofertę dopiero po uregulowaniu płatności finansowych!<br>Po Twojej akceptacji, transfer zostanie dokonany!";
+      }
       let dialog = custom({
         title: "Akceptacja",
         messageHtml:
@@ -182,7 +197,8 @@ export default {
           this.playerTransferOffer.PlayerName +
           " -> " +
           this.playerTransferOffer.FromTeamName +
-          "?",
+          "?" +
+          warning,
         buttons: [
           {
             text: "Tak",

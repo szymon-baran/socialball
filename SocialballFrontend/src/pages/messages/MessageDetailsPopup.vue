@@ -7,7 +7,7 @@
       :show-close-button="false"
       :show-title="true"
       :width="400"
-      :height="500"
+      :height="550"
       container=".dx-viewport"
       :title="message.message.subject"
       :shading="false"

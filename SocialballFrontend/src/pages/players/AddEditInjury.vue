@@ -7,7 +7,7 @@
       :show-close-button="false"
       :show-title="true"
       :width="600"
-      :height="300"
+      :height="310"
       container=".dx-viewport"
       :title="getTitle()"
       :shading="false"
@@ -72,6 +72,7 @@
           text="Wyrzuć zawodnika z drużyny"
           @click="handleKickPlayer()"
           type="danger"
+          styling-mode="text"
           class="mb-4"
         />
       </form>
@@ -160,7 +161,7 @@ export default {
       RESET_PLAYER_FORM: "players/RESET_PLAYER_FORM",
     }),
     getTitle() {
-      return (this.showToEdit ? "Edytuj" : "Dodaj") + " kontuzję zawodnika";
+      return (this.showToEdit ? "Edytuj" : "Dodaj") + " zawodnika w drużynie";
     },
     handleKickPlayer() {
       let dialog = custom({

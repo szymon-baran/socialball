@@ -68,7 +68,7 @@ namespace SocialballWebAPI.Services
                 List<UserData> peopleInTeam = _playerRepository.GetUserDatasInTeam(model.ToTeamId.Value);
                 foreach (var person in peopleInTeam)
                 {
-                    if (!person.UserId.HasValue)
+                    if (!person.UserId.HasValue || person.UserId == model.FromUserId)
                     {
                         continue;
                     }

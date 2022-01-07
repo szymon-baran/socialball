@@ -7,7 +7,7 @@
       :show-close-button="false"
       :show-title="true"
       width="50vw"
-      height="90vh"
+      height="96vh"
       container=".dx-viewport"
       title="Szczegóły meczu"
       :shading="false"
