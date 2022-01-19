@@ -17,6 +17,7 @@
       :column-auto-width="true"
       width="100%"
       no-data-text="Brak meczy"
+      ref="matches-grid"
     >
       <DxFilterRow :visible="true" />
       <DxLoadPanel :enabled="true" />
@@ -134,7 +135,10 @@ export default {
         this.userTeamId = response.data;
       });
     }
-    this.setMatches(this.$route.params.id);
+    this.$refs["matches-grid"].instance.beginCustomLoading();
+    this.setMatches(this.$route.params.id).then(() => {
+      this.$refs["matches-grid"].instance.endCustomLoading();
+    });
     this.setAllTeams();
   },
   components: {

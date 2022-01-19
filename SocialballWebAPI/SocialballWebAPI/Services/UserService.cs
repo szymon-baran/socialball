@@ -68,7 +68,8 @@ namespace SocialballWebAPI.Services
             {
                 Username = model.LoginUsername,
                 Password = BCrypt.Net.BCrypt.HashPassword(model.LoginPassword),
-                Email = model.Email
+                Email = model.Email,
+                IsActive = true
             };
             _userRepository.AddUser(user);
 

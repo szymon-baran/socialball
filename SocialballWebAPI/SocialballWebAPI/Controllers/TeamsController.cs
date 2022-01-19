@@ -56,7 +56,7 @@ namespace SocialballWebAPI.Controllers
         [HttpGet("getPositionsInsideOfTeam")]
         public ActionResult GetPositionsInsideOfTeam(Guid teamId)
         {
-            return Ok(TeamService.GetTeamsToChart(teamId));
+            return Ok(TeamService.GetPositionsCountToChart(teamId));
         }
 
         [HttpGet("details")]

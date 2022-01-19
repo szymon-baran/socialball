@@ -97,7 +97,7 @@ namespace SocialballWebAPI.Services
                 MatchId = x.MatchPlayer.MatchId,
                 MatchBetween = x.MatchPlayer.Match.HomeTeam.Name + " - " + x.MatchPlayer.Match.AwayTeam.Name,
                 DateTime = x.MatchPlayer.Match.DateTime,
-                GoalScorerName = x.MatchPlayer.Player.FirstName ?? "" + " " + x.MatchPlayer.Player.LastName
+                GoalScorerName = (x.MatchPlayer.Player.FirstName ?? "") + " " + x.MatchPlayer.Player.LastName
             }).OrderByDescending(x => x.DateTime).ToList();
 
             var lookup = _matchEventRepository.GetGoalsPerMonthByPlayer(player.Id);
@@ -220,7 +220,7 @@ namespace SocialballWebAPI.Services
                 throw new KeyNotFoundException();
             }
 
-            return userData.TeamId.HasValue ? userData.TeamId.Value : null;
+            return userData.TeamId.HasValue ? userData.TeamId.Value : null; 
         }
 
         public List<SelectList> GetPlayersByTeamToLookup(Guid teamId)

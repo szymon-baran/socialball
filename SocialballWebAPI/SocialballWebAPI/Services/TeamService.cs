@@ -118,16 +118,18 @@ namespace SocialballWebAPI.Services
             return _leagueRepository.GetLeagues();
         }
 
-        public List<PositionsInTeam> GetTeamsToChart(Guid teamId)
+        public List<PositionsInTeam> GetPositionsCountToChart(Guid teamId)
         {
             List<PositionsInTeam> positionsInTeams = new List<PositionsInTeam>();
 
-            for (PositionType p = 0; p <= PositionType.Striker; p++)
+            foreach (PositionType p in Enum.GetValues(typeof(PositionType)))
             {
                 positionsInTeams.Add(new PositionsInTeam
                 {
                     Position = p,
-                    NumberOfPlayers = _playerRepository.GetPlayersInTeam(teamId).Where(x => x.Position == (int)p).Count()
+                    NumberOfPlayers = _playerRepository.GetPlayersInTeam(teamId)
+                    .Where(x => x.Position == (int)p)
+                    .Count()
                 });
             }
 

@@ -54,7 +54,7 @@ export default {
               }
             }
           });
-        })
+        });
         match.result = homeGoals + ":" + awayGoals;
       });
     },
@@ -112,13 +112,16 @@ export default {
 
   actions: {
     setMatches({ commit }, teamId) {
-      axios
-        .get("https://localhost:44369/api/matches", {
-          params: { teamId: teamId },
-        })
-        .then((response) => {
-          commit("SET_MATCHES", response.data);
-        });
+      return new Promise((resolve) => {
+        axios
+          .get("https://localhost:44369/api/matches", {
+            params: { teamId: teamId },
+          })
+          .then((response) => {
+            commit("SET_MATCHES", response.data);
+            resolve(response);
+          });
+      });
     },
     setUnconfirmedMatches({ commit }, teamId) {
       axios
@@ -209,12 +212,15 @@ export default {
           );
       });
     },
-    sendMatchAnswer: async ({ state, dispatch }, { isAccepted: isAccepted, teamId: teamId }) => {
+    sendMatchAnswer: async (
+      { state, dispatch },
+      { isAccepted: isAccepted, teamId: teamId }
+    ) => {
       let wrapper = {
         Id: state.match.Id,
         IsAccepted: isAccepted,
-        UserTeamId: teamId
-      }
+        UserTeamId: teamId,
+      };
       await axios
         .post("https://localhost:44369/api/matches/sendMatchAnswer", wrapper, {
           headers: authHeader(),

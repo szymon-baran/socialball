@@ -30,7 +30,7 @@ namespace SocialballWebAPI.Data.Repositories
 
         public List<FromUserJobAdvertisement> GetFromUserJobAdvertisements()
         {
-            return _context.FromUserJobAdvertisements.Where(x => x.IsActive == true).ToList();
+            return _context.FromUserJobAdvertisements.Include(x => x.User).ThenInclude(x => x.UserData).Include(x => x.JobAdvertisementAnswers).Where(x => x.IsActive == true).ToList();
         }
 
         public List<FromUserJobAdvertisement> GetFromUserJobAdvertisementsByUserId(Guid userId)

@@ -15,7 +15,7 @@ namespace SocialballWebAPI.Abstraction
         void AddTeam(AddTeamDto model);
         object GetTeamsByLeague(Guid leagueId);
         List<SelectList> GetTeamsToSelectList();
-        List<PositionsInTeam> GetTeamsToChart(Guid teamId);
+        List<PositionsInTeam> GetPositionsCountToChart(Guid teamId);
         TeamDto GetTeamDetails(Guid id);
         List<League> GetLeaguesToLookup();
     }

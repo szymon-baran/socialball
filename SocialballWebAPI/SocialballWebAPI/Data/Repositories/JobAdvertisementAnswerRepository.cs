@@ -24,7 +24,7 @@ namespace SocialballWebAPI.Data.Repositories
 
         public List<JobAdvertisementTeamAnswer> GetJobAdvertisementTeamAnswersByUser(Guid? userId)
         {
-            return _context.JobAdvertisementTeamAnswers.Where(x => x.JobAdvertisement is FromUserJobAdvertisement ? ((FromUserJobAdvertisement)x.JobAdvertisement).UserId == userId : false).ToList();
+            return _context.JobAdvertisementTeamAnswers.Include(x => x.Team).Where(x => x.JobAdvertisement is FromUserJobAdvertisement ? ((FromUserJobAdvertisement)x.JobAdvertisement).UserId == userId : false).ToList();
         }
 
         public JobAdvertisementAnswer GetJobAdvertisementAnswerDetails(Guid id)

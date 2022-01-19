@@ -35,7 +35,10 @@
               <li v-if="player.Citizenship">
                 Narodowość: {{ player.Citizenship }}
               </li>
-              <li v-if="player.Email">E-mail kontaktowy: <a :href="getEmailLink()">{{ player.Email }}</a></li>
+              <li v-if="player.Email">
+                E-mail kontaktowy:
+                <a :href="getEmailLink()">{{ player.Email }}</a>
+              </li>
             </div>
           </div>
         </div>
@@ -48,11 +51,28 @@
         ref="showStatsButton"
         type="default"
       />
+      <DxButton text="Kontakt" @click="showAddMessagePopup()" class="ml-4" />
     </div>
     <div class="secondary-border mt-3" v-if="areStatsVisible">
       <div class="row">
         <div class="col mt-2">
-          <p>Zawodnik średnio zdobywa {{ player.Goals.length / player.MatchCount }} goli i {{ player.Assists.length / player.MatchCount }} asyst na mecz.</p>
+          <p>
+            Zawodnik średnio zdobywa
+            <span class="bolder-goals">
+              {{
+                Math.round((player.Goals.length / player.MatchCount) * 100) /
+                  100
+              }}
+            </span>
+            goli i
+            <span class="bolder-goals">
+              {{
+                Math.round((player.Assists.length / player.MatchCount) * 100) /
+                  100
+              }}
+            </span>
+            asyst na mecz.
+          </p>
         </div>
       </div>
       <div class="row">
@@ -133,9 +153,6 @@
           </DxChart>
         </div>
       </div>
-    </div>
-    <div class="mt-4" v-if="isLoggedIn">
-      <DxButton text="Kontakt" @click="showAddMessagePopup()" />
     </div>
     <MessageAdd
       v-if="addMessagePopupOptions.isVisible"
@@ -218,11 +235,7 @@ export default {
       const date = new Date(this.player.IsInjuredUntil);
       return (
         "Kontuzjowany do: " +
-        (date.getDate() +
-          "/" +
-          date.getMonth() +
-          "/" +
-          date.getFullYear())
+        (date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear())
       );
     },
     isInjured() {
@@ -235,7 +248,7 @@ export default {
     },
     getEmailLink() {
       return "mailto:" + this.player.Email;
-    }
+    },
   },
   mounted() {
     this.setPlayerDetails(this.$route.params.id);
@@ -257,3 +270,8 @@ export default {
   },
 };
 </script>
+<style scoped>
+.bolder-goals {
+  font-weight: bold;
+}
+</style>
