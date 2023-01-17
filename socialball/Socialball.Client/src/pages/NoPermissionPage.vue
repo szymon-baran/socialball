@@ -1,0 +1,35 @@
+<template>
+  <div class="text-center big-data-grid" id="not-found-container">
+    <i class="far fa-frown main-color mt-3"></i>
+    <h1 class="m-4">403</h1>
+    <h3>Brak uprawnień do przeglądania wybranej strony!</h3>
+    <h3>Zaloguj się na odpowiednie konto.</h3>
+    <DxButton
+      text="Powrót na stronę główną"
+      type="default"
+      styling-mode="outlined"
+      @click="routerPushToHome"
+    />
+  </div>
+</template>
+<script>
+import DxButton from "devextreme-vue/button";
+import router from "../router";
+
+export default {
+  name: "NoPermission",
+  methods: {
+    routerPushToHome() {
+      router.push({ path: "/" });
+    },
+  },
+  components: {
+    DxButton,
+  },
+};
+</script>
+<style scoped>
+.fa-frown {
+  font-size: 600%;
+}
+</style>

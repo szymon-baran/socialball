@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Socialball.Data.EntityFramework\Socialball.Data.EntityFramework.csproj" />
+    <ProjectReference Include="..\Socialball.Domain\Socialball.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

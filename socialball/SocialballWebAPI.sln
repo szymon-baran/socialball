@@ -1,0 +1,101 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32901.215
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Socialball.WebAPI", "Socialball.WebAPI\Socialball.WebAPI.csproj", "{09F29903-7259-4E3E-B9D3-628C98565731}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{8F2703FC-C28E-473D-8524-C7310CF15C2C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Socialball.Application.Abstraction", "Socialball.Application.Abstraction\Socialball.Application.Abstraction.csproj", "{5F0C31AB-BE4C-44E2-9AA5-0EE594B85EF6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Socialball.Application.Services", "Socialball.Application.Services\Socialball.Application.Services.csproj", "{E6B07156-EC5B-47E5-8FEE-34E8F69256D8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{783CF8F7-EF5B-466D-872D-F585F8F441D4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Socialball.Data.Abstraction", "Socialball.Data.Abstraction\Socialball.Data.Abstraction.csproj", "{3972F306-2DC4-479D-BA26-A85D9BC41D05}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Socialball.Data.Repositories", "Socialball.Data.Repositories\Socialball.Data.Repositories.csproj", "{897E6C07-ED37-4545-8504-80A73C4E8B94}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Socialball.Data.Dictionaries", "Socialball.Data.Dictionaries\Socialball.Data.Dictionaries.csproj", "{9DCB251D-A7CD-4013-BDD8-CAC1D4153A05}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{B21AAACD-C804-48DD-A48F-BB2722C8B191}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{E583E32F-D546-4B09-9A09-243F5833F75D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Socialball.Domain", "Socialball.Domain\Socialball.Domain.csproj", "{E8EA9388-38CB-4314-92CF-B2FEB4AE3B66}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DI", "DI", "{4F80BD55-82D3-4B45-BAD2-A76FB4B5B9CE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Socialball.DependencyResolver", "Socialball.DependencyResolver\Socialball.DependencyResolver.csproj", "{A9C3EB06-8106-4A2B-A9F8-5BDC7D319E6F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Socialball.Data.EntityFramework", "Socialball.Data.EntityFramework\Socialball.Data.EntityFramework.csproj", "{D7097253-18C2-47E6-A453-1048C3110B01}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Socialball.Client", "Socialball.Client\Socialball.Client.csproj", "{93DA3521-D018-43B9-AC16-4B1612688BB0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{09F29903-7259-4E3E-B9D3-628C98565731}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09F29903-7259-4E3E-B9D3-628C98565731}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09F29903-7259-4E3E-B9D3-628C98565731}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09F29903-7259-4E3E-B9D3-628C98565731}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F0C31AB-BE4C-44E2-9AA5-0EE594B85EF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F0C31AB-BE4C-44E2-9AA5-0EE594B85EF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F0C31AB-BE4C-44E2-9AA5-0EE594B85EF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F0C31AB-BE4C-44E2-9AA5-0EE594B85EF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6B07156-EC5B-47E5-8FEE-34E8F69256D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6B07156-EC5B-47E5-8FEE-34E8F69256D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6B07156-EC5B-47E5-8FEE-34E8F69256D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6B07156-EC5B-47E5-8FEE-34E8F69256D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3972F306-2DC4-479D-BA26-A85D9BC41D05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3972F306-2DC4-479D-BA26-A85D9BC41D05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3972F306-2DC4-479D-BA26-A85D9BC41D05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3972F306-2DC4-479D-BA26-A85D9BC41D05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{897E6C07-ED37-4545-8504-80A73C4E8B94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{897E6C07-ED37-4545-8504-80A73C4E8B94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{897E6C07-ED37-4545-8504-80A73C4E8B94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{897E6C07-ED37-4545-8504-80A73C4E8B94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DCB251D-A7CD-4013-BDD8-CAC1D4153A05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DCB251D-A7CD-4013-BDD8-CAC1D4153A05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DCB251D-A7CD-4013-BDD8-CAC1D4153A05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DCB251D-A7CD-4013-BDD8-CAC1D4153A05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8EA9388-38CB-4314-92CF-B2FEB4AE3B66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8EA9388-38CB-4314-92CF-B2FEB4AE3B66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8EA9388-38CB-4314-92CF-B2FEB4AE3B66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8EA9388-38CB-4314-92CF-B2FEB4AE3B66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9C3EB06-8106-4A2B-A9F8-5BDC7D319E6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9C3EB06-8106-4A2B-A9F8-5BDC7D319E6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9C3EB06-8106-4A2B-A9F8-5BDC7D319E6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9C3EB06-8106-4A2B-A9F8-5BDC7D319E6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7097253-18C2-47E6-A453-1048C3110B01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7097253-18C2-47E6-A453-1048C3110B01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7097253-18C2-47E6-A453-1048C3110B01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7097253-18C2-47E6-A453-1048C3110B01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93DA3521-D018-43B9-AC16-4B1612688BB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93DA3521-D018-43B9-AC16-4B1612688BB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93DA3521-D018-43B9-AC16-4B1612688BB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93DA3521-D018-43B9-AC16-4B1612688BB0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{09F29903-7259-4E3E-B9D3-628C98565731} = {B21AAACD-C804-48DD-A48F-BB2722C8B191}
+		{5F0C31AB-BE4C-44E2-9AA5-0EE594B85EF6} = {8F2703FC-C28E-473D-8524-C7310CF15C2C}
+		{E6B07156-EC5B-47E5-8FEE-34E8F69256D8} = {8F2703FC-C28E-473D-8524-C7310CF15C2C}
+		{3972F306-2DC4-479D-BA26-A85D9BC41D05} = {783CF8F7-EF5B-466D-872D-F585F8F441D4}
+		{897E6C07-ED37-4545-8504-80A73C4E8B94} = {783CF8F7-EF5B-466D-872D-F585F8F441D4}
+		{9DCB251D-A7CD-4013-BDD8-CAC1D4153A05} = {783CF8F7-EF5B-466D-872D-F585F8F441D4}
+		{E8EA9388-38CB-4314-92CF-B2FEB4AE3B66} = {E583E32F-D546-4B09-9A09-243F5833F75D}
+		{A9C3EB06-8106-4A2B-A9F8-5BDC7D319E6F} = {4F80BD55-82D3-4B45-BAD2-A76FB4B5B9CE}
+		{D7097253-18C2-47E6-A453-1048C3110B01} = {783CF8F7-EF5B-466D-872D-F585F8F441D4}
+		{93DA3521-D018-43B9-AC16-4B1612688BB0} = {B21AAACD-C804-48DD-A48F-BB2722C8B191}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {09EE6FEE-8E67-4555-846D-46D876A8C64E}
+	EndGlobalSection
+EndGlobal

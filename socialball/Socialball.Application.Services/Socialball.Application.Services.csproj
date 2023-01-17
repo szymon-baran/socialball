@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.5" />
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Socialball.Application.Abstraction\Socialball.Application.Abstraction.csproj" />
+    <ProjectReference Include="..\Socialball.Data.Abstraction\Socialball.Data.Abstraction.csproj" />
+    <ProjectReference Include="..\Socialball.Data.Dictionaries\Socialball.Data.Dictionaries.csproj" />
+    <ProjectReference Include="..\Socialball.Data.EntityFramework\Socialball.Data.EntityFramework.csproj" />
+    <ProjectReference Include="..\Socialball.Data.Repositories\Socialball.Data.Repositories.csproj" />
+    <ProjectReference Include="..\Socialball.Domain\Socialball.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
